@@ -5,7 +5,7 @@ const controller = require('../../controllers/collections.controller');
 const router = express.Router();
 
 router
-  .route('/')
-  .get(controller.list);
+  .route('/solanart')
+  .get(controller.listSolanart);
 
 module.exports = router;

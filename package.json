@@ -62,6 +62,7 @@
     "starter project"
   ],
   "dependencies": {
+    "@meanie/mongoose-upsert-many": "^2.2.0",
     "axios": "^0.21.1",
     "bcryptjs": "2.4.3",
     "bluebird": "^3.5.0",

@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
+const upsertMany = require('@meanie/mongoose-upsert-many');
 
 /**
- * Refresh Token Schema
+ * nft: Item Schema
  * @private
  */
 const ItemSchema = new mongoose.Schema({
-  item_id: {
-    type: String,
-    requitred: true,
+  item_api_id: {
+    type: Number,
+    required: true,
     index: true,
   },
   item_name: {
@@ -15,17 +16,19 @@ const ItemSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
-  item_full_name: String,
   description: String,
   token_add: String,
   for_sale: Boolean,
   seller_address: String,
-  current_price: Number,
+  attributes: String,
+  skin: String,
+  ranking: Number,
+  price: Number,
   last_sold_price: Number,
   collectionId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Collection',
-    required: true,
+    // required: true,
   },
   created_at: {
     type: Date,
@@ -35,7 +38,16 @@ const ItemSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+}, {
+  // Schema-wide configuration for the upsertMany plugin
+  upsertMany: {
+    matchFields: ['item_api_id'],
+    type: 'replaceOne',
+    ensureModel: true,
+  },
 });
+
+ItemSchema.plugin(upsertMany);
 
 ItemSchema.pre('save', (next) => {
   this.updated_at = Date.now();
@@ -43,7 +55,7 @@ ItemSchema.pre('save', (next) => {
 });
 
 /**
- * @typedef Collection
+ * @typedef Item
  */
 const Item = mongoose.model('Item', ItemSchema);
 module.exports = Item;
