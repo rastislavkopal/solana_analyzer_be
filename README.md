@@ -38,7 +38,6 @@ Boilerplate/Generator/Starter Project for building RESTful APIs and microservice
 ```bash
 git clone --depth 1 https://github.com/danielfsousa/express-rest-es2017-boilerplate
 cd express-rest-es2017-boilerplate
-rm -rf .git
 ```
 
 #### Install dependencies:
