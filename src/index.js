@@ -8,6 +8,9 @@ const mongoose = require('./config/mongoose');
 // open mongoose connection
 mongoose.connect();
 
+// start the background jobs automatically
+require('./api/jobs/jobs');
+
 // listen to requests
 app.listen(port, () => logger.info(`server started on port ${port} (${env})`));
 

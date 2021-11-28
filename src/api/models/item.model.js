@@ -23,12 +23,16 @@ const ItemSchema = new mongoose.Schema({
   attributes: String,
   skin: String,
   ranking: Number,
-  price: Number,
+  price: {
+    type: Number,
+    required: true,
+    index: true,
+  },
   last_sold_price: Number,
   collectionId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Collection',
-    // required: true,
+    required: true,
   },
   created_at: {
     type: Date,
