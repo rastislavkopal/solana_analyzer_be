@@ -61,6 +61,9 @@ collectionSchema.method({
     return transformed;
   },
 });
+
+// collectionSchema.index({ collection_name_id: 1, type: -1 }); // schema level
+
 /**
  * @typedef Collection
  */

@@ -3493,7 +3493,7 @@
   "resolved" "https://registry.npmjs.org/module-details-from-path/-/module-details-from-path-1.0.3.tgz"
   "version" "1.0.3"
 
-"moment-timezone@^0.5.13", "moment-timezone@^0.5.x":
+"moment-timezone@^0.5.13", "moment-timezone@^0.5.31", "moment-timezone@^0.5.x":
   "resolved" "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.33.tgz"
   "version" "0.5.33"
   dependencies:
@@ -3629,6 +3629,13 @@
     "just-extend" "^4.0.2"
     "lolex" "^4.1.0"
     "path-to-regexp" "^1.7.0"
+
+"node-cron@^3.0.0":
+  "integrity" "sha512-DDwIvvuCwrNiaU7HEivFDULcaQualDv7KoNlB/UU1wPW0n1tDEmBJKhEIE6DlF2FuoOHcNbLJ8ITL2Iv/3AWmA=="
+  "resolved" "https://registry.npmjs.org/node-cron/-/node-cron-3.0.0.tgz"
+  "version" "3.0.0"
+  dependencies:
+    "moment-timezone" "^0.5.31"
 
 "node-environment-flags@1.0.5":
   "resolved" "https://registry.npmjs.org/node-environment-flags/-/node-environment-flags-1.0.5.tgz"
