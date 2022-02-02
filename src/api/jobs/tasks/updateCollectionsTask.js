@@ -13,8 +13,8 @@ const logger = require('../../../config/logger');
 // # │ │ │ │ │ │
 // # * * * * * *
 
-// Updates list of collections and its information every minute
-const updateCollectionTask = cron.schedule('* * * * *', async () => {
+// Updates list of collections and its information every 10 minutes
+const updateCollectionTask = cron.schedule('*/10 * * * *', async () => {
   try {
     // get and update collections and their basic info
     axios

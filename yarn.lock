@@ -434,6 +434,13 @@
   "resolved" "https://registry.npmjs.org/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz"
   "version" "2.4.0"
 
+"@types/yauzl@^2.9.1":
+  "integrity" "sha512-8uALY5LTvSuHgloDVUvWP3pIauILm+8/0pDMokuDYIoNsOkSwd5AiHBTSEJjKTDcZr5z8UpgOWZkxBF4iJftoA=="
+  "resolved" "https://registry.npmjs.org/@types/yauzl/-/yauzl-2.9.2.tgz"
+  "version" "2.9.2"
+  dependencies:
+    "@types/node" "*"
+
 "abbrev@1":
   "resolved" "https://registry.npmjs.org/abbrev/-/abbrev-1.1.1.tgz"
   "version" "1.1.1"
@@ -877,6 +884,11 @@
   "resolved" "https://registry.npmjs.org/bson/-/bson-1.1.5.tgz"
   "version" "1.1.5"
 
+"buffer-crc32@~0.2.3":
+  "integrity" "sha1-DTM+PwDqxQqhRUq9MO+MKl2ackI="
+  "resolved" "https://registry.npmjs.org/buffer-crc32/-/buffer-crc32-0.2.13.tgz"
+  "version" "0.2.13"
+
 "buffer-equal-constant-time@1.0.1":
   "resolved" "https://registry.npmjs.org/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz"
   "version" "1.0.1"
@@ -1199,6 +1211,11 @@
 "commander@^2.15.1", "commander@^2.20.0":
   "resolved" "https://registry.npmjs.org/commander/-/commander-2.20.3.tgz"
   "version" "2.20.3"
+
+"commander@^8.2.0":
+  "integrity" "sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww=="
+  "resolved" "https://registry.npmjs.org/commander/-/commander-8.3.0.tgz"
+  "version" "8.3.0"
 
 "commander@2.15.1":
   "resolved" "https://registry.npmjs.org/commander/-/commander-2.15.1.tgz"
@@ -1791,6 +1808,11 @@
   "resolved" "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz"
   "version" "1.0.5"
 
+"escape-string-regexp@^2.0.0":
+  "integrity" "sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w=="
+  "resolved" "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz"
+  "version" "2.0.0"
+
 "escape-string-regexp@^4.0.0":
   "resolved" "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz"
   "version" "4.0.0"
@@ -2029,6 +2051,18 @@
   "resolved" "https://registry.npmjs.org/extend/-/extend-3.0.2.tgz"
   "version" "3.0.2"
 
+"extract-zip@^2.0.1":
+  "integrity" "sha512-GDhU9ntwuKyGXdZBUgTIe+vXnWj0fppUEtMDL0+idd5Sta8TGpHssn/eusA9mrPr9qNDym6SxAYZjNvCn/9RBg=="
+  "resolved" "https://registry.npmjs.org/extract-zip/-/extract-zip-2.0.1.tgz"
+  "version" "2.0.1"
+  dependencies:
+    "@types/yauzl" "^2.9.1"
+    "debug" "^4.1.1"
+    "get-stream" "^5.1.0"
+    "yauzl" "^2.10.0"
+  optionalDependencies:
+    "@types/yauzl" "^2.9.1"
+
 "extsprintf@^1.2.0", "extsprintf@1.3.0":
   "resolved" "https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz"
   "version" "1.3.0"
@@ -2066,6 +2100,13 @@
 "fclone@~1.0.11", "fclone@1.0.11":
   "resolved" "https://registry.npmjs.org/fclone/-/fclone-1.0.11.tgz"
   "version" "1.0.11"
+
+"fd-slicer@~1.1.0":
+  "integrity" "sha1-JcfInLH5B3+IkbvmHY85Dq4lbx4="
+  "resolved" "https://registry.npmjs.org/fd-slicer/-/fd-slicer-1.1.0.tgz"
+  "version" "1.1.0"
+  dependencies:
+    "pend" "~1.2.0"
 
 "fecha@^4.2.0":
   "resolved" "https://registry.npmjs.org/fecha/-/fecha-4.2.0.tgz"
@@ -2288,6 +2329,7 @@
     "pump" "^3.0.0"
 
 "get-stream@^5.1.0":
+  "integrity" "sha512-nBF+F1rAZVCu/p7rjzgA+Yb4lfYXrpl7a6VmJrU8wF9I1CKvP/QwPNZHnOlwbTkY6dvtFIzFMSyQXbLoTQPRpA=="
   "resolved" "https://registry.npmjs.org/get-stream/-/get-stream-5.2.0.tgz"
   "version" "5.2.0"
   dependencies:
@@ -2378,7 +2420,7 @@
     "to-readable-stream" "^1.0.0"
     "url-parse-lax" "^3.0.0"
 
-"graceful-fs@^4.1.11", "graceful-fs@^4.1.15", "graceful-fs@^4.1.2", "graceful-fs@^4.1.6", "graceful-fs@^4.2.0":
+"graceful-fs@^4.1.11", "graceful-fs@^4.1.15", "graceful-fs@^4.1.2", "graceful-fs@^4.1.6", "graceful-fs@^4.2.0", "graceful-fs@^4.2.4":
   "resolved" "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.6.tgz"
   "version" "4.2.6"
 
@@ -2894,6 +2936,11 @@
     "isemail" "2.x.x"
     "items" "2.x.x"
     "topo" "2.x.x"
+
+"jpeg-js@^0.4.2":
+  "integrity" "sha512-ru1HWKek8octvUHFHvE5ZzQ1yAsJmIvRdGWvSoKV52XKyuyYA437QWDttXT8eZXDSbuMpHlLzPDZUPd6idIz+Q=="
+  "resolved" "https://registry.npmjs.org/jpeg-js/-/jpeg-js-0.4.3.tgz"
+  "version" "0.4.3"
 
 "js-git@^0.7.8":
   "resolved" "https://registry.npmjs.org/js-git/-/js-git-0.7.8.tgz"
@@ -3415,8 +3462,9 @@
     "mime-db" "1.40.0"
 
 "mime@^2.4.6":
-  "resolved" "https://registry.yarnpkg.com/mime/-/mime-2.5.2.tgz"
-  "version" "2.5.2"
+  "integrity" "sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg=="
+  "resolved" "https://registry.npmjs.org/mime/-/mime-2.6.0.tgz"
+  "version" "2.6.0"
 
 "mime@1.6.0":
   "resolved" "https://registry.npmjs.org/mime/-/mime-1.6.0.tgz"
@@ -4060,6 +4108,11 @@
   "resolved" "https://registry.npmjs.org/pause/-/pause-0.0.1.tgz"
   "version" "0.0.1"
 
+"pend@~1.2.0":
+  "integrity" "sha1-elfrVQpng/kRUzH89GY9XI4AelA="
+  "resolved" "https://registry.npmjs.org/pend/-/pend-1.2.0.tgz"
+  "version" "1.2.0"
+
 "performance-now@^2.1.0":
   "resolved" "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz"
   "version" "2.1.0"
@@ -4103,6 +4156,35 @@
   "version" "2.0.0"
   dependencies:
     "find-up" "^2.1.0"
+
+"playwright-core@=1.17.1":
+  "integrity" "sha512-C3c8RpPiC3qr15fRDN6dx6WnUkPLFmST37gms2aoHPDRvp7EaGDPMMZPpqIm/QWB5J40xDrQCD4YYHz2nBTojQ=="
+  "resolved" "https://registry.npmjs.org/playwright-core/-/playwright-core-1.17.1.tgz"
+  "version" "1.17.1"
+  dependencies:
+    "commander" "^8.2.0"
+    "debug" "^4.1.1"
+    "extract-zip" "^2.0.1"
+    "https-proxy-agent" "^5.0.0"
+    "jpeg-js" "^0.4.2"
+    "mime" "^2.4.6"
+    "pngjs" "^5.0.0"
+    "progress" "^2.0.3"
+    "proper-lockfile" "^4.1.1"
+    "proxy-from-env" "^1.1.0"
+    "rimraf" "^3.0.2"
+    "socks-proxy-agent" "^6.1.0"
+    "stack-utils" "^2.0.3"
+    "ws" "^7.4.6"
+    "yauzl" "^2.10.0"
+    "yazl" "^2.5.1"
+
+"playwright@^1.17.1":
+  "integrity" "sha512-DisCkW9MblDJNS3rG61p8LiLA2WA7IY/4A4W7DX4BphWe/HuWjKmGQptuk4NVIh5UuSwXpW/jaH2+ZgjHs3GMA=="
+  "resolved" "https://registry.npmjs.org/playwright/-/playwright-1.17.1.tgz"
+  "version" "1.17.1"
+  dependencies:
+    "playwright-core" "=1.17.1"
 
 "please-upgrade-node@^3.2.0":
   "resolved" "https://registry.npmjs.org/please-upgrade-node/-/please-upgrade-node-3.2.0.tgz"
@@ -4185,6 +4267,11 @@
   optionalDependencies:
     "pm2-sysmonit" "^1.2.8"
 
+"pngjs@^5.0.0":
+  "integrity" "sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw=="
+  "resolved" "https://registry.npmjs.org/pngjs/-/pngjs-5.0.0.tgz"
+  "version" "5.0.0"
+
 "prelude-ls@^1.2.1":
   "resolved" "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.2.1.tgz"
   "version" "1.2.1"
@@ -4220,9 +4307,10 @@
   dependencies:
     "fromentries" "^1.2.0"
 
-"progress@^2.0.0":
-  "resolved" "https://registry.npmjs.org/progress/-/progress-2.0.0.tgz"
-  "version" "2.0.0"
+"progress@^2.0.0", "progress@^2.0.3":
+  "integrity" "sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA=="
+  "resolved" "https://registry.npmjs.org/progress/-/progress-2.0.3.tgz"
+  "version" "2.0.3"
 
 "promise@^7.0.1":
   "resolved" "https://registry.npmjs.org/promise/-/promise-7.3.1.tgz"
@@ -4235,6 +4323,15 @@
   "version" "2.2.0"
   dependencies:
     "read" "^1.0.4"
+
+"proper-lockfile@^4.1.1":
+  "integrity" "sha512-TjNPblN4BwAWMXU8s9AEz4JmQxnD1NNL7bNOY/AKUzyamc379FWASUhc/K1pL2noVb+XmZKLL68cjzLsiOAMaA=="
+  "resolved" "https://registry.npmjs.org/proper-lockfile/-/proper-lockfile-4.1.2.tgz"
+  "version" "4.1.2"
+  dependencies:
+    "graceful-fs" "^4.2.4"
+    "retry" "^0.12.0"
+    "signal-exit" "^3.0.2"
 
 "proxy-addr@~2.0.5":
   "resolved" "https://registry.npmjs.org/proxy-addr/-/proxy-addr-2.0.5.tgz"
@@ -4256,9 +4353,10 @@
     "proxy-from-env" "^1.0.0"
     "socks-proxy-agent" "^5.0.0"
 
-"proxy-from-env@^1.0.0":
-  "resolved" "https://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.0.0.tgz"
-  "version" "1.0.0"
+"proxy-from-env@^1.0.0", "proxy-from-env@^1.1.0":
+  "integrity" "sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg=="
+  "resolved" "https://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz"
+  "version" "1.1.0"
 
 "psl@^1.1.28":
   "resolved" "https://registry.npmjs.org/psl/-/psl-1.8.0.tgz"
@@ -4709,6 +4807,11 @@
   dependencies:
     "lowercase-keys" "^1.0.0"
 
+"retry@^0.12.0":
+  "integrity" "sha1-G0KmJmoh8HQh0bC1S33BZ7AcATs="
+  "resolved" "https://registry.npmjs.org/retry/-/retry-0.12.0.tgz"
+  "version" "0.12.0"
+
 "right-align@^0.1.1":
   "resolved" "https://registry.npmjs.org/right-align/-/right-align-0.1.3.tgz"
   "version" "0.1.3"
@@ -4958,7 +5061,16 @@
     "debug" "4"
     "socks" "^2.3.3"
 
-"socks@^2.3.3":
+"socks-proxy-agent@^6.1.0":
+  "integrity" "sha512-t8J0kG3csjA4g6FTbsMOWws+7R7vuRC8aQ/wy3/1OWmsgwA68zs/+cExQ0koSitUDXqhufF/YJr9wtNMZHw5Ew=="
+  "resolved" "https://registry.npmjs.org/socks-proxy-agent/-/socks-proxy-agent-6.1.1.tgz"
+  "version" "6.1.1"
+  dependencies:
+    "agent-base" "^6.0.2"
+    "debug" "^4.3.1"
+    "socks" "^2.6.1"
+
+"socks@^2.3.3", "socks@^2.6.1":
   "resolved" "https://registry.yarnpkg.com/socks/-/socks-2.6.1.tgz"
   "version" "2.6.1"
   dependencies:
@@ -5040,6 +5152,13 @@
 "stack-trace@0.0.x":
   "resolved" "https://registry.npmjs.org/stack-trace/-/stack-trace-0.0.10.tgz"
   "version" "0.0.10"
+
+"stack-utils@^2.0.3":
+  "integrity" "sha512-xrQcmYhOsn/1kX+Vraq+7j4oE2j/6BFscZ0etmYg81xuM8Gq0022Pxb8+IqgOFUIaxHs0KaSb7T1+OegiNrNFA=="
+  "resolved" "https://registry.npmjs.org/stack-utils/-/stack-utils-2.0.5.tgz"
+  "version" "2.0.5"
+  dependencies:
+    "escape-string-regexp" "^2.0.0"
 
 "statuses@>= 1.5.0 < 2", "statuses@~1.5.0":
   "resolved" "https://registry.npmjs.org/statuses/-/statuses-1.5.0.tgz"
@@ -5670,7 +5789,7 @@
     "signal-exit" "^3.0.2"
     "typedarray-to-buffer" "^3.1.5"
 
-"ws@^7.0.0":
+"ws@^7.0.0", "ws@^7.4.6":
   "resolved" "https://registry.yarnpkg.com/ws/-/ws-7.5.0.tgz"
   "version" "7.5.0"
 
@@ -5776,3 +5895,18 @@
     "cliui" "^2.1.0"
     "decamelize" "^1.0.0"
     "window-size" "0.1.0"
+
+"yauzl@^2.10.0":
+  "integrity" "sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk="
+  "resolved" "https://registry.npmjs.org/yauzl/-/yauzl-2.10.0.tgz"
+  "version" "2.10.0"
+  dependencies:
+    "buffer-crc32" "~0.2.3"
+    "fd-slicer" "~1.1.0"
+
+"yazl@^2.5.1":
+  "integrity" "sha512-phENi2PLiHnHb6QBVot+dJnaAZ0xosj7p3fWl+znIjBDlnMI2PsZCJZ306BPTFOaHf5qdDEI8x5qFrSOBN5vrw=="
+  "resolved" "https://registry.npmjs.org/yazl/-/yazl-2.5.1.tgz"
+  "version" "2.5.1"
+  dependencies:
+    "buffer-crc32" "~0.2.3"

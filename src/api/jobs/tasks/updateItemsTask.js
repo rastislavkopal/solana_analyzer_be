@@ -15,11 +15,21 @@ const logger = require('../../../config/logger');
 // # │ │ │ │ │ │
 // # * * * * * *
 
-// Updates list of collections and its information every minute
-const updateItemsTask = cron.schedule('* * * * *', async () => {
+// Updates list of collections and its information every 1 minute
+const updateItemsTask = cron.schedule('*/1 * * * **', async () => {
   try {
     // get and update collections and their basic info
-    const collections = await Collection.find({}).limit(5);
+    const collections = await Collection.find(
+      {
+        $or: [
+          { collection_name_id: 'degenape' },
+          { collection_name_id: 'aurory' },
+          { collection_name_id: 'solpunks' },
+          { collection_name_id: 'boldbadgers' },
+          { collection_name_id: 'frakt' },
+        ],
+      },
+    ).limit(5);
     collections.forEach((collection) => {
       axios
         .get(`https://qzlsklfacc.medianetwork.cloud/nft_for_sale?collection=${collection.collection_name_id}`)
