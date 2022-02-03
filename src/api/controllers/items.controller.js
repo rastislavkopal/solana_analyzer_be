@@ -8,9 +8,9 @@ const logger = require('../../config/logger');
  * Load collection and append to req.
  * @public
  */
-exports.load = async (req, res, next, collectionNameId) => {
+exports.load = async (req, res, next, symbol) => {
   try {
-    const collection = await Collection.find({ collection_name_id: collectionNameId });
+    const collection = await Collection.find({ symbol });
     req.locals = { collection };
     return next();
   } catch (error) {
@@ -19,13 +19,13 @@ exports.load = async (req, res, next, collectionNameId) => {
 };
 
 /**
- * Get Solanart collections list
+ * Get collections list
  * @public
  */
 exports.listItems = async (req, res, next) => {
   try {
-    const colectionName = req.locals.collection[0].collection_name_id;
-    const collection = await Collection.find({ collection_name_id: colectionName });
+    const colectionName = req.locals.collection[0].symbol;
+    const collection = await Collection.find({ symbol: colectionName });
 
     const item = await Item.find({ collectionId: collection[0]._id });
     res.setHeader('Content-Type', 'application/json');
