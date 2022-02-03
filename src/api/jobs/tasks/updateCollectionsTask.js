@@ -21,13 +21,13 @@ const updateCollectionTask = cron.schedule('*/10 * * * *', async () => {
       .get('https://qzlsklfacc.medianetwork.cloud/get_collections')
       .then((response) => {
         response.data.forEach((element) => {
-          Collection.findOneAndUpdate({ collection_name_id: element.url }, {
+          Collection.findOneAndUpdate({ symbol: element.url }, {
             description: element.description,
-            collection_full_name: element.name,
+            name: element.name,
             creators: element.creators,
             market_name: 'solanart.io',
           }, {
-            select: '_id collection_name_id',
+            select: '_id symbol',
             upsert: true,
             rawResult: false,
           }, (err) => {
@@ -44,7 +44,7 @@ const updateCollectionTask = cron.schedule('*/10 * * * *', async () => {
       .get('https://qzlsklfacc.medianetwork.cloud/query_volume_all')
       .then((response) => {
         response.data.forEach((element) => {
-          Collection.findOneAndUpdate({ collection_name_id: element.collection }, {
+          Collection.findOneAndUpdate({ symbol: element.collection }, {
             total_volume: element.totalVolume,
             daily_volume: element.dailyVolume,
             weekly_volume: element.weeklyVolume,
@@ -58,7 +58,7 @@ const updateCollectionTask = cron.schedule('*/10 * * * *', async () => {
             prev_weekly_volume: element.prevWeeklyVolume,
             category: element.category,
           }, {
-            select: '_id collection_name_id',
+            select: '_id symbol',
             upsert: true,
             rawResult: false,
           }, (err) => {

@@ -17,12 +17,12 @@ exports.createCollectionIfNotExists = async (collectionId) => {
   } = collectionRes.data;
 
   if (symbol) {
-    const res = await Collection.findOne({ collection_name_id: symbol });
+    const res = await Collection.findOne({ symbol });
     if (!res) {
       const newCollection = new Collection({
-        collection_name_id: symbol,
+        symbol,
         market_name: 'https://magiceden.io/',
-        collection_full_name: name,
+        name,
         totalItems, // shorthand syntax
         description,
         image,

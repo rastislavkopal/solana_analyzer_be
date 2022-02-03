@@ -22,17 +22,17 @@ const updateItemsTask = cron.schedule('*/1 * * * **', async () => {
     const collections = await Collection.find(
       {
         $or: [
-          { collection_name_id: 'degenape' },
-          { collection_name_id: 'aurory' },
-          { collection_name_id: 'solpunks' },
-          { collection_name_id: 'boldbadgers' },
-          { collection_name_id: 'frakt' },
+          { symbol: 'degenape' },
+          { symbol: 'aurory' },
+          { symbol: 'solpunks' },
+          { symbol: 'boldbadgers' },
+          { symbol: 'frakt' },
         ],
       },
     ).limit(5);
     collections.forEach((collection) => {
       axios
-        .get(`https://qzlsklfacc.medianetwork.cloud/nft_for_sale?collection=${collection.collection_name_id}`)
+        .get(`https://qzlsklfacc.medianetwork.cloud/nft_for_sale?collection=${collection.symbol}`)
         .then((response) => {
           const items = response.data.map((item) => {
             const rObj = {
