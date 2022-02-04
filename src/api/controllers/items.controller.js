@@ -2,7 +2,7 @@
 // const axios = require('axios');
 const Collection = require('../models/collection.model');
 const Item = require('../models/item.model');
-const logger = require('../../config/logger');
+// const logger = require('../../config/logger');
 
 /**
  * Load collection and append to req.
