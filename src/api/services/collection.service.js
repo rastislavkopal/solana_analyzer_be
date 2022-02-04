@@ -11,7 +11,6 @@ const Collection = require('../models/collection.model');
  */
 exports.createCollectionIfNotExists = async (collectionId) => {
   const collectionRes = await axios.get(`https://api-mainnet.magiceden.io/collections/${collectionId}`);
-  console.log(collectionRes.data);
   const {
     symbol, description, image, name, totalItems,
   } = collectionRes.data;
@@ -33,6 +32,6 @@ exports.createCollectionIfNotExists = async (collectionId) => {
     console.log('already exists');
     return res;
   }
-  console.log('is null');
+  console.log('Fetched collection response is null.');
   return null;
 };
