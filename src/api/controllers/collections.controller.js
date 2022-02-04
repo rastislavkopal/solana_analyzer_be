@@ -1,9 +1,24 @@
 const httpStatus = require('http-status');
 const Collection = require('../models/collection.model');
+const CollectionTs = require('../models/collectionTs.model');
 const service = require('../services/collection.service');
 
 /**
- * Get Solanart collections list
+ * Load collection and append to req.
+ * @public
+ */
+exports.load = async (req, res, next, symbol) => {
+  try {
+    const collection = await Collection.findOne({ symbol }).exec();
+    req.locals = { collection };
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Get collections list
  * @public
  */
 exports.listCollections = async (req, res, next) => {
@@ -22,7 +37,7 @@ exports.listCollections = async (req, res, next) => {
  */
 exports.addCollection = async (req, res, next) => {
   try {
-    const ret = await service.createCollectionIfNotExists(req.body.collectionId);
+    const ret = await service.createCollectionIfNotExists(req.body.symbol);
 
     if (ret) {
       res.status(httpStatus.CREATED);
@@ -31,6 +46,26 @@ exports.addCollection = async (req, res, next) => {
       res.status(httpStatus.NOT_FOUND);
       res.json('collection not found');
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get historical data for collection
+ * @public
+ */
+exports.getCollectionHistory = async (req, res, next) => {
+  try {
+    let limit = 100;
+
+    if (req.query.limit) limit = req.query.limit;
+
+    const { collection } = req.locals;
+    const collectionTs = await CollectionTs.find({ 'metadata.symbol': collection.symbol }, '-_id metadata timestamp')
+      .limit(limit).sort('timestamp');
+    res.setHeader('Content-Type', 'application/json');
+    res.json(collectionTs);
   } catch (error) {
     next(error);
   }

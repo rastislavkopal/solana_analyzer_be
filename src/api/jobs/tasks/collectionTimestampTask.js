@@ -26,7 +26,7 @@ const updateItemsTask = cron.schedule('*/60 * * * * *', async () => {
       const now = new Date(Date.now());
       const timestamp = new CollectionTs({
         metadata: {
-          collectionId: results.symbol,
+          symbol: results.symbol,
           floorPrice: results.floorPrice,
           listedCount: results.listedCount,
           listedTotalValue: results.listedTotalValue,

@@ -9,7 +9,7 @@ const collectionTsSchema = new mongoose.Schema(
     name: String,
     timestamp: Date,
     metadata: {
-      collectionId: String,
+      symbol: String,
       floorPrice: Number,
       listedCount: Number,
       listedTotalValue: Number,

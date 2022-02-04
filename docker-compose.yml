@@ -1,12 +1,12 @@
 version: "3"
 
 services:
-  boilerplate-api:
+  api:
     build: .
     command: yarn dev -- -L
     environment:
       - NODE_ENV=development
-      - MONGO_URI=mongodb://mongodb:27017/express-rest-es2017-boilerplate
+      - MONGO_URI=mongodb://mongodb:27017/market_gap
     volumes:
       - .:/app
     ports:
