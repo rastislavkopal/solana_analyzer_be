@@ -5,18 +5,7 @@ const CollectionTs = require('../../models/collectionTs.model');
 const logger = require('../../../config/logger');
 const { agent } = require('../../utils/proxyGenerator');
 
-// # ┌────────────── second (optional)
-// # │ ┌──────────── minute
-// # │ │ ┌────────── hour
-// # │ │ │ ┌──────── day of month
-// # │ │ │ │ ┌────── month
-// # │ │ │ │ │ ┌──── day of week
-// # │ │ │ │ │ │
-// # │ │ │ │ │ │
-// # * * * * * *
-
-//
-const updateItemsTask = cron.schedule('*/60 * * * * *', async () => {
+const updateItemsTask = cron.schedule('*/5 * * * *', async () => {
   try {
     const collections = await Collection.find({}, 'symbol name');
 
