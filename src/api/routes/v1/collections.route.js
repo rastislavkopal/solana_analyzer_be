@@ -13,7 +13,15 @@ router
 router.param('symbol', controller.load);
 
 router
-  .route('/:symbol/history')
-  .get(validate(getHistoricalData), controller.getCollectionHistory);
+  .route('/:symbol/history/complete')
+  .get(validate(getHistoricalData), controller.getCollectionHistoryComplete);
+
+router
+  .route('/:symbol/history/floor')
+  .get(validate(getHistoricalData), controller.getCollectionHistoryFloor);
+
+router
+  .route('/:symbol/history/listings')
+  .get(validate(getHistoricalData), controller.getCollectionHistoryListings);
 
 module.exports = router;

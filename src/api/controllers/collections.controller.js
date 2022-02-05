@@ -55,17 +55,79 @@ exports.addCollection = async (req, res, next) => {
  * Get historical data for collection
  * @public
  */
-exports.getCollectionHistory = async (req, res, next) => {
+exports.getCollectionHistoryComplete = async (req, res, next) => {
   try {
     let limit = 100;
 
     if (req.query.limit) limit = req.query.limit;
 
     const { collection } = req.locals;
+    if (!collection) {
+      res.status(httpStatus.NOT_FOUND);
+      res.json('Collection not found');
+      return;
+    }
+
     const collectionTs = await CollectionTs.find({ 'metadata.symbol': collection.symbol }, '-_id metadata timestamp')
       .limit(limit).sort('timestamp');
     res.setHeader('Content-Type', 'application/json');
     res.json(collectionTs);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getCollectionHistoryFloor = async (req, res, next) => {
+  try {
+    let limit = 100;
+
+    if (req.query.limit) limit = req.query.limit;
+
+    const { collection } = req.locals;
+
+    if (!collection) {
+      res.status(httpStatus.NOT_FOUND);
+      res.json('Collection not found');
+      return;
+    }
+    const collectionTs = await CollectionTs.find({ 'metadata.symbol': collection.symbol }, '-_id metadata timestamp')
+      .limit(limit).sort('timestamp');
+
+    const history = {};
+    collectionTs.forEach((it) => {
+      history[new Date(it.timestamp)] = it.metadata.floorPrice;
+    });
+
+    res.setHeader('Content-Type', 'application/json');
+    res.json(history);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getCollectionHistoryListings = async (req, res, next) => {
+  try {
+    let limit = 100;
+
+    if (req.query.limit) limit = req.query.limit;
+
+    const { collection } = req.locals;
+
+    if (!collection) {
+      res.status(httpStatus.NOT_FOUND);
+      res.json('Collection not found');
+      return;
+    }
+    const collectionTs = await CollectionTs.find({ 'metadata.symbol': collection.symbol }, '-_id metadata timestamp')
+      .limit(limit).sort('timestamp');
+
+    const history = {};
+    collectionTs.forEach((it) => {
+      history[new Date(it.timestamp)] = it.metadata.listedCount;
+    });
+
+    res.setHeader('Content-Type', 'application/json');
+    res.json(history);
   } catch (error) {
     next(error);
   }
