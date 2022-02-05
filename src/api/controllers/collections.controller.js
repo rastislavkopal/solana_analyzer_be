@@ -95,7 +95,7 @@ exports.getCollectionHistoryFloor = async (req, res, next) => {
 
     const history = {};
     collectionTs.forEach((it) => {
-      history[new Date(it.timestamp)] = it.metadata.floorPrice;
+      history[(new Date(it.timestamp)).toISOString()] = it.metadata.floorPrice;
     });
 
     res.setHeader('Content-Type', 'application/json');
@@ -123,7 +123,7 @@ exports.getCollectionHistoryListings = async (req, res, next) => {
 
     const history = {};
     collectionTs.forEach((it) => {
-      history[new Date(it.timestamp)] = it.metadata.listedCount;
+      history[(new Date(it.timestamp)).toISOString()] = it.metadata.listedCount;
     });
 
     res.setHeader('Content-Type', 'application/json');
