@@ -155,7 +155,3 @@ yarn deploy
 
  - [KunalKapadia/express-mongoose-es6-rest-api](https://github.com/KunalKapadia/express-mongoose-es6-rest-api)
  - [diegohaz/rest](https://github.com/diegohaz/rest)
-
-## License
-
-[MIT License](README.md) - [Daniel Sousa](https://github.com/danielfsousa)
