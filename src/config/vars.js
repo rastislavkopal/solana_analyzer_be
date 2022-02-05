@@ -21,4 +21,5 @@ module.exports = {
     username: process.env.EMAIL_USERNAME,
     password: process.env.EMAIL_PASSWORD,
   },
+  proxyAgentUri: process.env.PROXY_AGENT_URI,
 };
