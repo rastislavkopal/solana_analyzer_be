@@ -3,7 +3,7 @@ version: "3"
 services:
   api:
     build: .
-    command: yarn start
+    command: yarn dev -- -L
     environment:
       - NODE_ENV=production
       - MONGO_URI=mongodb+srv://doadmin:2ScTr6418gXH5v03@db-mongodb-fra1-21691-f756f24b.mongo.ondigitalocean.com/admin?authSource=admin&replicaSet=db-mongodb-fra1-21691&tls=true&tlsCAFile=/app/certs/mongo_ca_certificate.crt
