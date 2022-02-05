@@ -9,3 +9,5 @@ services:
       - MONGO_URI=mongodb+srv://doadmin:2ScTr6418gXH5v03@db-mongodb-fra1-21691-f756f24b.mongo.ondigitalocean.com/admin?authSource=admin&replicaSet=db-mongodb-fra1-21691&tls=true&tlsCAFile=/app/certs/mongo_ca_certificate.crt
     ports:
       - "3000:3000"
+    volumes:
+      - .:/app
