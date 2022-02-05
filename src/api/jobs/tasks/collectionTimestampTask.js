@@ -1,9 +1,9 @@
 const cron = require('node-cron');
-// const mongoose = require('mongoose');
 const axios = require('axios');
 const Collection = require('../../models/collection.model');
 const CollectionTs = require('../../models/collectionTs.model');
 const logger = require('../../../config/logger');
+const { agent } = require('../../utils/proxyGenerator');
 
 // # ┌────────────── second (optional)
 // # │ ┌──────────── minute
@@ -21,7 +21,12 @@ const updateItemsTask = cron.schedule('*/60 * * * * *', async () => {
     const collections = await Collection.find({}, 'symbol name');
 
     collections.forEach(async (it) => {
-      const resp = await axios.get(`https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/${it.symbol}`);
+      const config = {
+        url: String(`https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/${it.symbol}`),
+        httpsAgent: agent,
+      };
+      const resp = await axios.request(config);
+
       const { results } = resp.data;
       const now = new Date(Date.now());
       const timestamp = new CollectionTs({

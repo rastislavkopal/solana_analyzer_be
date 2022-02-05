@@ -1,8 +1,9 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-// const util = require('util');
-// const HttpsProxyAgent = require('https-proxy-agent');
-// const tunnel = require('tunnel');
+const HttpsProxyAgent = require('https-proxy-agent');
+const { proxyAgentUri } = require('../../config/vars');
+
+exports.agent = new HttpsProxyAgent(proxyAgentUri);
 
 exports.proxyGenerator = async () => {
   const ipAddresses = [];
@@ -25,21 +26,7 @@ exports.proxyGenerator = async () => {
 
     const rand = Math.floor(Math.random() * 100);
 
-    // options = {
-    //   proxy: false,
-    //   httpsAgent: tunnel.httpsOverHttp({
-    //     proxy: {
-    //       host: String(ipAddresses[rand]),
-    //       port: parseInt(portNumbers[rand], 10),
-    //     },
-    //   }),
-    // };
-    // options = {
-    //   proxy: false,
-    //   httpsAgent: new HttpsProxyAgent(`http://${ipAddresses[rand]}:${portNumbers[rand]}`),
-    // };
     options = `http://${ipAddresses[rand]}:${portNumbers[rand]}`;
-    console.log(options);
   });
   return options;
 };
