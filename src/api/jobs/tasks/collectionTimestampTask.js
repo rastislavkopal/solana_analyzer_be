@@ -17,6 +17,9 @@ const updateItemsTask = cron.schedule('*/5 * * * *', async () => {
       const resp = await axios.request(config);
 
       const { results } = resp.data;
+
+      if (resp.status !== 200 || !results) return;
+
       const now = new Date(Date.now());
       const timestamp = new CollectionTs({
         metadata: {
