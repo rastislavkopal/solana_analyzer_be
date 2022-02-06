@@ -69,7 +69,7 @@ exports.getCollectionHistoryComplete = async (req, res, next) => {
     }
 
     const collectionTs = await CollectionTs.find({ 'metadata.symbol': collection.symbol }, '-_id metadata timestamp')
-      .limit(limit).sort('timestamp');
+      .sort('timestamp').limit(limit);
     res.setHeader('Content-Type', 'application/json');
     res.json(collectionTs);
   } catch (error) {
@@ -91,7 +91,7 @@ exports.getCollectionHistoryFloor = async (req, res, next) => {
       return;
     }
     const collectionTs = await CollectionTs.find({ 'metadata.symbol': collection.symbol }, '-_id metadata timestamp')
-      .limit(limit).sort('timestamp');
+      .sort('timestamp').limit(limit);
 
     const history = {};
     collectionTs.forEach((it) => {
@@ -119,7 +119,7 @@ exports.getCollectionHistoryListings = async (req, res, next) => {
       return;
     }
     const collectionTs = await CollectionTs.find({ 'metadata.symbol': collection.symbol }, '-_id metadata timestamp')
-      .limit(limit).sort('timestamp');
+      .sort('timestamp').limit(limit);
 
     const history = {};
     collectionTs.forEach((it) => {
