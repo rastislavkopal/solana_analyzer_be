@@ -6,10 +6,14 @@ const router = express.Router();
 /**
  * Load collection when API with collectionNameId route parameter is hit
  */
-router.param('collectionNameId', controller.load);
+router.param('symbol', controller.load);
+
+// router
+//   .route('')
+//   .get(controller.listItems);
 
 router
-  .route('/:collectionNameId/item')
-  .get(controller.listItems);
+  .route('/:symbol/item/listings')
+  .get(controller.getListingPriceDistribution);
 
 module.exports = router;
