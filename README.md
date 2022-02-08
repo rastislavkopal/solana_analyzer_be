@@ -1,4 +1,4 @@
-# Market_gap BACKEND
+# Solysis BACKEND
 RESTful API using Node.js, Express and MongoDB
 
 ## Features
@@ -34,8 +34,8 @@ RESTful API using Node.js, Express and MongoDB
 #### Clone the repo and make it yours:
 
 ```bash
-git clone --depth 1 https://github.com/rastislavkopal/market_gap
-cd market_gap
+git clone --depth 1 https://github.com/rastislavkopal/solysis_be
+cd solysis_be
 ```
 
 #### Install dependencies:

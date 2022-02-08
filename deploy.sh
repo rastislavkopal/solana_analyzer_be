@@ -1,12 +1,12 @@
 #!/bin/bash
-docker build -t danielfsousa/express-rest-es2017-boilerplate .
-docker push danielfsousa/express-rest-es2017-boilerplate
+docker build -t rastislavkopal/solysis_be .
+docker push rastislavkopal/solysis_be
 
 ssh deploy@$DEPLOY_SERVER << EOF
-docker pull danielfsousa/express-rest-es2017-boilerplate
-docker stop api-boilerplate || true
-docker rm api-boilerplate || true
-docker rmi danielfsousa/express-rest-es2017-boilerplate:current || true
-docker tag danielfsousa/express-rest-es2017-boilerplate:latest danielfsousa/express-rest-es2017-boilerplate:current
-docker run -d --restart always --name api-boilerplate -p 3000:3000 danielfsousa/express-rest-es2017-boilerplate:current
+docker pull rastislavkopal/solysis_be
+docker stop api || true
+docker rm api || true
+docker rmi rastislavkopal/solysis_be:current || true
+docker tag rastislavkopal/solysis_be:latest rastislavkopal/solysis_be:current
+docker run -d --restart always --name api -p 3000:3000 rastislavkopal/solysis_be:current
 EOF
