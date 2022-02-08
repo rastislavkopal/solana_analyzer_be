@@ -93,9 +93,12 @@ exports.getCollectionHistoryFloor = async (req, res, next) => {
     const collectionTs = await CollectionTs.find({ 'metadata.symbol': collection.symbol }, '-_id metadata timestamp')
       .sort({ timestamp: -1 }).limit(limit);
 
-    const history = {};
+    const history = [];
     collectionTs.forEach((it) => {
-      history[(new Date(it.timestamp)).toISOString()] = it.metadata.floorPrice;
+      history.push({
+        timestamp: (new Date(it.timestamp)).toISOString(),
+        value: it.metadata.floorPrice,
+      });
     });
 
     res.setHeader('Content-Type', 'application/json');
@@ -121,9 +124,12 @@ exports.getCollectionHistoryListings = async (req, res, next) => {
     const collectionTs = await CollectionTs.find({ 'metadata.symbol': collection.symbol }, '-_id metadata timestamp')
       .sort({ timestamp: -1 }).limit(limit);
 
-    const history = {};
+    const history = [];
     collectionTs.forEach((it) => {
-      history[(new Date(it.timestamp)).toISOString()] = it.metadata.listedCount;
+      history.push({
+        timestamp: (new Date(it.timestamp)).toISOString(),
+        value: it.metadata.listedCount,
+      });
     });
 
     res.setHeader('Content-Type', 'application/json');

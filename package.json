@@ -2,7 +2,8 @@
   "name": "solysis",
   "version": "1.2.2",
   "description": "Solysis APP backend",
-  "author": "Rastislav Kopal",
+  "author": "Solysis",
+  "license": "MIT",
   "main": "src/index.js",
   "engines": {
     "node": ">=12",
