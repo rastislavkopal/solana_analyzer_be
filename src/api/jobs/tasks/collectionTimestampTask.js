@@ -16,9 +16,9 @@ const updateItemsTask = cron.schedule('*/5 * * * *', async () => {
       };
       const resp = await axios.request(config);
 
-      const { results } = resp.data;
+      if (resp.status !== 200 || !resp.data) return;
 
-      if (resp.status !== 200 || !results) return;
+      const { results } = resp.data;
 
       const now = new Date(Date.now());
       const timestamp = new CollectionTs({
@@ -34,7 +34,7 @@ const updateItemsTask = cron.schedule('*/5 * * * *', async () => {
         timestamp: now.toISOString(),
       });
       timestamp.save((err) => {
-        if (err) logger.error(`${err}`); // saved!
+        if (err) logger.error(`${err}`); // saved
       });
     });
   } catch (error) {
