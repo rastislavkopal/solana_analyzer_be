@@ -5,6 +5,33 @@ const CollectionTs = require('../../models/collectionTs.model');
 const logger = require('../../../config/logger');
 const { agent } = require('../../utils/proxyGenerator');
 
+async function saveCollectionTimestampFromResponse(resp) {
+  try {
+    if (resp.status !== 200 || Object.keys(resp.data).length === 0) throw new Error('An error occured while fetching data.');
+
+    const { results } = resp.data;
+    const now = new Date(Date.now());
+
+    const timestamp = new CollectionTs({
+      metadata: {
+        symbol: results.symbol,
+        floorPrice: results.floorPrice,
+        listedCount: results.listedCount,
+        listedTotalValue: results.listedTotalValue,
+        avgPrice24hr: results.avgPrice24hr,
+        volume24hr: results.volume24hr,
+        volumeAll: results.volumeAll,
+      },
+      timestamp: now.toISOString(),
+    });
+    timestamp.save((err) => {
+      if (err) logger.error(`${err}`); // saved
+    });
+  } catch (error) {
+    logger.error(`${error}`);
+  }
+}
+
 const updateItemsTask = cron.schedule('*/5 * * * *', async () => {
   try {
     const collections = await Collection.find({}, 'symbol name');
@@ -14,28 +41,12 @@ const updateItemsTask = cron.schedule('*/5 * * * *', async () => {
         url: String(`https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/${it.symbol}`),
         httpsAgent: agent,
       };
-      const resp = await axios.request(config);
 
-      if (resp.status !== 200 || !resp.data) return;
-
-      const { results } = resp.data;
-
-      const now = new Date(Date.now());
-      const timestamp = new CollectionTs({
-        metadata: {
-          symbol: results.symbol,
-          floorPrice: results.floorPrice,
-          listedCount: results.listedCount,
-          listedTotalValue: results.listedTotalValue,
-          avgPrice24hr: results.avgPrice24hr,
-          volume24hr: results.volume24hr,
-          volumeAll: results.volumeAll,
-        },
-        timestamp: now.toISOString(),
-      });
-      timestamp.save((err) => {
-        if (err) logger.error(`${err}`); // saved
-      });
+      axios.request(config)
+        .then((resp) => {
+          saveCollectionTimestampFromResponse(resp);
+        })
+        .catch((error) => { throw error; });
     });
   } catch (error) {
     logger.error(`${error}`);
