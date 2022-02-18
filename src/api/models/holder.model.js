@@ -18,7 +18,7 @@ const holderSchema = new Schema({
         ref: 'Collection',
         required: true,
       },
-      count: Number,
+      items_count: Number,
     },
   ],
 });
