@@ -7,8 +7,25 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(controller.listCollections)
-  .post(validate(addCollection), controller.addCollection);
+  .get(controller.listCollection)
+  .post(listCollections, controller.addCollection);
+
+router
+  .route('/all')
+  .get(controller.listAllCollections);
+
+router
+  .route('/rarity/')
+  .get(controller.getCollectionRaritySheet)
+  .post(controller.addCollectionRarity);
+
+router
+  .route('/rarity/')
+  .delete(controller.removeCollectionRarity);
+
+router
+  .route('/rarity/all')
+  .get(controller.listRaritySheets);
 
 router.param('symbol', controller.load);
 

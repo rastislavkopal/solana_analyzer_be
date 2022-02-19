@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const Collection = require('../models/collection.model');
+const RaritySheet = require('../models/raritySheet.model');
 const CollectionTs = require('../models/collectionTs.model');
 const service = require('../services/collection.service');
 
@@ -20,12 +21,20 @@ exports.load = async (req, res, next, body) => {
     return next(error);
   }
 };
-
 /**
  * Get collections list
  * @public
  */
-exports.listCollections = async (req, res, next) => {
+exports.listCollection = async (req, res, next) => {
+  try {
+    const collections = await Collection.find({ symbol: req.body.symbol });
+    res.setHeader('Content-Type', 'application/json');
+    res.json(collections);
+  } catch (error) {
+    next(error);
+  }
+};
+exports.listAllCollections = async (req, res, next) => {
   try {
     const collections = await Collection.find({});
     res.setHeader('Content-Type', 'application/json');
@@ -54,7 +63,63 @@ exports.addCollection = async (req, res, next) => {
     next(error);
   }
 };
+/**
+ * Get collections rarity
+ * @public
+ */
+exports.getCollectionRaritySheet = async (req, res, next) => {
+  try {
+    const raritySheet = await RaritySheet.find(req.body.collectionId);
+    res.setHeader('Content-Type', 'application/json');
+    res.json(raritySheet);
+  } catch (error) {
+    next(error);
+  }
+};
+exports.addCollectionRarity = async (req, res, next) => {
+  try {
+    // eslint-disable-next-line max-len
+    const ret = await service.addCollectionRarityIfNotExists(req.body.collectionId, req.body.collectionName);
 
+    if (ret) {
+      res.status(httpStatus.CREATED);
+      res.json(ret);
+    } else {
+      res.status(httpStatus.NOT_FOUND);
+      res.json('collection not found');
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+exports.removeCollectionRarity = async (req, res, next) => {
+  try {
+    const ret = await service.removeCollectionRarityIfNotExists(req.body.collectionId);
+
+    if (ret) {
+      res.status(httpStatus.ACCEPTED);
+      res.json(ret);
+    } else {
+      res.status(httpStatus.NOT_FOUND);
+      res.json('Already deleted');
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+exports.listRaritySheets = async (req, res, next) => {
+  try {
+    const collections = await RaritySheet.find({});
+    const resp = [];
+    collections.forEach((collection) => {
+      resp.push(collection.transform());
+    });
+    res.setHeader('Content-Type', 'application/json');
+    res.json(resp);
+  } catch (error) {
+    next(error);
+  }
+};
 /**
  * Get historical data for collection
  * @public
@@ -132,7 +197,7 @@ exports.getCollectionHistoryListings = async (req, res, next) => {
     collectionTs.forEach((it) => {
       history.push({
         timestamp: (new Date(it.timestamp)).toISOString(),
-        value: it.metadata.listedCount,
+        listedCount: it.metadata.listedCount,
       });
     });
 
