@@ -36,9 +36,8 @@ const updateItemsTask = cron.schedule('*/1 * * * **', async () => {
         .then((response) => {
           const items = response.data.map((item) => {
             const rObj = {
-              item_api_id: item.id,
+              mintAddress: item.token_add,
               item_name: item.name,
-              token_add: item.token_add,
               seller_address: item.seller_address,
               price: item.price,
               for_sale: item.for_sale,

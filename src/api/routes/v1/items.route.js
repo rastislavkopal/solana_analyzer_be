@@ -8,12 +8,12 @@ const router = express.Router();
  */
 router.param('symbol', controller.load);
 
-// router
-//   .route('')
-//   .get(controller.listItems);
+router
+  .route('/:symbol/item/all')
+  .get(controller.listItems);
 
 router
   .route('/:symbol/item/listings')
-  .get(controller.getListingPriceDistribution);
+  .get(controller.getListingPriceRankDistribution);
 
 module.exports = router;
