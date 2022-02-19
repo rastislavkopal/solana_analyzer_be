@@ -7,12 +7,14 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(controller.listCollection)
+  .get(controller.listCollections)
   .post(validate(addCollection), controller.addCollection);
 
+router.param('symbol', controller.load);
+
 router
-  .route('/all')
-  .get(controller.listAllCollections);
+  .route('/:symbol')
+  .get(controller.getCollection);
 
 router
   .route('/rarity/')
@@ -26,8 +28,6 @@ router
 router
   .route('/rarity/all')
   .get(controller.listRaritySheets);
-
-router.param('symbol', controller.load);
 
 router
   .route('/:symbol/history/complete')

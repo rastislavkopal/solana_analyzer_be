@@ -15,7 +15,7 @@ module.exports = {
   addCollection: {
     body: {
       symbol: Joi.string().max(128).required(),
-      rarity_symbol: Joi.string().max(128).required(),
+      raritySymbol: Joi.string().max(128).required(),
     },
   },
 };

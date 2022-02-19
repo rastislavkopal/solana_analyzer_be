@@ -7,9 +7,9 @@ const RaritySheet = require('../models/raritySheet.model');
  * Create collection if does not already exists
  * @public
  */
-exports.createCollectionIfNotExists = async (collectionId) => {
+exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => {
   const config = {
-    url: String(`https://api-mainnet.magiceden.io/collections/${collectionId}`),
+    url: String(`https://api-mainnet.magiceden.io/collections/${collectionSymbol}`),
     httpsAgent: agent,
   };
 
@@ -25,6 +25,7 @@ exports.createCollectionIfNotExists = async (collectionId) => {
       const newCollection = new Collection({
         symbol,
         market_name: 'https://magiceden.io/',
+        raritySymbol,
         name,
         totalItems,
         description,

@@ -23,6 +23,6 @@ router.use('/auth', authRoutes);
 * Collections and items
 */
 router.use('/collection', collectionsRoutes);
-router.use('/collection', itemsRoutes);
+// router.use('/collection', itemsRoutes);
 
 module.exports = router;

@@ -8,12 +8,9 @@ const service = require('../services/collection.service');
  * Load collection and append to req.
  * @public
  */
-exports.load = async (req, res, next, body) => {
+exports.load = async (req, res, next, symbol) => {
   try {
-    const collection = await Collection.findOne({
-      symbol: body.symbol,
-      rarity_symbol: body.rarity_symbol,
-    }).exec();
+    const collection = await Collection.findOne({ symbol }).exec();
 
     req.locals = { collection };
     return next();
@@ -21,20 +18,26 @@ exports.load = async (req, res, next, body) => {
     return next(error);
   }
 };
+
 /**
- * Get collections list
+ * Get collection by symbol
  * @public
  */
-exports.listCollection = async (req, res, next) => {
+exports.getCollection = async (req, res, next) => {
   try {
-    const collections = await Collection.find({ symbol: req.body.symbol });
+    const collections = await Collection.find({ symbol: req.locals.collection.symbol });
     res.setHeader('Content-Type', 'application/json');
     res.json(collections);
   } catch (error) {
     next(error);
   }
 };
-exports.listAllCollections = async (req, res, next) => {
+
+/**
+ * Get collections list
+ * @public
+ */
+exports.listCollections = async (req, res, next) => {
   try {
     const collections = await Collection.find({});
     res.setHeader('Content-Type', 'application/json');
@@ -50,11 +53,12 @@ exports.listAllCollections = async (req, res, next) => {
  */
 exports.addCollection = async (req, res, next) => {
   try {
-    const ret = await service.createCollectionIfNotExists(req.body);
+    const ret = await service.createCollectionIfNotExists(req.body.symbol, req.body.raritySymbol);
 
+    console.log(ret);
     if (ret) {
       res.status(httpStatus.CREATED);
-      res.json(ret);
+      res.json();
     } else {
       res.status(httpStatus.NOT_FOUND);
       res.json('collection not found');
@@ -63,6 +67,7 @@ exports.addCollection = async (req, res, next) => {
     next(error);
   }
 };
+
 /**
  * Get collections rarity
  * @public
@@ -76,6 +81,7 @@ exports.getCollectionRaritySheet = async (req, res, next) => {
     next(error);
   }
 };
+
 exports.addCollectionRarity = async (req, res, next) => {
   try {
     // eslint-disable-next-line max-len
@@ -92,6 +98,7 @@ exports.addCollectionRarity = async (req, res, next) => {
     next(error);
   }
 };
+
 exports.removeCollectionRarity = async (req, res, next) => {
   try {
     const ret = await service.removeCollectionRarityIfNotExists(req.body.collectionId);
@@ -107,6 +114,7 @@ exports.removeCollectionRarity = async (req, res, next) => {
     next(error);
   }
 };
+
 exports.listRaritySheets = async (req, res, next) => {
   try {
     const collections = await RaritySheet.find({});
@@ -120,6 +128,7 @@ exports.listRaritySheets = async (req, res, next) => {
     next(error);
   }
 };
+
 /**
  * Get historical data for collection
  * @public
