@@ -44,9 +44,9 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
  * Add rarity sheet if it doesn't already exist
  * @public
  */
-exports.addCollectionRarityIfNotExists = async (collectionId, collectionName) => {
+exports.updateCollectionRarity = async (collectionId, raritySymbol) => {
   const config = {
-    url: String(`https://howrare.is/api/v0.1/collections/${collectionName}`),
+    url: String(`https://howrare.is/api/v0.1/collections/${raritySymbol}`),
     httpsAgent: agent,
   };
 
@@ -64,7 +64,7 @@ exports.addCollectionRarityIfNotExists = async (collectionId, collectionName) =>
       const res = await RaritySheet.findOne({ collectionId });
       if (!res) {
         const newRaritySheet = await new RaritySheet({
-          collectionName,
+          raritySymbol,
           ranking_url: 'https://howrare.is/888anonclub',
           twitter,
           discord,

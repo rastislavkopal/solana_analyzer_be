@@ -17,19 +17,6 @@ router
   .get(controller.getCollection);
 
 router
-  .route('/rarity/')
-  .get(controller.getCollectionRaritySheet)
-  .post(controller.addCollectionRarity);
-
-router
-  .route('/rarity/')
-  .delete(controller.removeCollectionRarity);
-
-router
-  .route('/rarity/all')
-  .get(controller.listRaritySheets);
-
-router
   .route('/:symbol/history/complete')
   .get(validate(getHistoricalData), controller.getCollectionHistoryComplete);
 

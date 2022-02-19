@@ -120,16 +120,10 @@ async function updateItemsOf(symbol) {
           );
         });
         Promise.allSettled(requestsPeriod)
-          .then(() => {
-            updateItemsFromData(concatData);
-          })
-          .catch((error) => {
-            throw error;
-          });
+          .then(() => updateItemsFromData(concatData))
+          .catch((error) => { throw error; });
       })
-      .catch((error) => {
-        throw error;
-      });
+      .catch((error) => { throw error; });
   } catch (error) {
     logger.error(`${error}`);
   }
