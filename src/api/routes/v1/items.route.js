@@ -12,8 +12,4 @@ router
   .route('/:symbol/item/all')
   .get(controller.listItems);
 
-router
-  .route('/:symbol/item/listings')
-  .get(controller.getListingPriceRankDistribution);
-
 module.exports = router;
