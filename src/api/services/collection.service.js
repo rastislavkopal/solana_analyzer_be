@@ -7,9 +7,9 @@ const RaritySheet = require('../models/raritySheet.model');
  * Create collection if does not already exists
  * @public
  */
-exports.createCollectionIfNotExists = async (collectionId) => {
+exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => {
   const config = {
-    url: String(`https://api-mainnet.magiceden.io/collections/${collectionId}`),
+    url: String(`https://api-mainnet.magiceden.io/collections/${collectionSymbol}`),
     httpsAgent: agent,
   };
 
@@ -25,6 +25,7 @@ exports.createCollectionIfNotExists = async (collectionId) => {
       const newCollection = new Collection({
         symbol,
         market_name: 'https://magiceden.io/',
+        raritySymbol,
         name,
         totalItems,
         description,
@@ -43,9 +44,9 @@ exports.createCollectionIfNotExists = async (collectionId) => {
  * Add rarity sheet if it doesn't already exist
  * @public
  */
-exports.addCollectionRarityIfNotExists = async (collectionId, collectionName) => {
+exports.updateCollectionRarity = async (collectionId, raritySymbol) => {
   const config = {
-    url: String(`https://howrare.is/api/v0.1/collections/${collectionName}`),
+    url: String(`https://howrare.is/api/v0.1/collections/${raritySymbol}`),
     httpsAgent: agent,
   };
 
@@ -63,7 +64,7 @@ exports.addCollectionRarityIfNotExists = async (collectionId, collectionName) =>
       const res = await RaritySheet.findOne({ collectionId });
       if (!res) {
         const newRaritySheet = await new RaritySheet({
-          collectionName,
+          raritySymbol,
           ranking_url: 'https://howrare.is/888anonclub',
           twitter,
           discord,

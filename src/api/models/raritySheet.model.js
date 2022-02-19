@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
  * @private
  */
 const raritySheetSchema = new mongoose.Schema({
-  collectionName: String,
+  raritySymbol: String,
   ranking_url: String,
   twitter: String,
   discord: String,
@@ -59,7 +59,7 @@ raritySheetSchema.method({
   transform() {
     const transformed = {};
     console.log('transform');
-    const fields = ['collectionName', 'ranking_url', 'twitter', 'discord', 'website', 'logo', 'collectionId'];
+    const fields = ['raritySymbol', 'ranking_url', 'twitter', 'discord', 'website', 'logo', 'collectionId'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

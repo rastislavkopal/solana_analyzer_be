@@ -1,6 +1,5 @@
 const httpStatus = require('http-status');
 const Collection = require('../models/collection.model');
-const RaritySheet = require('../models/raritySheet.model');
 const CollectionTs = require('../models/collectionTs.model');
 const service = require('../services/collection.service');
 
@@ -8,12 +7,9 @@ const service = require('../services/collection.service');
  * Load collection and append to req.
  * @public
  */
-exports.load = async (req, res, next, body) => {
+exports.load = async (req, res, next, symbol) => {
   try {
-    const collection = await Collection.findOne({
-      symbol: body.symbol,
-      rarity_symbol: body.rarity_symbol,
-    }).exec();
+    const collection = await Collection.findOne({ symbol }).exec();
 
     req.locals = { collection };
     return next();
@@ -21,20 +17,41 @@ exports.load = async (req, res, next, body) => {
     return next(error);
   }
 };
+
 /**
- * Get collections list
+ * Get collection by symbol
  * @public
  */
-exports.listCollection = async (req, res, next) => {
+exports.getCollection = async (req, res, next) => {
   try {
-    const collections = await Collection.find({ symbol: req.body.symbol });
-    res.setHeader('Content-Type', 'application/json');
-    res.json(collections);
+    if (!req.locals.collection) {
+      res.status(httpStatus.BAD_REQUEST);
+      res.json('Collection not found.');
+    }
+
+    Collection.findOne({ symbol: req.locals.collection.symbol }, (err, collection) => {
+      if (err) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR);
+        res.json('Unexpected error occurred.');
+      }
+      if (!collection) {
+        res.status(httpStatus.NOT_FOUND);
+        res.json('collection not found');
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.json(collection);
+      }
+    });
   } catch (error) {
     next(error);
   }
 };
-exports.listAllCollections = async (req, res, next) => {
+
+/**
+ * Get collections list
+ * @public
+ */
+exports.listCollections = async (req, res, next) => {
   try {
     const collections = await Collection.find({});
     res.setHeader('Content-Type', 'application/json');
@@ -50,7 +67,7 @@ exports.listAllCollections = async (req, res, next) => {
  */
 exports.addCollection = async (req, res, next) => {
   try {
-    const ret = await service.createCollectionIfNotExists(req.body);
+    const ret = await service.createCollectionIfNotExists(req.body.symbol, req.body.raritySymbol);
 
     if (ret) {
       res.status(httpStatus.CREATED);
@@ -63,63 +80,7 @@ exports.addCollection = async (req, res, next) => {
     next(error);
   }
 };
-/**
- * Get collections rarity
- * @public
- */
-exports.getCollectionRaritySheet = async (req, res, next) => {
-  try {
-    const raritySheet = await RaritySheet.find(req.body.collectionId);
-    res.setHeader('Content-Type', 'application/json');
-    res.json(raritySheet);
-  } catch (error) {
-    next(error);
-  }
-};
-exports.addCollectionRarity = async (req, res, next) => {
-  try {
-    // eslint-disable-next-line max-len
-    const ret = await service.addCollectionRarityIfNotExists(req.body.collectionId, req.body.collectionName);
 
-    if (ret) {
-      res.status(httpStatus.CREATED);
-      res.json(ret);
-    } else {
-      res.status(httpStatus.NOT_FOUND);
-      res.json('collection not found');
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-exports.removeCollectionRarity = async (req, res, next) => {
-  try {
-    const ret = await service.removeCollectionRarityIfNotExists(req.body.collectionId);
-
-    if (ret) {
-      res.status(httpStatus.ACCEPTED);
-      res.json(ret);
-    } else {
-      res.status(httpStatus.NOT_FOUND);
-      res.json('Already deleted');
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-exports.listRaritySheets = async (req, res, next) => {
-  try {
-    const collections = await RaritySheet.find({});
-    const resp = [];
-    collections.forEach((collection) => {
-      resp.push(collection.transform());
-    });
-    res.setHeader('Content-Type', 'application/json');
-    res.json(resp);
-  } catch (error) {
-    next(error);
-  }
-};
 /**
  * Get historical data for collection
  * @public

@@ -10,7 +10,7 @@ const collectionSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
-  rarity_symbol: String,
+  raritySymbol: String,
   market_name: String,
   name: String,
   description: String,
@@ -44,7 +44,7 @@ collectionSchema.pre('save', (next) => {
 collectionSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['symbol', 'rarity_symbol', 'market_name', 'name', 'description', 'category'];
+    const fields = ['symbol', 'raritySymbol', 'market_name', 'name', 'description', 'category'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

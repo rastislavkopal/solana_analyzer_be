@@ -3,6 +3,7 @@ const userRoutes = require('./user.route');
 const authRoutes = require('./auth.route');
 const collectionsRoutes = require('./collections.route');
 const itemsRoutes = require('./items.route');
+const rarityRoutes = require('./rarity.route');
 
 const router = express.Router();
 
@@ -24,5 +25,7 @@ router.use('/auth', authRoutes);
 */
 router.use('/collection', collectionsRoutes);
 router.use('/collection', itemsRoutes);
+
+router.use('/collection', rarityRoutes);
 
 module.exports = router;
