@@ -8,7 +8,7 @@ const router = express.Router();
 router
   .route('/')
   .get(controller.listCollection)
-  .post(listCollections, controller.addCollection);
+  .post(validate(addCollection), controller.addCollection);
 
 router
   .route('/all')
