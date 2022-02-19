@@ -7,9 +7,13 @@ const service = require('../services/collection.service');
  * Load collection and append to req.
  * @public
  */
-exports.load = async (req, res, next, symbol) => {
+exports.load = async (req, res, next, body) => {
   try {
-    const collection = await Collection.findOne({ symbol }).exec();
+    const collection = await Collection.findOne({
+      symbol: body.symbol,
+      rarity_symbol: body.rarity_symbol,
+    }).exec();
+
     req.locals = { collection };
     return next();
   } catch (error) {
@@ -37,7 +41,7 @@ exports.listCollections = async (req, res, next) => {
  */
 exports.addCollection = async (req, res, next) => {
   try {
-    const ret = await service.createCollectionIfNotExists(req.body.symbol);
+    const ret = await service.createCollectionIfNotExists(req.body);
 
     if (ret) {
       res.status(httpStatus.CREATED);

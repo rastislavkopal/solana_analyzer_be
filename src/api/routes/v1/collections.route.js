@@ -1,14 +1,14 @@
 const express = require('express');
 const validate = require('express-validation');
 const controller = require('../../controllers/collections.controller');
-const { getHistoricalData } = require('../../validations/collection.validation');
+const { getHistoricalData, addCollection } = require('../../validations/collection.validation');
 
 const router = express.Router();
 
 router
   .route('/')
   .get(controller.listCollections)
-  .post(controller.addCollection);
+  .post(validate(addCollection), controller.addCollection);
 
 router.param('symbol', controller.load);
 

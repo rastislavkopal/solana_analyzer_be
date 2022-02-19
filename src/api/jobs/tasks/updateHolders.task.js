@@ -17,11 +17,11 @@ const logger = require('../../../config/logger');
 // https://howrare.is/api/v0.1/collections/{collection}/owners
 const updateItemsTask = cron.schedule('*/30 * * * * **', async () => {
   try {
-    const collections = await Collection.find({}, 'symbol name');
+    const collections = await Collection.find({}, 'symbol rarity_symbol');
 
     collections.forEach(async (it) => {
       const config = {
-        url: String(`https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/${it.symbol}`),
+        url: String(`https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/${it.rarity_symbol}`),
         httpsAgent: agent,
       };
 
