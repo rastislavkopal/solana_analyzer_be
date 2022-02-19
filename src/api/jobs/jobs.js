@@ -8,7 +8,7 @@ const tasks = {
   // updateCollectionsTask,
   // updateItemTask,
   // tokenInfoCrawlerTask,
-  // listedPriceDistributionTask,
+  listedPriceDistributionTask,
   collectionTimestampTask,
 };
 

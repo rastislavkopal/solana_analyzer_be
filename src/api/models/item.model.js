@@ -6,8 +6,8 @@ const upsertMany = require('@meanie/mongoose-upsert-many');
  * @private
  */
 const ItemSchema = new mongoose.Schema({
-  item_api_id: {
-    type: Number,
+  mintAddress: {
+    type: String,
     required: true,
     index: true,
   },
@@ -16,13 +16,19 @@ const ItemSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
-  description: String,
-  token_add: String,
+  name: String,
   for_sale: Boolean,
-  seller_address: String,
-  attributes: String,
-  skin: String,
-  ranking: Number,
+  attributes: [{
+    trait_type: String,
+    value: String,
+    rarity: Number,
+  }],
+  listedFor: Number,
+  rank: {
+    type: Number,
+    required: true,
+    index: true,
+  },
   price: {
     type: Number,
     required: true,
