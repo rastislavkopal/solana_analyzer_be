@@ -11,4 +11,11 @@ module.exports = {
       limit: Joi.number().min(1).max(500),
     },
   },
+  // POST /v1/collection/:symbol/history
+  addCollection: {
+    body: {
+      symbol: Joi.string().max(128).required(),
+      rarity_symbol: Joi.string().max(128).required(),
+    },
+  },
 };
