@@ -1,29 +1,26 @@
-import { Schema, model } from 'mongoose';
+const mongoose = require('mongoose');
 
 /**
  * Holder schema
  * @private
  */
-const holderSchema = new Schema({
+const holderSchema = new mongoose.Schema({
   walletId: {
     type: String,
     required: true,
     index: true,
     maxLength: 64,
   },
-  owns: [
-    {
-      collectionId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Collection',
-        required: true,
-      },
-      items_count: Number,
-    },
-  ],
+  collectionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Collection',
+    index: true,
+    required: true,
+  },
+  itemsCount: Number,
 });
 
 /**
  * @typedef Holder
  */
-export default model('Holder', holderSchema);
+module.exports = mongoose.model('Holder', holderSchema);

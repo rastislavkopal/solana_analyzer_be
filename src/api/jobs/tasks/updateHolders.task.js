@@ -1,6 +1,8 @@
 const cron = require('node-cron');
 const axios = require('axios');
+const mongoose = require('mongoose');
 const Collection = require('../../models/collection.model');
+const Holder = require('../../models/holder.model');
 const { agent } = require('../../utils/proxyGenerator');
 const logger = require('../../../config/logger');
 
@@ -14,20 +16,36 @@ const logger = require('../../../config/logger');
 // # │ │ │ │ │ │
 // # * * * * * *
 
-// https://howrare.is/api/v0.1/collections/{collection}/owners
-const updateHolderTask = cron.schedule('*/30 * * * * **', async () => {
+const updateHolderTask = cron.schedule('0 * * * *', async () => {
   try {
-    const collections = await Collection.find({}, 'symbol raritySymbol');
+    console.log('----------------JOB---update holders--------------');
+    const collections = await Collection.find({}, '_id symbol raritySymbol');
 
     collections.forEach(async (it) => {
       const config = {
-        url: String(`https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/${it.raritySymbol}`),
+        url: String(`https://howrare.is/api/v0.1/collections/${it.raritySymbol}/owners`),
         httpsAgent: agent,
       };
 
       axios.request(config)
-        .then((resp) => resp.result.data)
-        .then((data) => console.log(data)) // TODO iterate and update holders/owners
+        .then(async (resp) => {
+          await Holder.updateMany({ collectionId: it._id },
+            { $set: { itemsCount: 0 } });
+
+          const { owners } = resp.data.result.data;
+
+          Object.keys(owners).forEach(async (key) => {
+            await Holder.findOneAndUpdate({
+              walletId: owners[key],
+              collectionId: it._id,
+            }, {
+              $inc: { itemsCount: 1 },
+            }, {
+              new: true,
+              upsert: true,
+            });
+          });
+        })
         .catch((error) => { throw error; });
     });
   } catch (error) {
