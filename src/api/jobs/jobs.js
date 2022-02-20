@@ -3,6 +3,7 @@
 // const tokenInfoCrawlerTask = require('./tasks/tokenInfoCrawlerTask');
 const collectionTimestampTask = require('./tasks/collectionTimestampTask');
 const listedPriceDistributionTask = require('./tasks/listedPriceDistributionTask');
+const updateHoldersTask = require('./tasks/updateHolders.task');
 
 const tasks = {
   // updateCollectionsTask,
@@ -10,6 +11,7 @@ const tasks = {
   // tokenInfoCrawlerTask,
   listedPriceDistributionTask,
   collectionTimestampTask,
+  updateHoldersTask,
 };
 
 module.exports = tasks;

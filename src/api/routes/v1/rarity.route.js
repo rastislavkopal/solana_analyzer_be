@@ -1,18 +1,20 @@
 const express = require('express');
+const validate = require('express-validation');
 const controller = require('../../controllers/rarity.controller');
+const { accessCollectionRarity } = require('../../validations/rarity.validation');
 
 const router = express.Router();
 
-router.param('symbol', controller.load);
+router.param('raritySymbol', controller.load);
 
 router
-  .route('/:symbol/rarity')
-  .get(controller.getCollectionRaritySheet)
-  .post(controller.addCollectionRarity)
-  .delete(controller.removeCollectionRarity);
+  .route('/:raritySymbol/rarity')
+  .get(validate(accessCollectionRarity), controller.getCollectionRaritySheet)
+  .post(validate(accessCollectionRarity), controller.addCollectionRarity)
+  .delete(validate(accessCollectionRarity), controller.removeCollectionRarity);
 
 router
-  .route('/:symbol/rarity/all')
+  .route('/:raritySymbol/rarity/all')
   .get(controller.listRaritySheets);
 
 module.exports = router;
