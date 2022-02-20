@@ -1,4 +1,3 @@
-const Item = require('../models/item.model');
 const httpStatus = require('http-status');
 const RaritySheet = require('../models/raritySheet.model');
 const service = require('../services/collection.service');
@@ -8,9 +7,9 @@ const Collection = require('../models/collection.model');
  * Load collection and append to req.
  * @public
  */
-exports.load = async (req, res, next, symbol) => {
+exports.load = async (req, res, next, raritySymbol) => {
   try {
-    const collection = await Collection.findOne({ symbol }).exec();
+    const collection = await Collection.findOne({ raritySymbol }).exec();
 
     req.locals = { collection };
     return next();
@@ -25,7 +24,8 @@ exports.load = async (req, res, next, symbol) => {
 */
 exports.getCollectionRaritySheet = async (req, res, next) => {
   try {
-    const raritySheet = await RaritySheet.find(req.locals.collection.raritySymbol);
+    const { raritySymbol } = req.locals.collection;
+    const raritySheet = await RaritySheet.find({ raritySymbol });
     res.json(raritySheet);
   } catch (error) {
     next(error);
@@ -34,17 +34,17 @@ exports.getCollectionRaritySheet = async (req, res, next) => {
 
 exports.addCollectionRarity = async (req, res, next) => {
   try {
-    const { symbol, raritySymbol } = req.locals.collection;
+    const { _id, raritySymbol } = req.locals.collection;
 
-    const ret = await service.updateCollectionRarity(symbol, raritySymbol);
+    const ret = await service.updateCollectionRarity(_id, raritySymbol);
 
-    if (ret) {
-      res.status(httpStatus.CREATED);
-      res.json(ret);
-    } else {
+    if (!ret) {
       res.status(httpStatus.NOT_FOUND);
       res.json('collection not found');
     }
+
+    res.status(httpStatus.CREATED);
+    res.json(ret);
   } catch (error) {
     next(error);
   }
@@ -54,13 +54,13 @@ exports.removeCollectionRarity = async (req, res, next) => {
   try {
     const ret = await service.removeCollectionRarityIfNotExists(req.locals.collection.symbol);
 
-    if (ret) {
-      res.status(httpStatus.ACCEPTED);
-      res.json(ret);
-    } else {
+    if (!ret) {
       res.status(httpStatus.NOT_FOUND);
-      res.json('Already deleted');
+      res.json('Resource does not exists');
     }
+
+    res.status(httpStatus.ACCEPTED);
+    res.json(ret);
   } catch (error) {
     next(error);
   }

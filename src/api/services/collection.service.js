@@ -40,6 +40,7 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
   console.log('Fetched collection response is null.');
   return null;
 };
+
 /**
  * Add rarity sheet if it doesn't already exist
  * @public
