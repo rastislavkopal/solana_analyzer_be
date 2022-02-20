@@ -4,6 +4,7 @@ const authRoutes = require('./auth.route');
 const collectionsRoutes = require('./collections.route');
 const itemsRoutes = require('./items.route');
 const rarityRoutes = require('./rarity.route');
+const holdersRoutes = require('./holders.route');
 
 const router = express.Router();
 
@@ -25,7 +26,7 @@ router.use('/auth', authRoutes);
 */
 router.use('/collection', collectionsRoutes);
 router.use('/collection', itemsRoutes);
-
 router.use('/collection', rarityRoutes);
+router.use('/collection', holdersRoutes);
 
 module.exports = router;
