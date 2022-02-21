@@ -168,3 +168,42 @@ exports.getCollectionHistoryListings = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Update selected collection
+ * @public
+ */
+exports.updateCollection = async (req, res, next) => {
+  try {
+    const { collection } = req.locals;
+
+    if (!collection) {
+      res.status(httpStatus.NOT_FOUND);
+      res.json('Collection not found');
+      return;
+    }
+
+    const transformed = collection;
+    // update-able fields
+    const fields = ['raritySymbol', 'market_name', 'name', 'description',
+      'image', 'creators', 'totalItems', 'category', 'owner_count'];
+
+    fields.forEach((field) => {
+      if (req.body[field]) {
+        transformed[field] = req.body[field];
+      }
+    });
+
+    const ret = await Collection.updateOne({ _id: collection._id }, transformed);
+
+    if (ret.modifiedCount !== 0) {
+      res.status(httpStatus.CREATED);
+      res.json(transformed);
+    } else {
+      res.status(httpStatus.NOT_FOUND);
+      res.json('collection not found');
+    }
+  } catch (error) {
+    next(error);
+  }
+};
