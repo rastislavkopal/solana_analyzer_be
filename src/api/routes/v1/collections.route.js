@@ -14,7 +14,8 @@ router.param('symbol', controller.load);
 
 router
   .route('/:symbol')
-  .get(controller.getCollection);
+  .get(controller.getCollection)
+  .put(controller.updateCollection);
 
 router
   .route('/:symbol/history/complete')
