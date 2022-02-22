@@ -14,10 +14,9 @@ exports.load = async (req, res, next, symbol) => {
   }
 };
 
-exports.getLastBigSales = async (req, res, next) => {
+async function getBuyTransactions(req, res, next) {
   try {
     const { collection } = req.locals;
-    const { number } = req.params;
     const { symbol } = collection;
     const response = [];
     const config = {
@@ -27,22 +26,39 @@ exports.getLastBigSales = async (req, res, next) => {
       ),
       httpsAgent: agent,
     };
-    await axios.request(config).then(async (transactionResponse) => {
-      transactionResponse.data.forEach((transaction) => {
-        if (transaction.type === 'buyNow') {
-          response.push(transaction.tokenMint);
-        }
+    await axios.request(config)
+      .then(async (transactionResponse) => {
+        transactionResponse.data.forEach((transaction) => {
+          if (transaction.type === 'buyNow') {
+            response.push(transaction.tokenMint);
+          }
+        });
       });
-      response.sort((a, b) => b[1] - a[1])
-        .splice(number);
-      const items = await Item.find({
-        collectionId: collection._id,
-        mintAddress: response,
-      }).exec();
-      res.setHeader('Content-Type', 'application/json');
-      res.json(items);
-    });
+    return response;
   } catch (error) {
     return next(error);
   }
+}
+
+exports.getLastBigSales = async (req, res, next) => {
+  try {
+    const { collection } = req.locals;
+    const { number } = req.params;
+    const response = await getBuyTransactions(req, res, next);
+    response.sort((a, b) => b[1] - a[1])
+      .splice(number);
+    const items = await Item.find({
+      collectionId: collection._id,
+      mintAddress: response,
+    })
+      .exec();
+
+    res.setHeader('Content-Type', 'application/json');
+    res.json(items);
+  } catch (error) {
+    next(error);
+  }
+};
+exports.getBuyTransactions = async (req, res, next) => {
+
 };
