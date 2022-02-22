@@ -4,6 +4,7 @@
 const collectionTimestampTask = require('./tasks/collectionTimestampTask');
 const listedPriceDistributionTask = require('./tasks/listedPriceDistributionTask');
 const updateHoldersTask = require('./tasks/updateHolders.task');
+const getBuyTransactionsTask = require('./tasks/getBuyTransactionsTask');
 
 const tasks = {
   // updateCollectionsTask,
@@ -12,6 +13,7 @@ const tasks = {
   listedPriceDistributionTask,
   collectionTimestampTask,
   updateHoldersTask,
+  getBuyTransactionsTask,
 };
 
 module.exports = tasks;
