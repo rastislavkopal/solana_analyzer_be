@@ -14,7 +14,7 @@ exports.load = async (req, res, next, symbol) => {
   }
 };
 
-async function getBuyTransactions(req, res, next) {
+async function getBuyTransactions(req, res, next, offset = 0, limit = 500) {
   try {
     const { collection } = req.locals;
     const { symbol } = collection;
@@ -22,7 +22,7 @@ async function getBuyTransactions(req, res, next) {
     const config = {
       url: String(
         // `api-mainnet.magiceden.dev/v2/collections/${symbol}/activities?offset=0&limit=500`,
-        `https://api-mainnet.magiceden.dev/v2/collections/${symbol}/activities?offset=0&limit=500`,
+        `https://api-mainnet.magiceden.dev/v2/collections/${symbol}/activities?${offset}=0&limit=${limit}`,
       ),
       httpsAgent: agent,
     };
@@ -30,7 +30,14 @@ async function getBuyTransactions(req, res, next) {
       .then(async (transactionResponse) => {
         transactionResponse.data.forEach((transaction) => {
           if (transaction.type === 'buyNow') {
-            response.push(transaction.tokenMint);
+            response.push(
+              {
+                price: transaction.price,
+                mintAddress: transaction.tokenMint,
+                buyer: transaction.buyer,
+                seller: transaction.seller,
+              },
+            );
           }
         });
       });
@@ -45,12 +52,15 @@ exports.getLastBigSales = async (req, res, next) => {
     const { collection } = req.locals;
     const { number } = req.params;
     const response = await getBuyTransactions(req, res, next);
-    response.sort((a, b) => b[1] - a[1])
+    response.sort((a, b) => b.price - a.price)
       .splice(number);
+    let mintAddrArray = [];
+    mintAddrArray = response.map((item) => item.mintAddress);
     const items = await Item.find({
       collectionId: collection._id,
-      mintAddress: response,
+      mintAddress: mintAddrArray,
     })
+      .sort({ listedFor: -1 })
       .exec();
 
     res.setHeader('Content-Type', 'application/json');
@@ -59,6 +69,6 @@ exports.getLastBigSales = async (req, res, next) => {
     next(error);
   }
 };
-exports.getBuyTransactions = async (req, res, next) => {
+exports.getWhaleTransactions = async (req, res, next) => {
 
 };
