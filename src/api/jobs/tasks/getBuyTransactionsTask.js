@@ -20,7 +20,7 @@ const collectionSymbolList = ['888_anon_club'];
 
 async function saveTransaction(transaction, collectionId) {
   const holder = await Holder.findOne({ collectionId, walletId: transaction.buyer }).exec();
-  let isWhale;
+  let isWhale = false;
   if (holder != null && holder.itemsCount > 7) {
     isWhale = true;
   }
