@@ -5,6 +5,7 @@ const logger = require('../../../config/logger');
 const { agent } = require('../../utils/proxyGenerator');
 const Transaction = require('../../models/transaction.model');
 const Collection = require('../../models/collection.model');
+const Holder = require('../../models/holder.model');
 
 const collectionSymbolList = ['888_anon_club'];
 // # ┌────────────── second (optional)
@@ -17,7 +18,12 @@ const collectionSymbolList = ['888_anon_club'];
 // # │ │ │ │ │ │
 // # * * * * * *
 
-function saveTransaction(transaction, collectionId) {
+async function saveTransaction(transaction, collectionId) {
+  const holder = await Holder.findOne({ collectionId, walletId: transaction.buyer }).exec();
+  let isWhale;
+  if (holder != null && holder.itemsCount > 7) {
+    isWhale = true;
+  }
   const newTransaction = new Transaction({
     signature: transaction.signature,
     mintAddress: transaction.tokenMint,
@@ -26,6 +32,7 @@ function saveTransaction(transaction, collectionId) {
     price: transaction.price,
     transactionType: transaction.type,
     collectionId,
+    isWhale,
   });
   return newTransaction.save();
 }
