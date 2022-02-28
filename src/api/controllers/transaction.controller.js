@@ -24,7 +24,7 @@ exports.getLastBigSales = async (req, res, next) => {
     const transactions = await Transaction.find({
       collectionId: collection._id,
     }).sort({ price: -1 })
-      // .limit(Number(number))
+      .limit(Number(number))
       .exec();
 
     const items = await Item.find({
