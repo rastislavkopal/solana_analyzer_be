@@ -6,8 +6,8 @@ const { agent } = require('../../utils/proxyGenerator');
 const Transaction = require('../../models/transaction.model');
 const Collection = require('../../models/collection.model');
 const Holder = require('../../models/holder.model');
+const CollectionService = require('../../services/collection.service');
 
-const collectionSymbolList = ['888_anon_club'];
 // # ┌────────────── second (optional)
 // # │ ┌──────────── minute
 // # │ │ ┌────────── hour
@@ -63,9 +63,12 @@ async function getBuyTransactions(symbol, offset = 0, limit = 500) {
 // Updates list of collections and its information every 1 minute
 const getBuyTransactionsTask = cron.schedule('* * * * *', async () => {
   console.log('Transaction-JOB---');
-  collectionSymbolList.forEach((symbol) => {
-    getBuyTransactions(symbol);
-  });
+  const activeCollections = await CollectionService.loadActive();
+  if (activeCollections != null) {
+    activeCollections.forEach((symbol) => {
+      getBuyTransactions(symbol);
+    });
+  }
 });
 
 module.exports = getBuyTransactionsTask;

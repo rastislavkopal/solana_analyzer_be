@@ -10,7 +10,6 @@ const service = require('../services/collection.service');
 exports.load = async (req, res, next, symbol) => {
   try {
     const collection = await Collection.findOne({ symbol }).exec();
-
     req.locals = { collection };
     return next();
   } catch (error) {

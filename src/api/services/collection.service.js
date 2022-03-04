@@ -30,6 +30,7 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
         totalItems,
         description,
         image,
+        active: true,
       });
       console.log('to be created');
       return newCollection.save();
@@ -95,4 +96,14 @@ exports.removeCollectionRarityIfNotExists = async (collectionId) => {
   }
   console.log('Already deleted');
   return null;
+};
+
+exports.loadActive = async (req, res, next) => {
+  try {
+    const activeCollections = await Collection.find({ active: true });
+    const collectionSymbolList = activeCollections.map((collection) => collection.symbol);
+    return collectionSymbolList;
+  } catch (error) {
+    return next(error);
+  }
 };

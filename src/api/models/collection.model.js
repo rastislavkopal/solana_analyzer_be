@@ -28,6 +28,7 @@ const collectionSchema = new mongoose.Schema({
     default: Date.now,
   },
   api_last_updated: Number,
+  active: Boolean,
 });
 
 /*

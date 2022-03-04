@@ -7,8 +7,9 @@ const RaritySheet = require('../../models/raritySheet.model');
 const { agent } = require('../../utils/proxyGenerator');
 const logger = require('../../../config/logger');
 const Collection = require('../../models/collection.model');
+const CollectionService = require('../../services/collection.service');
 
-const collectionSymbolList = ['888_anon_club'];
+// const collectionSymbolList = ['888_anon_club'];
 
 async function updateItemsFromData(concatData) {
   concatData.forEach((value, key) => {
@@ -131,9 +132,12 @@ async function updateItemsOf(symbol) {
 // '*/5 * * * *'
 const updateItemsTask = cron.schedule('*/5 * * * *', async () => {
   console.log('ListedPriceDistribution-JOB---');
-  collectionSymbolList.forEach((symbol) => {
-    updateItemsOf(symbol);
-  });
+  const activeCollections = CollectionService.loadActive();
+  if (activeCollections) {
+    activeCollections.forEach((symbol) => {
+      updateItemsOf(symbol);
+    });
+  }
 });
 
 module.exports = updateItemsTask;
