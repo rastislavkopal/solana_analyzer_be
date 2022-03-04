@@ -60,6 +60,15 @@ exports.listCollections = async (req, res, next) => {
     next(error);
   }
 };
+exports.removeCollections = async (req, res, next) => {
+  try {
+    const collections = await Collection.remove({});
+    res.setHeader('Content-Type', 'application/json');
+    res.json(collections);
+  } catch (error) {
+    next(error);
+  }
+};
 
 /**
  * Add new collection

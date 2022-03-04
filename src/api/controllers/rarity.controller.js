@@ -10,7 +10,7 @@ const Collection = require('../models/collection.model');
 exports.load = async (req, res, next, raritySymbol) => {
   try {
     const collection = await Collection.findOne({ raritySymbol }).exec();
-
+    console.log(collection);
     req.locals = { collection };
     return next();
   } catch (error) {

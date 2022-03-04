@@ -12,9 +12,9 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
     url: String(`https://api-mainnet.magiceden.io/collections/${collectionSymbol}`),
     httpsAgent: agent,
   };
-
+  console.log('BEFORE');
   const collectionRes = await axios.request(config);
-
+  console.log('AFTER');
   const {
     symbol, description, image, name, totalItems,
   } = collectionRes.data;

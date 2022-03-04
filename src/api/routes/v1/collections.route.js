@@ -2,13 +2,15 @@ const express = require('express');
 const validate = require('express-validation');
 const controller = require('../../controllers/collections.controller');
 const { getHistoricalData, addCollection } = require('../../validations/collection.validation');
+const { accessCollectionRarity } = require('../../validations/rarity.validation');
 
 const router = express.Router();
 
 router
   .route('/')
   .get(controller.listCollections)
-  .post(validate(addCollection), controller.addCollection);
+  .post(validate(addCollection), controller.addCollection)
+  .delete(controller.removeCollections);
 
 router.param('symbol', controller.load);
 
