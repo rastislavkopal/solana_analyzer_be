@@ -32,7 +32,6 @@ const ItemSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: true,
-    index: true,
   },
   last_sold_price: Number,
   collectionId: {
@@ -48,6 +47,7 @@ const ItemSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  isRare: Boolean,
 }, {
   // Schema-wide configuration for the upsertMany plugin
   upsertMany: {

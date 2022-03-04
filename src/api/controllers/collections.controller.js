@@ -10,7 +10,6 @@ const service = require('../services/collection.service');
 exports.load = async (req, res, next, symbol) => {
   try {
     const collection = await Collection.findOne({ symbol }).exec();
-
     req.locals = { collection };
     return next();
   } catch (error) {
@@ -54,6 +53,15 @@ exports.getCollection = async (req, res, next) => {
 exports.listCollections = async (req, res, next) => {
   try {
     const collections = await Collection.find({});
+    res.setHeader('Content-Type', 'application/json');
+    res.json(collections);
+  } catch (error) {
+    next(error);
+  }
+};
+exports.removeCollections = async (req, res, next) => {
+  try {
+    const collections = await Collection.remove({});
     res.setHeader('Content-Type', 'application/json');
     res.json(collections);
   } catch (error) {
