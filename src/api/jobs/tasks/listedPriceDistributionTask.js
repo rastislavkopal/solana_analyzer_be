@@ -130,7 +130,7 @@ async function updateItemsOf(symbol) {
 }
 // '*/5 * * * *'
 const updateItemsTask = cron.schedule('*/5 * * * *', async () => {
-  console.log('JOB----------------------->');
+  console.log('ListedPriceDistribution-JOB---');
   collectionSymbolList.forEach((symbol) => {
     updateItemsOf(symbol);
   });
