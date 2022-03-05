@@ -17,6 +17,7 @@ const Item = require('../models/item.model');
  */
 exports.load = async (req, res, next, symbol) => {
   try {
+    console.log('loading symbol');
     const collection = await Collection.findOne({ symbol }).exec();
     req.locals = { collection };
     return next();
@@ -31,17 +32,20 @@ exports.load = async (req, res, next, symbol) => {
  */
 exports.listItems = async (req, res, next) => {
   try {
-    const items = await Item.find({ collectionId: req.locals.collection._id });
+    const collectionSymbol = req.locals.collection.symbol;
+    const items = await Item.find({ collectionSymbol });
     res.setHeader('Content-Type', 'application/json');
     res.json(items);
   } catch (error) {
     next(error);
   }
 };
-exports.listItemsBellowRank = async (req, res, next, rank) => {
+exports.listItemsBellowRank = async (req, res, next) => {
   try {
-    const collectionId = req.locals.collection._id;
-    const items = await Item.find({ collectionId, rank: { $lte: rank } });
+    const { rank } = req.params;
+    const collectionSymbol = req.locals.collection.symbol;
+    // eslint-disable-next-line max-len
+    const items = await Item.find({ collectionSymbol, rank: { $lte: rank } }).sort({ listedFor: 1 }).limit(5);
     res.setHeader('Content-Type', 'application/json');
     res.json(items);
   } catch (error) {

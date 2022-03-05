@@ -34,11 +34,11 @@ const ItemSchema = new mongoose.Schema({
     required: true,
   },
   last_sold_price: Number,
-  collectionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Collection',
+  collectionSymbol: {
+    type: String,
     required: true,
   },
+  collectionId: String,
   created_at: {
     type: Date,
     default: Date.now,

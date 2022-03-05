@@ -11,7 +11,7 @@ const CollectionService = require('../../services/collection.service');
 
 // const collectionSymbolList = ['888_anon_club'];
 
-async function updateItemsFromData(concatData) {
+async function updateItemsFromData(concatData, symbol) {
   console.log('Updating items....');
   concatData.forEach((value, key) => {
     Item.updateOne({ mintAddress: key },
@@ -24,9 +24,11 @@ async function updateItemsFromData(concatData) {
             collectionId: value.collectionId,
             name: value.name,
             mintAddress: key,
+            collectionSymbol: symbol,
           },
       },
       { upsert: true }).then(() => {
+      console.log('Finished updating...');
     });
   });
 }
@@ -77,6 +79,7 @@ async function updateItemsOf(symbol) {
                 price: it.price,
                 listedFor: null,
                 rank,
+                collectionSymbol: symbol,
                 collectionId: collection._id,
                 name: it.title,
               });
@@ -120,7 +123,7 @@ async function updateItemsOf(symbol) {
           );
         });
         Promise.allSettled(requestsPeriod)
-          .then(() => updateItemsFromData(concatData))
+          .then(() => updateItemsFromData(concatData, symbol))
           .catch((error) => { throw error; });
       })
       .catch((error) => { throw error; });
