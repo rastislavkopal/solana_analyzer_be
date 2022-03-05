@@ -5,17 +5,17 @@ const mongoose = require('mongoose');
  * @private
  */
 const raritySheetSchema = new mongoose.Schema({
-  raritySymbol: String,
+  raritySymbol: {
+    type: String,
+    index: true,
+    required: true,
+  },
   ranking_url: String,
   twitter: String,
   discord: String,
   website: String,
   logo: String,
-  collectionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Collection',
-    required: true,
-  },
+  collectionId: String,
   items: {
     type: Map,
     of: {

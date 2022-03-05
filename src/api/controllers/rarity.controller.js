@@ -34,9 +34,7 @@ exports.getCollectionRaritySheet = async (req, res, next) => {
 
 exports.addCollectionRarity = async (req, res, next) => {
   try {
-    const { _id, raritySymbol } = req.locals.collection;
-
-    const ret = await service.updateCollectionRarity(_id, raritySymbol);
+    const ret = await service.updateCollectionRarity(req.body.raritySymbol, req.body.collectionId);
 
     if (!ret) {
       res.status(httpStatus.NOT_FOUND);
@@ -52,7 +50,8 @@ exports.addCollectionRarity = async (req, res, next) => {
 
 exports.removeCollectionRarity = async (req, res, next) => {
   try {
-    const ret = await service.removeCollectionRarityIfNotExists(req.locals.collection.symbol);
+    // eslint-disable-next-line max-len
+    const ret = await service.removeCollectionRarityIfNotExists(req.body.raritySymbol, req.body.collectionId);
 
     if (!ret) {
       res.status(httpStatus.NOT_FOUND);
@@ -71,7 +70,9 @@ exports.listRaritySheets = async (req, res, next) => {
     const collections = await RaritySheet.find({});
     const resp = [];
     collections.forEach((collection) => {
-      resp.push(collection.transform());
+      const transformed = collection;
+      transformed.items = null;
+      resp.push(transformed);
     });
     res.json(resp);
   } catch (error) {

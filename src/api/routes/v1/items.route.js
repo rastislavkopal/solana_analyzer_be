@@ -12,4 +12,8 @@ router
   .route('/:symbol/item/all')
   .get(controller.listItems);
 
+router
+  .route('/:symbol/top/:rank')
+  .get(controller.listItemsBellowRank);
+
 module.exports = router;

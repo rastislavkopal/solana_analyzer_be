@@ -31,10 +31,17 @@ exports.load = async (req, res, next, symbol) => {
  */
 exports.listItems = async (req, res, next) => {
   try {
-    const { symbol } = req.locals.collection;
-    const collection = await Collection.find({ symbol });
-
-    const items = await Item.find({ collectionId: collection[0]._id });
+    const items = await Item.find({ collectionId: req.locals.collection._id });
+    res.setHeader('Content-Type', 'application/json');
+    res.json(items);
+  } catch (error) {
+    next(error);
+  }
+};
+exports.listItemsBellowRank = async (req, res, next, rank) => {
+  try {
+    const collectionId = req.locals.collection._id;
+    const items = await Item.find({ collectionId, rank: { $lte: rank } });
     res.setHeader('Content-Type', 'application/json');
     res.json(items);
   } catch (error) {
