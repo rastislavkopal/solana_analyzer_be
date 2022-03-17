@@ -12,6 +12,10 @@ router
   .post(validate(addCollection), controller.addCollection)
   .delete(controller.removeCollections);
 
+router
+  .route('/mainPage/')
+  .get(controller.collectionStats);
+
 router.param('symbol', controller.load);
 
 router

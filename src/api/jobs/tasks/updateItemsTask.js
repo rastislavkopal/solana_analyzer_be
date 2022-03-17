@@ -28,7 +28,7 @@ async function updateItemsFromData(concatData, symbol) {
           },
       },
       { upsert: true }).then(() => {
-      console.log('Finished updating...');
+      // console.log('Finished updating...');
     });
   });
 }
