@@ -62,9 +62,9 @@ exports.listCollections = async (req, res, next) => {
 exports.collectionStats = async (req, res, next) => {
   try {
     const now = new Date(Date.now()).toISOString();
-    const now6min = new Date(Date.now() - (360 * 1000)).toISOString();
+    const now5min = new Date(Date.now() - (300 * 1000)).toISOString();
 
-    const collectionTS_now = await CollectionTs.find({ timestamp: { $gte: now6min, $lte: now }},'-_id  name metadata timestamp');
+    const collectionTS_now = await CollectionTs.find({ timestamp: { $gt: now5min, $lte: now }},'-_id  name metadata timestamp');
     // collection image, symbol, floor price, listed count,volume (24h) floor price change (24h), listed count change (24h)
 
     res.setHeader('Content-Type', 'application/json');
