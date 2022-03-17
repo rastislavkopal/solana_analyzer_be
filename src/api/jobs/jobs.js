@@ -7,9 +7,6 @@ const updateHoldersTask = require('./tasks/updateHolders.task');
 const getBuyTransactionsTask = require('./tasks/getBuyTransactionsTask');
 
 const tasks = {
-  // updateCollectionsTask,
-  // updateItemTask,
-  // tokenInfoCrawlerTask,
   listedPriceDistributionTask,
   collectionTimestampTask,
   updateHoldersTask,
