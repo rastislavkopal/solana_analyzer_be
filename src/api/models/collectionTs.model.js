@@ -9,9 +9,16 @@ const collectionTsSchema = new mongoose.Schema(
     name: String,
     timestamp: Date,
     metadata: {
-      symbol: String,
+      symbol: {
+        type: String,
+        required: true,
+        index: true,
+      },
+      image: String,
       floorPrice: Number,
+      floorPriceChange: String,
       listedCount: Number,
+      listedCountChange: String,
       listedTotalValue: Number,
       avgPrice24hr: Number,
       volume24hr: Number,

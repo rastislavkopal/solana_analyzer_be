@@ -59,6 +59,20 @@ exports.listCollections = async (req, res, next) => {
     next(error);
   }
 };
+exports.collectionStats = async (req, res, next) => {
+  try {
+    const now = new Date(Date.now()).toISOString();
+    const now5min = new Date(Date.now() - (300 * 1000)).toISOString();
+
+    const collectionTS_now = await CollectionTs.find({ timestamp: { $gt: now5min, $lte: now }},'-_id  name metadata timestamp');
+    // collection image, symbol, floor price, listed count,volume (24h) floor price change (24h), listed count change (24h)
+
+    res.setHeader('Content-Type', 'application/json');
+    res.json(collectionTS_now);
+  } catch (error) {
+    next(error);
+  }
+};
 exports.removeCollections = async (req, res, next) => {
   try {
     const collections = await Collection.remove({});

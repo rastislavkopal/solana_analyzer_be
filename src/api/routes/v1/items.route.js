@@ -1,5 +1,7 @@
 const express = require('express');
+const validate = require('express-validation');
 const controller = require('../../controllers/items.controller');
+const { listItemsBellowRank } = require('../../validations/items.validation');
 
 const router = express.Router();
 
@@ -11,5 +13,9 @@ router.param('symbol', controller.load);
 router
   .route('/:symbol/item/all')
   .get(controller.listItems);
+
+router
+  .route('/:symbol/item/all/:rank')
+  .get(controller.listItemsBellowRank);
 
 module.exports = router;

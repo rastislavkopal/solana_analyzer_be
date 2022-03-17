@@ -2,6 +2,7 @@ const axios = require('axios');
 const { agent } = require('../utils/proxyGenerator');
 const Collection = require('../models/collection.model');
 const RaritySheet = require('../models/raritySheet.model');
+const rarityController = require('../controllers/rarity.controller');
 
 /**
  * Create collection if does not already exists
@@ -12,9 +13,9 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
     url: String(`https://api-mainnet.magiceden.io/collections/${collectionSymbol}`),
     httpsAgent: agent,
   };
-  console.log('BEFORE');
+  console.log('Waiting for ME....');
   const collectionRes = await axios.request(config);
-  console.log('AFTER');
+  console.log('Waiting over, yaay');
   const {
     symbol, description, image, name, totalItems,
   } = collectionRes.data;
@@ -33,6 +34,7 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
         active: true,
       });
       console.log('to be created');
+      this.updateCollectionRarity(raritySymbol, null);
       return newCollection.save();
     }
     console.log('Collection already exists');
@@ -46,7 +48,7 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
  * Add rarity sheet if it doesn't already exist
  * @public
  */
-exports.updateCollectionRarity = async (collectionId, raritySymbol) => {
+exports.updateCollectionRarity = async (raritySymbol, collectionId) => {
   const config = {
     url: String(`https://howrare.is/api/v0.1/collections/${raritySymbol}`),
     httpsAgent: agent,
@@ -54,20 +56,20 @@ exports.updateCollectionRarity = async (collectionId, raritySymbol) => {
 
   const collectionRes = await axios.request(config);
   const {
-    twitter, discord, website, logo, items,
+    // eslint-disable-next-line camelcase
+    twitter, discord, website, logo, items, ranking_url,
   } = collectionRes.data.result.data;
-
   const map1 = new Map();
   items.forEach((item) => {
     map1.set(item.mint, item);
   });
   if (collectionRes.data.result.data) {
-    if (collectionId) {
-      const res = await RaritySheet.findOne({ collectionId });
+    if (raritySymbol) {
+      const res = await RaritySheet.findOne({ raritySymbol });
       if (!res) {
         const newRaritySheet = await new RaritySheet({
           raritySymbol,
-          ranking_url: 'https://howrare.is/888anonclub',
+          ranking_url,
           twitter,
           discord,
           website,
@@ -75,6 +77,7 @@ exports.updateCollectionRarity = async (collectionId, raritySymbol) => {
           collectionId,
           items: map1,
         });
+        console.log('Saving new raritySheet');
         return newRaritySheet.save();
       }
       console.log('Collection already exists');
@@ -87,11 +90,11 @@ exports.updateCollectionRarity = async (collectionId, raritySymbol) => {
   return null;
 };
 
-exports.removeCollectionRarityIfNotExists = async (collectionId) => {
-  const res = await RaritySheet.findOne({ collectionId });
+exports.removeCollectionRarityIfNotExists = async (raritySymbol, collectionId) => {
+  const res = await RaritySheet.findOne({ $or: [{ raritySymbol }, { collectionId }] });
   if (res) {
     console.log('To be deleted');
-    await RaritySheet.deleteMany({ collectionId });
+    await RaritySheet.deleteMany({ $or: [{ raritySymbol }, { collectionId }] });
     return 'Success';
   }
   console.log('Already deleted');
