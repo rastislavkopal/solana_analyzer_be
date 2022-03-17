@@ -40,21 +40,20 @@ function calculateChange(collectionTS_now, collectionsTS_24hBefore, option) {
 
 async function saveCollectionTimestampFromResponse(resp,image,name) {
   try {
+    console.log('Saving collectionTs...');
     if (resp.status !== 200 || Object.keys(resp.data).length === 0) throw new Error('An error occured while fetching data.');
     const { results } = resp.data;
     const now = new Date(Date.now()).toISOString();
     const now5min = new Date(Date.now() - (300 * 1000)).toISOString();
-    const now10min = new Date(Date.now() - (600 * 1000)).toISOString();
     const before24h = new Date(Date.now() - (3600 * 1000 * 24)).toISOString();
-    const before24h10min = new Date(Date.now() - (3600 * 1000 * 24) - (600 * 1000)).toISOString();
 
     let collectionTS_now = await CollectionTs.findOne({'metadata.symbol': results.symbol, timestamp: { $gte: now5min}})
     if (!collectionTS_now){
-      collectionTS_now = await CollectionTs.findOne({'metadata.symbol': results.symbol, timestamp: { $gte: now10min}})
+      collectionTS_now = await CollectionTs.find({'metadata.symbol': results.symbol, timestamp: { $lte: now5min}}).sort({ timestamp: -1 }).limit(1);
     }
-    let collectionsTS_24hBefore = await CollectionTs.findOne({'metadata.symbol': results.symbol, timestamp: { $gte: before24h } });
+    let collectionsTS_24hBefore = await CollectionTs.findOne({'metadata.symbol': results.symbol, timestamp: { $gte: before24h }});
     if (!collectionsTS_24hBefore){
-      collectionsTS_24hBefore = await CollectionTs.findOne({'metadata.symbol': results.symbol, timestamp: { $gte: before24h10min } });
+      collectionsTS_24hBefore = await CollectionTs.find({'metadata.symbol': results.symbol, timestamp: { $lte: before24h }}).sort({ timestamp: -1 }).limit(limit);;
     }
     console.log('The collection now  : '+JSON.stringify(collectionTS_now));
     console.log('The collection from before : '+JSON.stringify(collectionsTS_24hBefore));
