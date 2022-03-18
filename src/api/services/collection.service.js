@@ -2,7 +2,7 @@ const axios = require('axios');
 const { agent } = require('../utils/proxyGenerator');
 const Collection = require('../models/collection.model');
 const RaritySheet = require('../models/raritySheet.model');
-const rarityController = require('../controllers/rarity.controller');
+// const rarityController = require('../controllers/rarity.controller');
 
 /**
  * Create collection if does not already exists
