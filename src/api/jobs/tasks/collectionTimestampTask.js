@@ -55,8 +55,8 @@ async function saveCollectionTimestampFromResponse(resp,image,name) {
     if (!collectionsTS_24hBefore){
       collectionsTS_24hBefore = await CollectionTs.find({'metadata.symbol': results.symbol, timestamp: { $lte: before24h }}).sort({ timestamp: -1 }).limit(limit);;
     }
-    console.log('The collection now  : '+JSON.stringify(collectionTS_now));
-    console.log('The collection from before : '+JSON.stringify(collectionsTS_24hBefore));
+    // console.log('The collection now  : '+JSON.stringify(collectionTS_now));
+    // console.log('The collection from before : '+JSON.stringify(collectionsTS_24hBefore));
     const floorPriceChange = calculateChange(collectionTS_now,collectionsTS_24hBefore, "floorPrice");
     const listedCountChange = calculateChange(collectionTS_now,collectionsTS_24hBefore, "listedCount");
 
