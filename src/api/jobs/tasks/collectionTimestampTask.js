@@ -89,7 +89,7 @@ async function saveCollectionTimestampFromResponse(resp, image, name) {
   }
 }
 
-const collectionTimestampTask = cron.schedule('*/5 * * * *', async () => {
+const collectionTimestampTask = cron.schedule('* * * * *', async () => {
   try {
     console.log('Collection_Time_series-JOB---');
     const collections = await Collection.find({}, 'symbol name image');
