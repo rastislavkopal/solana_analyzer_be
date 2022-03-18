@@ -24,17 +24,22 @@ async function saveTransaction(transaction, collectionId) {
   if (holder != null && holder.itemsCount > 7) {
     isWhale = true;
   }
-  const newTransaction = new Transaction({
-    signature: transaction.signature,
-    mintAddress: transaction.tokenMint,
-    buyer: transaction.buyer,
-    seller: transaction.seller,
-    price: transaction.price,
-    transactionType: transaction.type,
-    collectionId,
-    isWhale,
-  });
-  return newTransaction.save();
+
+  await Transaction.updateOne(
+    { signature: transaction.signature },
+    {
+      $set: {
+        mintAddress: transaction.tokenMint,
+        buyer: transaction.buyer,
+        seller: transaction.seller,
+        price: transaction.price,
+        transactionType: transaction.type,
+        collectionId,
+        isWhale,
+      },
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true },
+  );
 }
 
 async function getBuyTransactions(symbol, offset = 0, limit = 500) {

@@ -13,36 +13,39 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
     url: String(`https://api-mainnet.magiceden.io/collections/${collectionSymbol}`),
     httpsAgent: agent,
   };
-  console.log('Waiting for ME....');
-  const collectionRes = await axios.request(config);
-  console.log('Waiting over, yaay');
-  const {
-    symbol, description, image, name, totalItems,
-  } = collectionRes.data;
 
-  if (symbol) {
-    const res = await Collection.findOne({ symbol });
-    if (!res) {
-      const newCollection = new Collection({
-        symbol,
-        market_name: 'https://magiceden.io/',
-        raritySymbol,
-        name,
-        totalItems,
-        description,
-        image,
-        active: true,
-      });
-      console.log('to be created');
-      await newCollection.save();
-      if (typeof raritySymbol === 'undefined') this.updateCollectionRarity(raritySymbol, newCollection._id);
-      return newCollection;
-    }
-    console.log('Collection already exists');
-    return res;
-  }
-  console.log('Fetched collection response is null.');
-  return null;
+  const ret = await axios.request(config)
+    .then(async (res) => {
+      const {
+        symbol, description, image, name, totalItems,
+      } = res.data;
+
+      if (symbol) {
+        const collection = await Collection.findOne({ symbol });
+        if (!collection) {
+          const newCollection = new Collection({
+            symbol,
+            market_name: 'https://magiceden.io/',
+            name,
+            totalItems,
+            description,
+            image,
+            active: true,
+          });
+          if (raritySymbol) newCollection.raritySymbol = raritySymbol;
+
+          await newCollection.save();
+          this.updateCollectionRarity(raritySymbol, newCollection._id);
+          return newCollection;
+        }
+        return collection;
+      }
+      return null;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  return ret;
 };
 
 /**
@@ -50,45 +53,43 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
  * @public
  */
 exports.updateCollectionRarity = async (raritySymbol, collectionId) => {
+  if (!raritySymbol) return;
+
   const config = {
     url: String(`https://howrare.is/api/v0.1/collections/${raritySymbol}`),
     httpsAgent: agent,
   };
 
-  const collectionRes = await axios.request(config);
-  const {
-    // eslint-disable-next-line camelcase
-    twitter, discord, website, logo, items, ranking_url,
-  } = collectionRes.data.result.data;
-  const map1 = new Map();
-  items.forEach((item) => {
-    map1.set(item.mint, item);
-  });
-  if (collectionRes.data.result.data) {
-    if (raritySymbol) {
-      const res = await RaritySheet.findOne({ raritySymbol });
-      if (!res) {
-        const newRaritySheet = await new RaritySheet({
-          raritySymbol,
-          ranking_url,
-          twitter,
-          discord,
-          website,
-          logo,
-          collectionId,
-          items: map1,
-        });
-        console.log('Saving new raritySheet');
-        return newRaritySheet.save();
+  await axios.request(config)
+    .then(async (response) => {
+      const {
+        // eslint-disable-next-line camelcase
+        twitter, discord, website, logo, items, ranking_url,
+      } = response.data.result.data;
+
+      const map1 = new Map();
+      items.forEach((item) => {
+        map1.set(item.mint, item);
+      });
+
+      if (response.data.result.data && raritySymbol) {
+        const res = await RaritySheet.findOne({ raritySymbol });
+        if (!res) {
+          new RaritySheet({
+            raritySymbol,
+            ranking_url,
+            twitter,
+            discord,
+            website,
+            logo,
+            collectionId,
+            items: map1,
+          }).save();
+        }
       }
-      console.log('Collection already exists');
-      return res;
-    }
-    console.log('Collection not yet created');
-    return null;
-  }
-  console.log('Invalid collection name');
-  return null;
+    }).catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.removeCollectionRarityIfNotExists = async (raritySymbol, collectionId) => {
