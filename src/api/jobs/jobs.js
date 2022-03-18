@@ -7,10 +7,10 @@ const updateHoldersTask = require('./tasks/updateHolders.task');
 const getBuyTransactionsTask = require('./tasks/getBuyTransactionsTask');
 
 const tasks = {
-  listedPriceDistributionTask,
   collectionTimestampTask,
-  updateHoldersTask,
+  listedPriceDistributionTask,
   getBuyTransactionsTask,
+  updateHoldersTask,
 };
 
 module.exports = tasks;

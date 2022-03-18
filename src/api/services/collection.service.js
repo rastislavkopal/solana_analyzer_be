@@ -43,7 +43,7 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
       return null;
     })
     .catch((err) => {
-      console.log(err);
+      console.error(`An error occured while adding new collection ${collectionSymbol}, ${err}`);
     });
   return ret;
 };
@@ -88,7 +88,7 @@ exports.updateCollectionRarity = async (raritySymbol, collectionId) => {
         }
       }
     }).catch((err) => {
-      console.log(err);
+      console.error(err);
     });
 };
 
