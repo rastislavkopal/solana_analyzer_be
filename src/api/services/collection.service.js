@@ -2,6 +2,7 @@ const axios = require('axios');
 const { agent } = require('../utils/proxyGenerator');
 const Collection = require('../models/collection.model');
 const RaritySheet = require('../models/raritySheet.model');
+const logger = require('../../config/logger');
 // const rarityController = require('../controllers/rarity.controller');
 
 /**
@@ -43,7 +44,7 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
       return null;
     })
     .catch((err) => {
-      console.error(`An error occured while adding new collection ${collectionSymbol}, ${err}`);
+      logger.error(`An error occured while adding new collection ${collectionSymbol}, ${err}`);
     });
   return ret;
 };
@@ -88,7 +89,7 @@ exports.updateCollectionRarity = async (raritySymbol, collectionId) => {
         }
       }
     }).catch((err) => {
-      console.error(err);
+      logger.error(err);
     });
 };
 
