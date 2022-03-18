@@ -103,6 +103,7 @@ async function updateItemsOf(symbol) {
           requestsPeriod.push(
             axios.request(config)
               .then((periodResponse) => {
+                if (periodResponse.code === 'ECONNRESET' || periodResponse.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
                 const { results } = periodResponse.data;
                 results.every((it) => {
                   // can't be async - we are looking at the first occurence of 'initializeEscrow'

@@ -53,8 +53,9 @@ async function getBuyTransactions(symbol, offset = 0, limit = 500) {
       httpsAgent: agent,
     };
     await axios.request(config)
-      .then((transactionResponse) => {
-        transactionResponse.data.forEach((transaction) => {
+      .then((response) => {
+        if (response.code === 'ECONNRESET' || response.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
+        response.data.forEach((transaction) => {
           if (transaction.type === 'buyNow') {
             saveTransaction(transaction, collection._id);
           }

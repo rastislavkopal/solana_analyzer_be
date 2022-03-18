@@ -101,7 +101,7 @@ const collectionTimestampTask = cron.schedule('* * * * *', async () => {
 
       axios.request(config)
         .then((resp) => {
-          if (resp.code === 'ECONNRESET') throw new Error('An error occured while reaching magiceden api');
+          if (resp.code === 'ECONNRESET' || resp.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
           saveCollectionTimestampFromResponse(resp, it.image, it.name);
         })
         .catch((error) => { throw error; });
