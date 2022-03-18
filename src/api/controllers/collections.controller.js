@@ -104,6 +104,8 @@ exports.removeCollections = async (req, res, next) => {
  */
 exports.addCollection = async (req, res, next) => {
   try {
+    console.log(req.body);
+
     const ret = await service.createCollectionIfNotExists(req.body.symbol, req.body.raritySymbol);
 
     if (ret) {
