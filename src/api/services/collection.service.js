@@ -2,7 +2,7 @@ const axios = require('axios');
 const { agent } = require('../utils/proxyGenerator');
 const Collection = require('../models/collection.model');
 const RaritySheet = require('../models/raritySheet.model');
-const rarityController = require('../controllers/rarity.controller');
+// const rarityController = require('../controllers/rarity.controller');
 
 /**
  * Create collection if does not already exists
@@ -34,8 +34,9 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
         active: true,
       });
       console.log('to be created');
-      this.updateCollectionRarity(raritySymbol, null);
-      return newCollection.save();
+      await newCollection.save();
+      if (typeof raritySymbol === 'undefined') this.updateCollectionRarity(raritySymbol, newCollection._id);
+      return newCollection;
     }
     console.log('Collection already exists');
     return res;
