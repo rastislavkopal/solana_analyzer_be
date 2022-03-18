@@ -64,9 +64,24 @@ exports.collectionStats = async (req, res, next) => {
     const now = new Date(Date.now()).toISOString();
     const now5min = new Date(Date.now() - (300 * 1000)).toISOString();
 
-    const collectionTS_now = await CollectionTs.find({ timestamp: { $gt: now5min, $lte: now }},'-_id  name metadata timestamp');
-    // collection image, symbol, floor price, listed count,volume (24h) floor price change (24h), listed count change (24h)
+    //const collectionTS_now = await CollectionTs.find({ timestamp: { $gt: now5min, $lte: now }},'-_id  name metadata timestamp');
+    const collectionTS_now = await CollectionTs.aggregate([
+      { $sort: {'metadata.symbol': 1, timestamp: -1}},
+      { $group:{
+          _id: "$metadata.symbol",
+          timestamp: {$first: "$timestamp"},
+          metadata: {$first: "$metadata"},
 
+        }}
+    ])
+    /*
+    image: "metadata.image",
+          floorPrice: "metadata.floorPrice",
+          floorPriceChange: "metadata.floorPriceChange",
+          listedCount: "metadata.listedCount",
+          listedCountChange: "metadata.listedCountChange",
+          volume24hr: "metadata.volume24hr",
+     */
     res.setHeader('Content-Type', 'application/json');
     res.json(collectionTS_now);
   } catch (error) {
