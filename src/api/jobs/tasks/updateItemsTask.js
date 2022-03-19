@@ -52,7 +52,7 @@ async function updateItemsOf(symbol) {
     }
     const { raritySymbol } = collection;
     const rarityResp = await RaritySheet.findOne({ raritySymbol });
-    if (!rarityResp) {
+    if (!rarityResp || !rarityResp.items) {
       throw { name: 'RaritySheetNotFound', message: `listedPriceDistributionTask---${symbol}---RaritySheet not found!` };
     }
     const iterations = Math.ceil(listedCount / 20);
