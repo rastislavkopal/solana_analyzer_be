@@ -53,7 +53,7 @@ async function updateItemsOf(symbol) {
     }
     const { raritySymbol } = collection;
     const rarityResp = await RaritySheet.findOne({ raritySymbol });
-    if (!rarityResp || !rarityResp.items) {
+    if (!rarityResp) {
       logger.error(`listedPriceDistributionTask---${symbol}---RaritySheet not found!`);
     }
     const iterations = Math.ceil(listedCount / 20);
@@ -74,7 +74,9 @@ async function updateItemsOf(symbol) {
             const { results } = priceResponse.data;
             results.forEach(async (it) => {
               ids.push(it.mintAddress);
-              const { rank } = rarityResp.items.get(it.mintAddress);
+              const { rank } = (rarityResp && rarityResp.items
+                && rarityResp.items.has(it.mintAddress))
+                ? rarityResp.items.get(it.mintAddress) : '';
               concatData.set(it.mintAddress, {
                 mintAddress: it.mintAddress,
                 price: it.price,
