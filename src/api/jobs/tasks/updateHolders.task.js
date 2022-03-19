@@ -1,6 +1,6 @@
 const cron = require('node-cron');
-const axios = require('axios');
 const mongoose = require('mongoose');
+const requestService = require('../../services/request.service')
 const Collection = require('../../models/collection.model');
 const Holder = require('../../models/holder.model');
 const { agent } = require('../../utils/proxyGenerator');
@@ -27,7 +27,7 @@ const updateHolderTask = cron.schedule('0 * * * *', async () => {
         httpsAgent: agent,
       };
 
-      axios.request(config)
+      requestService.request(config)
         .then(async (resp) => {
           await Holder.updateMany({ collectionId: it._id },
             { $set: { itemsCount: 0 } });
@@ -46,7 +46,9 @@ const updateHolderTask = cron.schedule('0 * * * *', async () => {
             });
           });
         })
-        .catch((error) => { throw error; });
+        .catch((error) => {
+          logger.error(error);
+        });
     });
   } catch (error) {
     logger.error(`${error}`);
