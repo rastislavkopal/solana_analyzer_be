@@ -9,20 +9,20 @@ const { agent } = require('../../utils/proxyGenerator');
 function calculateChange(collectionTsNow, collectionsTs24hBefore, option) {
   if (collectionsTs24hBefore.length < 1 || !collectionTsNow || collectionTsNow.length < 1) return 'NaN';
 
-  let valNow;
-  let valBefore;
   let change = Number(0);
 
-  if (option === 'floorPrice') {
-    valNow = collectionTsNow.metadata.floorPrice;
-    valBefore = collectionsTs24hBefore.metadata.floorPrice;
-  } else if (option === 'listedCount') {
-    valNow = collectionTsNow.metadata.listedCount;
-    valBefore = collectionsTs24hBefore.metadata.listedCount;
-  } else {
+  if (option !== 'floorPrice' || option !== 'listedCount') {
     console.log('Invalid option in calculateChange() selected.');
     return '';
   }
+
+  if (!collectionTsNow.metadata || !collectionsTs24hBefore.metadata) {
+    console.log('CollectionTs metadata are undefined.');
+    return '';
+  }
+
+  const valNow = collectionTsNow.metadata[option];
+  const valBefore = collectionsTs24hBefore.metadata[option];
 
   if (valNow === valBefore) return `${change} %`;
 
