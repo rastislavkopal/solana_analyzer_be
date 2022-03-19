@@ -4,18 +4,13 @@ const Collection = require('../../models/collection.model');
 const CollectionTs = require('../../models/collectionTs.model');
 const logger = require('../../../config/logger');
 const { agent } = require('../../utils/proxyGenerator');
+const requestService = require('../../services/request.service');
 // const CollectionService = require('../../services/collection.service');
 
 function calculateChange(collectionTsNow, collectionsTs24hBefore, option) {
   if (collectionsTs24hBefore.length < 1 || !collectionTsNow || collectionTsNow.length < 1) return 'NaN';
 
   let change = Number(0);
-
-  if (option !== 'floorPrice' || option !== 'listedCount') {
-    console.log('Invalid option in calculateChange() selected.');
-    return '';
-  }
-
   if (!collectionTsNow.metadata || !collectionsTs24hBefore.metadata) {
     console.log('CollectionTs metadata are undefined.');
     return '';
@@ -23,7 +18,6 @@ function calculateChange(collectionTsNow, collectionsTs24hBefore, option) {
 
   const valNow = collectionTsNow.metadata[option];
   const valBefore = collectionsTs24hBefore.metadata[option];
-
   if (valNow === valBefore) return `${change} %`;
 
   if (valNow > valBefore) {
@@ -82,10 +76,10 @@ async function saveCollectionTimestampFromResponse(resp, image, name) {
       timestamp: now,
     });
     timestamp.save((err) => {
-      if (err) logger.error(`collectionTimestampTask: ${err}`); // saved
+      if (err) logger.error(`saveCollectionTimestampFromResponse error 1: ${err}`); // saved
     });
   } catch (error) {
-    logger.error(`collectionTimestampTask:  ${error}`);
+    logger.error(`saveCollectionTimestampFromResponse error 2:  ${error}`);
   }
 }
 
@@ -99,15 +93,17 @@ const collectionTimestampTask = cron.schedule('* * * * *', async () => {
         httpsAgent: agent,
       };
 
-      axios.request(config)
+      requestService.request(config)
         .then((resp) => {
           if (resp.code === 'ECONNRESET' || resp.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
           saveCollectionTimestampFromResponse(resp, it.image, it.name);
         })
-        .catch((error) => { throw error; });
+        .catch((error) => {
+          logger.error(`collectionTimestampTask error 1: ${error}`);
+        });
     });
   } catch (error) {
-    logger.error(`${error}`);
+    logger.error(`collectionTimeStampTask error 2: ${error}`);
   }
 });
 
