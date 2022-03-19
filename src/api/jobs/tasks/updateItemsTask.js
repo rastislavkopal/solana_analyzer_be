@@ -8,6 +8,7 @@ const { agent } = require('../../utils/proxyGenerator');
 const logger = require('../../../config/logger');
 const Collection = require('../../models/collection.model');
 const CollectionService = require('../../services/collection.service');
+const requestService = require('../../services/request.service');
 
 // const collectionSymbolList = ['888_anon_club'];
 
@@ -39,21 +40,21 @@ async function updateItemsOf(symbol) {
     const limit = 100;
 
     if (!collection) {
-      throw { name: 'CollectionNotFound', message: `listedPriceDistributionTask---${symbol}---Collection not found` };
+      logger.error(`listedPriceDistributionTask---${symbol}---Collection not found`);
     }
     const collectionTs = await CollectionTs.find({ 'metadata.symbol': symbol }, '-_id metadata timestamp')
       .sort({ timestamp: -1 })
       .limit(limit);
 
     const { listedCount } = collectionTs[0].metadata;
-    if (listedCount > 500 || !listedCount) {
+    if (listedCount > 1000 || !listedCount) {
       // Add more unsupported cases ( E.g. cooldown on this function )
-      throw { name: 'UnsupportedSize', message: `listedPriceDistributionTask---${symbol}---Collection of this size is unsupported(${listedCount})` };
+      logger.error(`listedPriceDistributionTask---${symbol}---Collection of this size is unsupported(${listedCount})`);
     }
     const { raritySymbol } = collection;
     const rarityResp = await RaritySheet.findOne({ raritySymbol });
     if (!rarityResp || !rarityResp.items) {
-      throw { name: 'RaritySheetNotFound', message: `listedPriceDistributionTask---${symbol}---RaritySheet not found!` };
+      logger.error(`listedPriceDistributionTask---${symbol}---RaritySheet not found!`);
     }
     const iterations = Math.ceil(listedCount / 20);
     const remainder = listedCount % 20;
@@ -67,7 +68,7 @@ async function updateItemsOf(symbol) {
         url: String(`https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q={"$match":{"collectionSymbol":"${symbol}"},"$sort":{"takerAmount":1,"createdAt":-1},"$skip":${index},"$limit":${step}}`),
         httpsAgent: agent,
       };
-      requestsPrice.push(axios.request(config)
+      requestsPrice.push(requestService.request(config)
         .then((priceResponse) => {
           if (priceResponse.status === 200) {
             const { results } = priceResponse.data;
@@ -87,7 +88,7 @@ async function updateItemsOf(symbol) {
           }
         })
         .catch((error) => {
-          throw error;
+          logger.error(`updateItemsOf error 1: ${error}`);
         }));
       index += step;
       step = 20;
@@ -101,35 +102,48 @@ async function updateItemsOf(symbol) {
             httpsAgent: agent,
           };
           requestsPeriod.push(
-            axios.request(config)
+            requestService.request(config)
               .then((periodResponse) => {
                 if (periodResponse.code === 'ECONNRESET' || periodResponse.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
                 const { results } = periodResponse.data;
                 results.every((it) => {
                   // can't be async - we are looking at the first occurence of 'initializeEscrow'
+                  // console.log(`it:${JSON.stringify(it.mint)}`);
+                  // console.log(JSON.stringify(concatData[it.mint]));
+                  // console.log(JSON.stringify(concatData.get(it.mint)));
+                  const tmp = concatData.get(it.mint);
+
                   if (it.txType === 'initializeEscrow') {
                     const timeDiff = (new Date(Date.now()) - Date.parse(it.createdAt));
                     const inHours = Number(timeDiff / 3600000)
                       .toFixed(2);
-                    if (inHours < 1) concatData[it.mint].listedFor = '< 1 hour';
-                    else concatData[it.mint].listedFor = `${inHours} hours`;
+                    if (inHours < 1) {
+                      tmp.listedFor = '< 1 hour';
+                    } else {
+                      tmp.listedFor = `${inHours} hours`;
+                    }
+                    concatData.set(it.mint, tmp);
                     return false;
                   }
                   return true;
                 });
               })
               .catch((error) => {
-                throw error;
+                logger.error(`updateItemsOf error 2: ${error}`);
               }),
           );
         });
         Promise.allSettled(requestsPeriod)
           .then(() => updateItemsFromData(concatData, symbol))
-          .catch((error) => { throw error; });
+          .catch((error) => {
+            logger.error(`updateItemsOf error 3: ${error}`);
+          });
       })
-      .catch((error) => { throw error; });
+      .catch((error) => {
+        logger.error(`updateItemsOf error 4: ${error}`);
+      });
   } catch (error) {
-    logger.error(`${error}`);
+    logger.error(`updateItemsOf error 5: ${error}`);
   }
 }
 // '*/5 * * * *'

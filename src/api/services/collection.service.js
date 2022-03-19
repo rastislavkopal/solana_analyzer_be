@@ -3,6 +3,7 @@ const { agent } = require('../utils/proxyGenerator');
 const Collection = require('../models/collection.model');
 const RaritySheet = require('../models/raritySheet.model');
 const logger = require('../../config/logger');
+const requestService = require('./request.service');
 // const rarityController = require('../controllers/rarity.controller');
 
 /**
@@ -15,7 +16,7 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
     httpsAgent: agent,
   };
 
-  const ret = await axios.request(config)
+  const ret = await requestService.request(config)
     .then(async (res) => {
       const {
         symbol, description, image, name, totalItems,
@@ -61,7 +62,7 @@ exports.updateCollectionRarity = async (raritySymbol, collectionId) => {
     httpsAgent: agent,
   };
 
-  await axios.request(config)
+  await requestService.request(config)
     .then(async (response) => {
       const {
         // eslint-disable-next-line camelcase
@@ -89,7 +90,7 @@ exports.updateCollectionRarity = async (raritySymbol, collectionId) => {
         }
       }
     }).catch((err) => {
-      logger.error(err);
+      logger.error(`Update collection rarity error: ${err}`);
     });
 };
 

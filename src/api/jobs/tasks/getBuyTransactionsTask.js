@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const axios = require('axios');
-// const mongoose = require('mongoose');
+const requestService = require('../../services/request.service')
 const logger = require('../../../config/logger');
 const { agent } = require('../../utils/proxyGenerator');
 const Transaction = require('../../models/transaction.model');
@@ -52,9 +52,11 @@ async function getBuyTransactions(symbol, offset = 0, limit = 500) {
       ),
       httpsAgent: agent,
     };
-    await axios.request(config)
+    await requestService.request(config)
       .then((response) => {
-        if (response.code === 'ECONNRESET' || response.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
+        if (response.code === 'ECONNRESET' || response.code === 'ERR_SOCKET_CLOSED') {
+          throw new Error('An error occured while reaching magiceden api');
+        }
         response.data.forEach((transaction) => {
           if (transaction.type === 'buyNow') {
             saveTransaction(transaction, collection._id);
