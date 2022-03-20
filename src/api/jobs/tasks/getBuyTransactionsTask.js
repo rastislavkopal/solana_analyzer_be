@@ -1,4 +1,5 @@
 const cron = require('node-cron');
+const axios = require('axios');
 const requestService = require('../../services/request.service');
 const logger = require('../../../config/logger');
 const { agent } = require('../../utils/proxyGenerator');
@@ -20,27 +21,25 @@ const CollectionService = require('../../services/collection.service');
 async function saveTransaction(transaction, collectionId) {
   const holder = await Holder.findOne({ collectionId, walletId: transaction.buyer }).exec();
   let isWhale = false;
-  if (holder) {
-    if (holder.itemsCount > 7) {
-      isWhale = true;
-    }
+  if (holder != null && holder.itemsCount > 7) {
+    isWhale = true;
+  }
 
-    Transaction.updateOne(
-      { signature: transaction.signature },
-      {
-        $set: {
-          mintAddress: transaction.tokenMint,
-          buyer: transaction.buyer,
-          seller: transaction.seller,
-          price: transaction.price,
-          transactionType: transaction.type,
-          collectionId,
-          isWhale,
-        },
+  Transaction.updateOne(
+    { signature: transaction.signature },
+    {
+      $set: {
+        mintAddress: transaction.tokenMint,
+        buyer: transaction.buyer,
+        seller: transaction.seller,
+        price: transaction.price,
+        transactionType: transaction.type,
+        collectionId,
+        isWhale,
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
-    );
-  } else logger.error(`Holder ${transaction.walletId} not found`);
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true },
+  );
 }
 
 async function getBuyTransactions(symbol, offset = 0, limit = 500) {
