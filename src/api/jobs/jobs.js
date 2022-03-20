@@ -2,13 +2,13 @@
 // const updateItemTask = require('./tasks/updateItemsTask');
 // const tokenInfoCrawlerTask = require('./tasks/tokenInfoCrawlerTask');
 const collectionTimestampTask = require('./tasks/collectionTimestampTask');
-const listedPriceDistributionTask = require('./tasks/updateItemsTask');
+const updateItemsTask = require('./tasks/updateItemsTask');
 const updateHoldersTask = require('./tasks/updateHolders.task');
 const getBuyTransactionsTask = require('./tasks/getBuyTransactionsTask');
 
 const tasks = {
   collectionTimestampTask,
-  listedPriceDistributionTask,
+  updateItemsTask,
   getBuyTransactionsTask,
   updateHoldersTask,
 };
