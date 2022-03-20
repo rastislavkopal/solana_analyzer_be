@@ -53,27 +53,28 @@ exports.getCollection = async (req, res, next) => {
 exports.listCollections = async (req, res, next) => {
   try {
     const collections = await Collection.find({});
-    res.setHeader('Content-Type', 'application/json');
     res.json(collections);
   } catch (error) {
     next(error);
   }
 };
+
 exports.collectionStats = async (req, res, next) => {
   try {
-    const now = new Date(Date.now()).toISOString();
-    const now5min = new Date(Date.now() - (300 * 1000)).toISOString();
+    // const now = new Date(Date.now()).toISOString();
+    // const now5min = new Date(Date.now() - (300 * 1000)).toISOString();
 
-    //const collectionTS_now = await CollectionTs.find({ timestamp: { $gt: now5min, $lte: now }},'-_id  name metadata timestamp');
-    const collectionTS_now = await CollectionTs.aggregate([
-      { $sort: {'metadata.symbol': 1, timestamp: -1}},
-      { $group:{
-          _id: "$metadata.symbol",
-          timestamp: {$first: "$timestamp"},
-          metadata: {$first: "$metadata"},
-
-        }}
-    ])
+    // const collectionTS_now = await CollectionTs.find({ timestamp: { $gt: now5min, $lte: now }},'-_id  name metadata timestamp');
+    const collectionTsNow = await CollectionTs.aggregate([
+      { $sort: { 'metadata.symbol': 1, timestamp: -1 } },
+      {
+        $group: {
+          _id: '$metadata.symbol',
+          timestamp: { $first: '$timestamp' },
+          metadata: { $first: '$metadata' },
+        },
+      },
+    ]);
     /*
     image: "metadata.image",
           floorPrice: "metadata.floorPrice",
@@ -82,8 +83,7 @@ exports.collectionStats = async (req, res, next) => {
           listedCountChange: "metadata.listedCountChange",
           volume24hr: "metadata.volume24hr",
      */
-    res.setHeader('Content-Type', 'application/json');
-    res.json(collectionTS_now);
+    res.json(collectionTsNow);
   } catch (error) {
     next(error);
   }
