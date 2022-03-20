@@ -110,9 +110,6 @@ async function updateItemsOf(symbol) {
                 const { results } = periodResponse.data;
                 results.every((it) => {
                   // can't be async - we are looking at the first occurence of 'initializeEscrow'
-                  // console.log(`it:${JSON.stringify(it.mint)}`);
-                  // console.log(JSON.stringify(concatData[it.mint]));
-                  // console.log(JSON.stringify(concatData.get(it.mint)));
                   const tmp = concatData.get(it.mint);
 
                   if (it.txType === 'initializeEscrow') {

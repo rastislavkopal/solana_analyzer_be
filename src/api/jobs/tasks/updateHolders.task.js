@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const mongoose = require('mongoose');
-const requestService = require('../../services/request.service')
+const requestService = require('../../services/request.service');
 const Collection = require('../../models/collection.model');
 const Holder = require('../../models/holder.model');
 const { agent } = require('../../utils/proxyGenerator');
