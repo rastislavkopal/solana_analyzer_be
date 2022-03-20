@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const axios = require('axios');
-const requestService = require('../../services/request.service')
+const requestService = require('../../services/request.service');
 const logger = require('../../../config/logger');
 const { agent } = require('../../utils/proxyGenerator');
 const Transaction = require('../../models/transaction.model');
@@ -25,7 +25,7 @@ async function saveTransaction(transaction, collectionId) {
     isWhale = true;
   }
 
-  await Transaction.updateOne(
+  Transaction.updateOne(
     { signature: transaction.signature },
     {
       $set: {

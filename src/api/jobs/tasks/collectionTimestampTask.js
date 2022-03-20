@@ -1,18 +1,17 @@
 const cron = require('node-cron');
-const axios = require('axios');
 const Collection = require('../../models/collection.model');
 const CollectionTs = require('../../models/collectionTs.model');
 const logger = require('../../../config/logger');
 const { agent } = require('../../utils/proxyGenerator');
 const requestService = require('../../services/request.service');
-// const CollectionService = require('../../services/collection.service');
 
 function calculateChange(collectionTsNow, collectionsTs24hBefore, option) {
   if (collectionsTs24hBefore.length < 1 || !collectionTsNow || collectionTsNow.length < 1) return 'NaN';
 
   let change = Number(0);
   if (!collectionTsNow.metadata || !collectionsTs24hBefore.metadata) {
-    console.log('CollectionTs metadata are undefined.');
+    if (!collectionTsNow.metadata) logger.error('CollectionTsNow metadata are undefined.');
+    if (!collectionsTs24hBefore.metadata) logger.error('CollectionTs24hBefore metadata are undefined.');
     return '';
   }
 
