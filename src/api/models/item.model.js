@@ -11,11 +11,6 @@ const ItemSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
-  item_name: {
-    type: String,
-    required: true,
-    index: true,
-  },
   name: String,
   for_sale: Boolean,
   attributes: [{
@@ -51,7 +46,7 @@ const ItemSchema = new mongoose.Schema({
 }, {
   // Schema-wide configuration for the upsertMany plugin
   upsertMany: {
-    matchFields: ['item_api_id'],
+    matchFields: ['mintAddress'],
     type: 'replaceOne',
     ensureModel: true,
   },
