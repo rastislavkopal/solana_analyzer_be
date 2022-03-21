@@ -11,6 +11,9 @@ mongoose.connect();
 // start the background jobs automatically
 require('./api/jobs/jobs');
 
+// const v8 = require('v8'); // get the max heap size info in GBs
+// logger.info((v8.getHeapStatistics().total_available_size / 1024 /1024 / 1024).toFixed(2));
+
 // listen to requests
 app.listen(port, () => logger.info(`server started on port ${port} (${env})`));
 
