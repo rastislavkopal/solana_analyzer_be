@@ -11,6 +11,7 @@ ADD package.json yarn.lock /app/
 RUN yarn --pure-lockfile
 ADD . /app
 
-RUN export NODE_OPTIONS=--max-old-space-size=4096 --trace-warnings
+ARG MAX_OLD_SPACE_SIZE=4096
+ENV NODE_OPTIONS=--max_old_space_size=$MAX_OLD_SPACE_SIZE
 
 CMD ["yarn", "docker:start"]
