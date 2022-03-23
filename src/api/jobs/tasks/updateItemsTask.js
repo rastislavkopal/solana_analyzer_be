@@ -8,7 +8,6 @@ const { agent } = require('../../utils/proxyGenerator');
 const logger = require('../../../config/logger');
 const Collection = require('../../models/collection.model');
 const CollectionService = require('../../services/collection.service');
-const requestService = require('../../services/request.service');
 
 // const collectionSymbolList = ['888_anon_club'];
 
@@ -96,7 +95,7 @@ async function updateItemsOf(symbol) {
           url: String(`https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q={"$match":{"collectionSymbol":"${symbol}"},"$sort":{"takerAmount":1,"createdAt":-1},"$skip":${index},"$limit":${step}}`),
           httpsAgent: agent,
         };
-        requestsPrice.push(requestService.request(config)
+        requestsPrice.push(axios.request(config)
           .then((priceResponse) => {
             if (priceResponse.status === 200) {
               const { results } = priceResponse.data;
@@ -132,7 +131,7 @@ async function updateItemsOf(symbol) {
               httpsAgent: agent,
             };
             requestsPeriod.push(
-              requestService.request(config)
+              axios.request(config)
                 .then((periodResponse) => {
                   if (periodResponse.code === 'ECONNRESET' || periodResponse.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
                   const { results } = periodResponse.data;

@@ -1,9 +1,9 @@
 const cron = require('node-cron');
+const axios = require('axios');
 const Collection = require('../../models/collection.model');
 const CollectionTs = require('../../models/collectionTs.model');
 const logger = require('../../../config/logger');
 const { agent } = require('../../utils/proxyGenerator');
-const requestService = require('../../services/request.service');
 
 function calculateChange(collectionTsNow, collectionsTs24hBefore, option) {
   if (collectionsTs24hBefore.length < 1 || !collectionTsNow || collectionTsNow.length < 1) return 'NaN';
@@ -92,7 +92,7 @@ const collectionTimestampTask = cron.schedule('* * * * *', async () => {
         httpsAgent: agent,
       };
 
-      requestService.request(config)
+      axios.request(config)
         .then((resp) => {
           if (resp.code === 'ECONNRESET' || resp.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
           saveCollectionTimestampFromResponse(resp, it.image, it.name);
