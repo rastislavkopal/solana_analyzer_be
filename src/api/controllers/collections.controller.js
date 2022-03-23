@@ -225,7 +225,7 @@ exports.updateCollection = async (req, res, next) => {
     const transformed = collection;
     // update-able fields
     const fields = ['raritySymbol', 'market_name', 'name', 'description',
-      'image', 'creators', 'totalItems', 'category', 'owner_count'];
+      'image', 'creators', 'totalItems', 'category', 'owner_count', 'active'];
 
     fields.forEach((field) => {
       if (req.body[field]) {
@@ -234,6 +234,10 @@ exports.updateCollection = async (req, res, next) => {
     });
 
     const ret = await Collection.updateOne({ _id: collection._id }, transformed);
+
+    if (transformed.raritySymbol) {
+      service.updateCollectionRarity(transformed.raritySymbol, collection.symbol);
+    }
 
     if (ret.modifiedCount !== 0) {
       res.status(httpStatus.CREATED);
