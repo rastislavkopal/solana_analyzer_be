@@ -127,8 +127,10 @@ exports.addCollection = async (req, res, next) => {
 exports.getCollectionHistoryComplete = async (req, res, next) => {
   try {
     let limit = 100;
+    let dense = 1;
 
     if (req.query.limit) limit = req.query.limit;
+    if (req.query.dense) dense = req.query.dense;
 
     const { collection } = req.locals;
     if (!collection) {
@@ -138,9 +140,15 @@ exports.getCollectionHistoryComplete = async (req, res, next) => {
     }
 
     const collectionTs = await CollectionTs.find({ 'metadata.symbol': collection.symbol }, '-_id metadata timestamp')
-      .sort({ timestamp: -1 }).limit(limit);
+      .sort({ timestamp: -1 }).limit(limit * dense);
+
+    const densedHistory = [];
+    for (let i = 0; (i < limit * dense) && (i < collectionTs.length); i += 1) {
+      if (i % dense === 0) densedHistory.push(collectionTs[i]);
+    }
+
     res.setHeader('Content-Type', 'application/json');
-    res.json(collectionTs);
+    res.json(densedHistory);
   } catch (error) {
     next(error);
   }

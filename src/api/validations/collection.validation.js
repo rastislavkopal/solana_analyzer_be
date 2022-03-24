@@ -9,6 +9,7 @@ module.exports = {
     },
     query: {
       limit: Joi.number().min(1).max(500),
+      dense: Joi.number().min(1).max(60),
     },
   },
   // POST /v1/collection/:symbol/history
