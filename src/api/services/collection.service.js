@@ -73,7 +73,7 @@ exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
       items.forEach((item) => {
         map1.set(item.mint, item);
       });
-      ItemService.updateItemsFromRarityMap(items, collectionSymbol);
+      ItemService.updateItemsFromRarityMap(items);
 
       if (response.data.result.data && raritySymbol) {
         const res = await RaritySheet.findOne({ raritySymbol });

@@ -17,7 +17,7 @@ exports.updateItemsFromMap = async (concatData, symbol) => {
   });
   Item.upsertMany(items).then(() => {}).catch((err) => { logger.error(`updateItemsFromData: ${err}`); });
 };
-exports.updateItemsFromRarityMap = async (concatData, symbol) => {
+exports.updateItemsFromRarityMap = async (concatData) => {
   console.log('Updating items....');
   const items = Array.from(concatData.entries(), ([key, value]) => {
     const rObj = {
