@@ -3,6 +3,7 @@ const { agent } = require('../utils/proxyGenerator');
 const Collection = require('../models/collection.model');
 const RaritySheet = require('../models/raritySheet.model');
 const logger = require('../../config/logger');
+const ItemService = require('./item.service');
 // const rarityController = require('../controllers/rarity.controller');
 
 /**
@@ -53,7 +54,7 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
  * Add rarity sheet if it doesn't already exist
  * @public
  */
-exports.updateCollectionRarity = async (raritySymbol, collectionId) => {
+exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
   if (!raritySymbol) return;
 
   const config = {
@@ -72,6 +73,7 @@ exports.updateCollectionRarity = async (raritySymbol, collectionId) => {
       items.forEach((item) => {
         map1.set(item.mint, item);
       });
+      ItemService.updateItemsFromMap(items, collectionSymbol);
 
       if (response.data.result.data && raritySymbol) {
         const res = await RaritySheet.findOne({ raritySymbol });
@@ -83,8 +85,7 @@ exports.updateCollectionRarity = async (raritySymbol, collectionId) => {
             discord,
             website,
             logo,
-            collectionId,
-            items: map1,
+            collectionSymbol,
           }).save();
         }
       }
@@ -93,11 +94,11 @@ exports.updateCollectionRarity = async (raritySymbol, collectionId) => {
     });
 };
 
-exports.removeCollectionRarityIfNotExists = async (raritySymbol, collectionId) => {
-  const res = await RaritySheet.findOne({ $or: [{ raritySymbol }, { collectionId }] });
+exports.removeCollectionRarityIfNotExists = async (raritySymbol, collectionSymbol) => {
+  const res = await RaritySheet.findOne({ $or: [{ raritySymbol }, { collectionSymbol }] });
   if (res) {
     console.log('To be deleted');
-    await RaritySheet.deleteMany({ $or: [{ raritySymbol }, { collectionId }] });
+    await RaritySheet.deleteMany({ $or: [{ raritySymbol }, { collectionSymbol }] });
     return 'Success';
   }
   console.log('Already deleted');

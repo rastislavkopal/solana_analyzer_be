@@ -8,25 +8,10 @@ const { agent } = require('../../utils/proxyGenerator');
 const logger = require('../../../config/logger');
 const Collection = require('../../models/collection.model');
 const CollectionService = require('../../services/collection.service');
+const ItemService = require('../../services/item.service');
 
 // const collectionSymbolList = ['888_anon_club'];
 
-async function updateItemsFromData(concatData, symbol) {
-  console.log('Updating items....');
-  const items = Array.from(concatData.entries(), ([key, value]) => {
-    const rObj = {
-      mintAddress: key,
-      rank: value.rank,
-      forSale: true,
-      collectionId: value.collectionId,
-      name: value.name,
-      collectionSymbol: symbol,
-      price: value.price,
-    };
-    return rObj;
-  });
-  Item.upsertMany(items).then(() => {}).catch((err) => { logger.error(`updateItemsFromData: ${err}`); });
-}
 async function updateListingTime(ids) {
   const concatData = new Map();
   await ids.forEach(async (id) => {
@@ -130,7 +115,7 @@ async function updateItemsOf(symbol) {
                   name: it.title,
                 });
               });
-              await updateItemsFromData(concatData, symbol);
+              await ItemService.updateItemsFromMap(concatData, symbol);
               updateListingTime(ids);
             }
           })

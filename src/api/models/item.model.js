@@ -11,10 +11,16 @@ const ItemSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
+  collectionSymbol: {
+    type: String,
+    index: true,
+    required: true,
+  },
+  raritySymbol: String,
   name: String,
   for_sale: Boolean,
   attributes: [{
-    trait_type: String,
+    name: String,
     value: String,
     rarity: Number,
   }],
@@ -29,10 +35,6 @@ const ItemSchema = new mongoose.Schema({
     required: true,
   },
   last_sold_price: Number,
-  collectionSymbol: {
-    type: String,
-    required: true,
-  },
   collectionId: String,
   created_at: {
     type: Date,
