@@ -1,4 +1,4 @@
-/* eslint-disable no-throw-literal,max-len */
+/* eslint-disable no-throw-literal */
 const cron = require('node-cron');
 const axios = require('axios');
 const CollectionTs = require('../../models/collectionTs.model');
@@ -17,6 +17,7 @@ async function updateItemsFromData(concatData, symbol) {
     const rObj = {
       mintAddress: key,
       rank: value.rank,
+      listedFor: value.price,
       forSale: true,
       collectionId: value.collectionId,
       name: value.name,
@@ -25,48 +26,30 @@ async function updateItemsFromData(concatData, symbol) {
     };
     return rObj;
   });
+
   Item.upsertMany(items).then(() => {}).catch((err) => { logger.error(`updateItemsFromData: ${err}`); });
-}
-async function updateListingTime(ids) {
-  const concatData = new Map();
-  await ids.forEach(async (id) => {
-    const config = {
-      url: String(`https://api-mainnet.magiceden.io/rpc/getGlobalActivitiesByQuery?q={"$match":{"mint":"${id}"},"$sort":{"blockTime":-1,"createdAt":-1},"$skip":0}`),
-      httpsAgent: agent,
-    };
-    axios.request(config)
-      .then(async (periodResponse) => {
-        if (periodResponse.code === 'ECONNRESET' || periodResponse.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
-        const { results } = periodResponse.data;
-        results.forEach(async (it) => {
-          let listedFor;
-          if (it.txType === 'initializeEscrow') {
-            const timeDiff = (new Date(Date.now()) - Date.parse(it.createdAt));
-            const inHours = Number(timeDiff / 3600000)
-              .toFixed(2);
-            if (inHours < 1) {
-              listedFor = '< 1 hour';
-            } else {
-              listedFor = `${inHours} hours`;
-            }
-            concatData.set(it.mint, listedFor);
-          }
-        });
-      })
-      .catch((error) => {
-        logger.error(`updateListingTime error 1: ${error}`);
-      });
-    // eslint-disable-next-line no-shadow
-    const items = Array.from(concatData.entries(), ([key, value]) => {
-      const rObj = {
-        mintAddress: key,
-        listedFor: value,
-      };
-      return rObj;
+  /*
+  concatData.forEach((value, key) => {
+    Item.updateOne({ mintAddress: key },
+      {
+        $set:
+          {
+            listedFor: value.price,
+            rank: value.rank,
+            forSale: true,
+            collectionId: value.collectionId,
+            name: value.name,
+            mintAddress: key,
+            collectionSymbol: symbol,
+          },
+      },
+      { upsert: true }).then(() => {
+      // console.log('Finished updating...');
     });
-    Item.upsertMany(items).then(() => {}).catch((err) => { logger.error(`updateListingTime error 2: ${err}`); });
   });
+   */
 }
+
 async function updateItemsOf(symbol) {
   try {
     const collection = await Collection.findOne({ symbol }).exec();
@@ -101,6 +84,7 @@ async function updateItemsOf(symbol) {
     let index = 0;
     let step = remainder;
     const concatData = new Map();
+    const requestsPrice = [];
     const ids = [];
     for (let h = 0; h < batches; h += 1) {
       if (h === batches - 1 && iterationRemainder !== 0) iterations %= 10;
@@ -111,8 +95,8 @@ async function updateItemsOf(symbol) {
           url: String(`https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q={"$match":{"collectionSymbol":"${symbol}"},"$sort":{"takerAmount":1,"createdAt":-1},"$skip":${index},"$limit":${step}}`),
           httpsAgent: agent,
         };
-        axios.request(config)
-          .then(async (priceResponse) => {
+        requestsPrice.push(axios.request(config)
+          .then((priceResponse) => {
             if (priceResponse.status === 200) {
               const { results } = priceResponse.data;
               results.forEach(async (it) => {
@@ -130,16 +114,63 @@ async function updateItemsOf(symbol) {
                   name: it.title,
                 });
               });
-              await updateItemsFromData(concatData, symbol);
-              updateListingTime(ids);
             }
           })
           .catch((error) => {
             logger.error(`updateItemsOf error 1: ${error}`);
-          });
+          }));
         index += step;
         step = 20;
       }
+      Promise.allSettled(requestsPrice)
+        .then(() => {
+          const requestsPeriod = [];
+          ids.forEach(async (id) => {
+            const config = {
+              url: String(`https://api-mainnet.magiceden.io/rpc/getGlobalActivitiesByQuery?q={"$match":{"mint":"${id}"},"$sort":{"blockTime":-1,"createdAt":-1},"$skip":0}`),
+              httpsAgent: agent,
+            };
+            requestsPeriod.push(
+              axios.request(config)
+                .then((periodResponse) => {
+                  if (periodResponse.code === 'ECONNRESET' || periodResponse.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
+                  const { results } = periodResponse.data;
+                  results.every((it) => {
+                    // can't be async - we are looking at the first occurence of 'initializeEscrow'
+                    const tmp = concatData.get(it.mint);
+
+                    if (it.txType === 'initializeEscrow') {
+                      const timeDiff = (new Date(Date.now()) - Date.parse(it.createdAt));
+                      const inHours = Number(timeDiff / 3600000)
+                        .toFixed(2);
+                      if (inHours < 1) {
+                        tmp.listedFor = '< 1 hour';
+                      } else {
+                        tmp.listedFor = `${inHours} hours`;
+                      }
+                      concatData.set(it.mint, tmp);
+                      return false;
+                    }
+                    return true;
+                  });
+                })
+                .catch((error) => {
+                  logger.error(`updateItemsOf error 2: ${error}`);
+                }),
+            );
+          });
+          Promise.allSettled(requestsPeriod)
+            .then(() => {
+              updateItemsFromData(concatData, symbol);
+              concatData.clear();
+            })
+            .catch((error) => {
+              logger.error(`updateItemsOf error 3: ${error}`);
+            });
+        })
+        .catch((error) => {
+          logger.error(`updateItemsOf error 4: ${error}`);
+        });
     }
   } catch (error) {
     logger.error(`updateItemsOf error 5: ${error}`);

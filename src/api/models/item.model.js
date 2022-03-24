@@ -47,7 +47,7 @@ const ItemSchema = new mongoose.Schema({
   // Schema-wide configuration for the upsertMany plugin
   upsertMany: {
     matchFields: ['mintAddress'],
-    type: 'replaceOne',
+    type: 'updateOne',
     ensureModel: true,
   },
 });
