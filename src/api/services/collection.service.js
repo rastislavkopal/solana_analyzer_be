@@ -37,7 +37,7 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
           if (raritySymbol) newCollection.raritySymbol = raritySymbol;
 
           await newCollection.save();
-          this.updateCollectionRarity(raritySymbol, newCollection._id);
+          this.updateCollectionRarity(raritySymbol, symbol);
           return newCollection;
         }
         return collection;
@@ -55,7 +55,9 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
  * @public
  */
 exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
-  if (!raritySymbol) return;
+  if (!raritySymbol) {
+    return;
+  }
 
   const config = {
     url: String(`https://howrare.is/api/v0.1/collections/${raritySymbol}`),
@@ -71,12 +73,20 @@ exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
 
       const map1 = new Map();
       items.forEach((item) => {
-        map1.set(item.mint, item);
+        const itemAttr = item.attributes;
+        const itemRank = item.rank;
+        const itemName = item.name;
+        map1.set(item.mint, {
+          itemAttr,
+          itemRank,
+          itemName,
+        });
       });
-      ItemService.updateItemsFromRarityMap(items);
+      ItemService.updateItemsFromRarityMap(map1);
 
       if (response.data.result.data && raritySymbol) {
         const res = await RaritySheet.findOne({ raritySymbol });
+        console.log(`!res: ${JSON.stringify(res)}`);
         if (!res) {
           new RaritySheet({
             raritySymbol,
@@ -87,8 +97,10 @@ exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
             logo,
             collectionSymbol,
           }).save();
+          return 'Success!';
         }
       }
+      return 'Success!';
     }).catch((err) => {
       logger.error(`Update collection rarity error: ${err}`);
     });

@@ -39,7 +39,7 @@ exports.addCollectionRarity = async (req, res, next) => {
 
     if (!ret) {
       res.status(httpStatus.NOT_FOUND);
-      res.json('collection not found');
+      res.json('Collection not found (SUCCESS ANYWAYS?)');
     }
 
     res.status(httpStatus.CREATED);
