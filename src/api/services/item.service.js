@@ -2,27 +2,35 @@ const Item = require('../models/item.model');
 const logger = require('../../config/logger');
 
 exports.updateItemsFromMap = async (concatData, symbol) => {
-  console.log('Updating items....');
+  console.log(`Updating items of ${symbol} ...`);
   const items = Array.from(concatData.entries(), ([key, value]) => {
     const rObj = {
-      mintAddress: key,
-      rank: value.rank,
-      forSale: true,
-      collectionId: value.collectionId,
-      name: value.name,
-      collectionSymbol: symbol,
-      price: value.price,
+      updateOne: {
+        filter: { mintAddress: key },
+        update: {
+          $set: {
+            mintAddress: key,
+            collectionSymbol: symbol,
+            forSale: true,
+            price: value.price,
+            collectionId: value.collectionId,
+          },
+        },
+        upsert: true,
+      },
     };
     return rObj;
   });
-  Item.upsertMany(items).then(() => {}).catch((err) => { logger.error(`updateItemsFromData: ${err}`); });
+  Item.bulkWrite(items);
 };
 exports.updateItemsFromRarityMap = async (concatData) => {
-  console.log('Updating items....');
+  console.log('Updating items from rarity map....');
   const items = Array.from(concatData.entries(), ([key, value]) => {
     const rObj = {
       mintAddress: key,
-      attributes: value,
+      attributes: value.itemAttr,
+      rank: value.itemRank,
+      name: value.itemName,
     };
     return rObj;
   });
