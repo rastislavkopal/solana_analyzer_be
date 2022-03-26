@@ -19,7 +19,10 @@ const logger = require('../../../config/logger');
 const updateHolderTask = cron.schedule('0 * * * *', async () => {
   try {
     console.log('----------------JOB---update holders--------------');
-    const collections = await Collection.find({}, '_id symbol raritySymbol');
+    const collections = await Collection.find(
+      { raritySymbol: { $exists: true, $ne: null } },
+      '_id symbol raritySymbol',
+    );
 
     collections.forEach(async (it) => {
       const config = {
