@@ -17,7 +17,7 @@ function calculateChange(collectionTsNow, collectionsTs24hBefore, option) {
 
   const valNow = collectionTsNow.metadata[option];
   const valBefore = collectionsTs24hBefore.metadata[option];
-  if (valNow === valBefore) return `${change} %`;
+  if (valNow === valBefore) return Number(change);
 
   if (valNow > valBefore) {
     change = Number((valNow / valBefore) * 100 - 100);
@@ -28,7 +28,7 @@ function calculateChange(collectionTsNow, collectionsTs24hBefore, option) {
 
   // change.toFixed(2);
   change = Math.round(change * 100) / 100;
-  return `${change}%`;
+  return Number(change);
 }
 
 async function saveCollectionTimestampFromResponse(resp, image, name) {
