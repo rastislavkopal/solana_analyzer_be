@@ -62,15 +62,15 @@ const updateCollectionTask = cron.schedule('*/10 * * * *', async () => {
             upsert: true,
             rawResult: false,
           }, (err) => {
-            if (err) logger.info(err);
+            if (err) logger.error(`updateCollectionTask error 0:${err}`);
           });
         });
       })
       .catch((error) => {
-        logger.info(error.message);
+        logger.error(`updateCollectionTask error 1:${error}`);
       });
   } catch (error) {
-    logger.error(error);
+    logger.error(`updateCollectionTask error 2: ${error}`);
   }
 
   const collections = await Collection.find({});

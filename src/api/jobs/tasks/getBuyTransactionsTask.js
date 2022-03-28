@@ -4,7 +4,7 @@ const logger = require('../../../config/logger');
 const { agent } = require('../../utils/proxyGenerator');
 const Transaction = require('../../models/transaction.model');
 const Collection = require('../../models/collection.model');
-const Holder = require('../../models/holder.model');
+// const Holder = require('../../models/holder.model');
 const CollectionService = require('../../services/collection.service');
 
 // # ┌────────────── second (optional)
@@ -17,13 +17,35 @@ const CollectionService = require('../../services/collection.service');
 // # │ │ │ │ │ │
 // # * * * * * *
 
-async function saveTransaction(transaction, collectionId) {
+async function saveTransactions(concatData, collectionSymbol) {
+  /*
   const holder = await Holder.findOne({ collectionId, walletId: transaction.buyer }).exec();
   let isWhale = false;
   if (holder != null && holder.itemsCount > 7) {
     isWhale = true;
   }
-
+   */
+  const items = Array.from(concatData.entries(), ([key, value]) => {
+    const rObj = {
+      updateOne: {
+        filter: { signature: key },
+        update: {
+          $set: {
+            signature: key,
+            mintAddress: value.tokenMint,
+            collectionSymbol,
+            price: value.price,
+            buyer: value.buyer,
+            seller: value.seller,
+          },
+        },
+        upsert: true,
+      },
+    };
+    return rObj;
+  });
+  await Transaction.bulkWrite(items);
+  /*
   Transaction.updateOne(
     { signature: transaction.signature },
     {
@@ -39,12 +61,13 @@ async function saveTransaction(transaction, collectionId) {
     },
     { upsert: true, new: true, setDefaultsOnInsert: true },
   );
+   */
 }
 
-async function getBuyTransactions(symbol, offset = 0, limit = 500) {
+async function getBuyTransactions(symbol, offset = 0, limit = 100) {
   try {
-    const collection = await Collection.findOne({ symbol })
-      .exec();
+    const collection = await Collection.findOne({ symbol });
+    const concatData = new Map();
     const config = {
       url: String(
         `https://api-mainnet.magiceden.dev/v2/collections/${symbol}/activities?${offset}=0&limit=${limit}`,
@@ -58,12 +81,13 @@ async function getBuyTransactions(symbol, offset = 0, limit = 500) {
         }
         response.data.forEach((transaction) => {
           if (transaction.type === 'buyNow') {
-            saveTransaction(transaction, collection._id);
+            concatData.set(transaction.signature, transaction);
           }
         });
+        saveTransactions(concatData, collection.symbol);
       });
   } catch (error) {
-    logger.error(error);
+    logger.error(`getBuyTransactionsTask error 1: ${error}`);
   }
 }
 

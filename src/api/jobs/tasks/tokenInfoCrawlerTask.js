@@ -20,7 +20,7 @@ const updateItemsTask = cron.schedule('*/5 * * * * **', async () => {
     const result = await scrapToken();
     console.log(result);
   } catch (error) {
-    logger.error(error);
+    logger.error(`tokenInfoCrawlerTask error 1: ${error}`);
   }
 
   // logger.info(`Updated collections info: ${collections.length} .. items`);
