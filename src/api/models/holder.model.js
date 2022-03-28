@@ -11,13 +11,21 @@ const holderSchema = new mongoose.Schema({
     index: true,
     maxLength: 64,
   },
-  collectionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Collection',
-    index: true,
-    required: true,
-  },
-  itemsCount: Number,
+  collections: [{
+    symbol: {
+      type: String,
+      index: true,
+      required: true,
+    },
+    itemsCount: Number,
+    isWhale: {
+      type: Boolean,
+      default() {
+        return this.itemsCount > 6;
+      },
+    },
+  }],
+
 });
 
 /**

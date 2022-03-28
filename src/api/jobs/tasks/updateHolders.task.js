@@ -50,7 +50,7 @@ const updateHolderTask = cron.schedule('0 * * * *', async () => {
           });
         })
         .catch((error) => {
-          logger.error(error);
+          logger.error(`updateHolderTask${error}`);
         });
     });
   } catch (error) {

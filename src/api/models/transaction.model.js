@@ -24,10 +24,9 @@ const transactionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  collectionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Collection',
-    required: true,
+  collectionSymbol: {
+    type: String,
+    index: true,
   },
   price: Number,
   isWhale: Boolean,
