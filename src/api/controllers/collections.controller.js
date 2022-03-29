@@ -74,9 +74,7 @@ exports.collectionStats = async (req, res, next) => {
           metadata: { $first: '$metadata' },
         },
       },
-    ], {
-      allowDiskUse: true,
-    });
+    ]).option({ allowDiskUse: true });
     /*
     image: "metadata.image",
           floorPrice: "metadata.floorPrice",
