@@ -29,9 +29,9 @@ exports.listHolders = async (req, res, next) => {
       res.json('Collection not found');
     }
 
-    const { _id } = req.locals.collection;
+    const { symbol } = req.locals.collection;
 
-    const collectionHolders = await Holder.find({ collectionId: _id }, '-_id walletId itemsCount');
+    const collectionHolders = await Holder.find({ 'collections.symbol': symbol }, '-_id walletId itemsCount');
     res.json(collectionHolders);
   } catch (error) {
     next(error);
@@ -49,12 +49,12 @@ exports.getHoldersCount = async (req, res, next) => {
       res.json('Collection not found');
     }
 
-    const { _id, symbol } = req.locals.collection;
+    const { symbol } = req.locals.collection;
 
     // find owners of collection where itemsCount is greater than 0
     const collectionHolders = await Holder.find({
       $and: [
-        { collectionId: _id },
+        { 'collections.symbol': symbol },
         { itemsCount: { $gt: 0 } },
       ],
     });
@@ -84,11 +84,11 @@ exports.getWhalesList = async (req, res, next) => {
     if (req.query.limit) limit = req.query.limit;
     if (req.query.treshold) treshold = req.query.treshold;
 
-    const { _id } = req.locals.collection;
+    const { symbol } = req.locals.collection;
 
     const collectionHolders = await Holder.find({
       $and: [
-        { collectionId: _id },
+        { 'collections.symbol': symbol },
         { itemsCount: { $gt: treshold } },
       ],
     }, '-_id walletId itemsCount').limit(limit);

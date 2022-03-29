@@ -111,7 +111,6 @@ async function updateItemsOf(symbol) {
                   listedFor: null,
                   rank,
                   collectionSymbol: symbol,
-                  collectionId: collection._id,
                   name: it.title,
                 });
               });
@@ -131,8 +130,8 @@ async function updateItemsOf(symbol) {
   }
 }
 // '*/5 * * * *'
-const updateItemsTask = cron.schedule('* * * * *', async () => {
-  console.log('ListedPriceDistribution-JOB---');
+const updateItemsTask1hr = cron.schedule('0 * * * *', async () => {
+  console.log('updateItemsTask1hr-JOB---');
   const activeCollections = await CollectionService.loadActive();
   console.log(`Active: ${JSON.stringify(activeCollections)}`);
   if (Object.keys(activeCollections).length > 0) {
@@ -142,4 +141,4 @@ const updateItemsTask = cron.schedule('* * * * *', async () => {
   }
 });
 
-module.exports = updateItemsTask;
+module.exports = updateItemsTask1hr;

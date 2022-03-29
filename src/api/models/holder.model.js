@@ -11,6 +11,7 @@ const holderSchema = new mongoose.Schema({
     index: true,
     maxLength: 64,
   },
+  collectionId: String,
   collections: [{
     symbol: {
       type: String,

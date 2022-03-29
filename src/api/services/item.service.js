@@ -13,7 +13,6 @@ exports.updateItemsFromMap = async (concatData, symbol) => {
             collectionSymbol: symbol,
             forSale: true,
             price: value.price,
-            collectionId: value.collectionId,
           },
         },
         upsert: true,

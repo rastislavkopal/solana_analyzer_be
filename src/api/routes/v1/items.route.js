@@ -15,7 +15,7 @@ router
   .get(controller.listItems);
 
 router
-  .route('/:symbol/item/all/:rank')
-  .get(controller.listItemsBellowRank);
+  .route('/:symbol/item/')
+  .get(controller.test);
 
 module.exports = router;

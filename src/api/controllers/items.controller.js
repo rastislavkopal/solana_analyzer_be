@@ -3,8 +3,10 @@
 // const httpStatus = require('http-status');
 // const { response } = require('express');
 // const httpStatus = require('http-status');
+const axios = require('axios');
 const Collection = require('../models/collection.model');
 const Item = require('../models/item.model');
+const { agent } = require('../utils/proxyGenerator');
 // const logger = require('../../config/logger');
 // const { agent } = require('../utils/proxyGenerator');
 // const CollectionTs = require('../models/collectionTs.model');
@@ -48,6 +50,25 @@ exports.listItemsBellowRank = async (req, res, next) => {
     const items = await Item.find({ collectionSymbol, rank: { $lte: rank } }).sort({ listedFor: 1 }).limit(5);
     res.setHeader('Content-Type', 'application/json');
     res.json(items);
+  } catch (error) {
+    next(error);
+  }
+};
+exports.test = async (req, res, next) => {
+  try {
+    console.log(`symb: ${req.params.symbol}`);
+    const t = encodeURIComponent(`{"$match":{"collectionSymbol":"${req.params.symbol}"},"$sort":{"takerAmount":1,"createdAt":-1},"$skip":500,"$limit":500,"status":["all"]}`);
+    const config = {
+      url: `https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q=${t}`,
+      httpsAgent: agent,
+    };
+    console.log(`URL: ${config.url}`);
+    axios.request(config).then((response) => {
+      const { results } = response.data;
+      console.log(results[0]);
+      res.setHeader('Content-Type', 'application/json');
+      res.json(results.length);
+    });
   } catch (error) {
     next(error);
   }
