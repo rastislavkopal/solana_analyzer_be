@@ -40,7 +40,6 @@ const updateHolderTask = cron.schedule('0 * * * *', async () => {
           Object.keys(owners).forEach(async (key) => {
             await Holder.findOneAndUpdate({
               walletId: owners[key],
-              collectionId: it._id,
             }, {
               $inc: { itemsCount: 1 },
             }, {

@@ -2,8 +2,6 @@ const axios = require('axios');
 const Collection = require('../models/collection.model');
 const Item = require('../models/item.model');
 const Transaction = require('../models/transaction.model');
-const Holder = require('../models/holder.model');
-const { agent } = require('../utils/proxyGenerator');
 
 exports.load = async (req, res, next, symbol) => {
   try {
@@ -19,10 +17,11 @@ exports.getLastBigSales = async (req, res, next) => {
   try {
     const { collection } = req.locals;
     const { number } = req.params;
+    const { symbol } = req.params;
     // testing purposes only
     // await Transaction.remove({}).exec();
     const transactions = await Transaction.find({
-      collectionId: collection._id,
+      collectionSymbol: symbol,
     }).sort({ price: -1 })
       .limit(Number(number))
       .exec();
