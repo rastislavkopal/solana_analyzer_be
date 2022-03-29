@@ -32,7 +32,7 @@ const updateHolderTask = cron.schedule('0 * * * *', async () => {
 
       axios.request(config)
         .then(async (resp) => {
-          await Holder.updateMany({ collectionId: it._id },
+          await Holder.updateMany({ 'collections.symbol': it.symbol },
             { $set: { itemsCount: 0 } });
 
           const { owners } = resp.data.result.data;
