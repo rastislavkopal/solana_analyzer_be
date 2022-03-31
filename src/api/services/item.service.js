@@ -20,7 +20,7 @@ exports.updateItemsFromMap = async (concatData, symbol) => {
     };
     return rObj;
   });
-  await Item.bulkWrite(items);
+  Item.bulkWrite(items);
 };
 exports.updateItemsFromRarityMap = async (concatData) => {
   console.log('Updating items from rarity map....');

@@ -1,11 +1,9 @@
 const cron = require('node-cron');
-// const mongoose = require('mongoose');
 const axios = require('axios');
 const Collection = require('../../models/collection.model');
 const Holder = require('../../models/holder.model');
 const { agent } = require('../../utils/proxyGenerator');
 const logger = require('../../../config/logger');
-const Item = require('../../models/item.model');
 
 // # ┌────────────── second (optional)
 // # │ ┌──────────── minute
@@ -16,9 +14,6 @@ const Item = require('../../models/item.model');
 // # │ │ │ │ │ │
 // # │ │ │ │ │ │
 // # * * * * * *
-function logMapElements(value, key, map) {
-  console.log(`map.get('${key}') = ${value}`);
-}
 
 const updateHolderTask = cron.schedule('* * * * *', async () => {
   try {
@@ -33,23 +28,20 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
         url: String(`https://howrare.is/api/v0.1/collections/${it.raritySymbol}/owners`),
         httpsAgent: agent,
       };
-
-      axios.request(config)
+      const concatData = new Map();
+      const ids = [];
+      await axios.request(config)
         .then(async (resp) => {
           const { owners } = resp.data.result.data;
-          const concatData = new Map();
           // eslint-disable-next-line no-restricted-syntax
           Object.values(owners).forEach((value) => {
             if (concatData.get(value)) {
               concatData.set(value, concatData.get(value) + 1);
-            } else concatData.set(value, 1);
+            } else {
+              ids.push(value);
+              concatData.set(value, 1);
+            }
           });
-          /*
-          console.log('IKRRR');
-          Object.values(concatData).forEach((value) => {
-            console.log(value);
-          });
-           */
           // concatData.forEach(logMapElements);
           /*
           const items = Array.from(owners.entries(), ([key, value]) => {
@@ -88,6 +80,41 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
         .catch((error) => {
           logger.error(`updateHolderTask error 1: ${error}`);
         });
+      const holders = await Holder.find({ 'collections.symbol': it.symbol }, 'walletId');
+      const hld = holders.map((holder) => holder.walletId);
+      const difference = ids.filter((x) => !hld.includes(x));
+      if (difference.length > 0) {
+        console.log(it.symbol);
+        const items = difference.map((id) => {
+          const item = {
+            insertOne: {
+              document: {
+                walletId: id,
+                collections: {
+                  symbol: it.symbol,
+                },
+              },
+            },
+          };
+          return item;
+        });
+        await Holder.bulkWrite(items);
+      }
+      const itemCount = Array.from(concatData.entries(), ([key, value]) => {
+        const rObj = {
+          updateOne: {
+            filter: { walletId: key, 'collections.symbol': it.symbol },
+            update: {
+              $set: {
+                'collections.$.itemsCount': value,
+              },
+            },
+            upsert: true,
+          },
+        };
+        return rObj;
+      });
+      await Holder.bulkWrite(itemCount);
     });
   } catch (error) {
     logger.error(`updateHolderTask error 2: ${error}`);
