@@ -18,7 +18,10 @@ const holderSchema = new mongoose.Schema({
       index: true,
       required: true,
     },
-    itemsCount: Number,
+    itemsCount: {
+      type: Number,
+      default: 0,
+    },
     isWhale: {
       type: Boolean,
       default() {
