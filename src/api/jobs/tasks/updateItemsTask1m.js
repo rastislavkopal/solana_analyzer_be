@@ -10,14 +10,15 @@ const CollectionService = require('../../services/collection.service');
 const ItemService = require('../../services/item.service');
 
 async function updateListingTime(ids) {
+  console.log('Updating listedFor of items');
   const concatData = new Map();
-  await ids.forEach(async (id) => {
+  await Promise.all(ids.map(async (id) => {
     const config = {
       url: String(`https://api-mainnet.magiceden.io/rpc/getGlobalActivitiesByQuery?q={"$match":{"mint":"${id}"},"$sort":{"blockTime":-1,"createdAt":-1},"$skip":0}`),
       httpsAgent: agent,
     };
-    axios.request(config)
-      .then(async (periodResponse) => {
+    return axios.request(config)
+      .then((periodResponse) => {
         if (periodResponse.code === 'ECONNRESET' || periodResponse.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
         const { results } = periodResponse.data;
         results.every((it) => {
@@ -32,27 +33,26 @@ async function updateListingTime(ids) {
           }
           return true;
         });
-        console.log('About to update listedFor');
-        const items = Array.from(concatData.entries(), ([key, value]) => {
-          const rObj = {
-            updateOne: {
-              filter: { mintAddress: key },
-              update: {
-                $set: {
-                  listedFor: value,
-                },
-              },
-              upsert: true,
-            },
-          };
-          return rObj;
-        });
-        Item.bulkWrite(items);
       })
       .catch((error) => {
         logger.error(`updateListingTime1m error 1: ${error}`);
       });
+  }));
+  const items = Array.from(concatData.entries(), ([key, value]) => {
+    const rObj = {
+      updateOne: {
+        filter: { mintAddress: key },
+        update: {
+          $set: {
+            listedFor: value,
+          },
+        },
+        upsert: true,
+      },
+    };
+    return rObj;
   });
+  Item.bulkWrite(items);
 }
 async function updateItemsOf(symbol) {
   try {
@@ -86,9 +86,9 @@ async function updateItemsOf(symbol) {
     } else step = remainder;
 
     let index = 0;
-    const concatData = new Map();
-    const ids = [];
     for (let i = 0; i < iterations; i += 1) {
+      const concatData = new Map();
+      const ids = [];
       const config = {
         url: String(`https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q={"$match":{"collectionSymbol":"${symbol}"},"$sort":{"takerAmount":1,"createdAt":-1},"$skip":${index},"$limit":${step}}`),
         httpsAgent: agent,

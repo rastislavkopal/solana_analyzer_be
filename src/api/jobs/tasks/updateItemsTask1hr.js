@@ -10,14 +10,15 @@ const CollectionService = require('../../services/collection.service');
 const ItemService = require('../../services/item.service');
 
 async function updateListingTime(ids) {
+  console.log('Updating listedFor of items');
   const concatData = new Map();
-  await ids.forEach(async (id) => {
+  await Promise.all(ids.map(async (id) => {
     const config = {
       url: String(`https://api-mainnet.magiceden.io/rpc/getGlobalActivitiesByQuery?q={"$match":{"mint":"${id}"},"$sort":{"blockTime":-1,"createdAt":-1},"$skip":0}`),
       httpsAgent: agent,
     };
-    axios.request(config)
-      .then(async (periodResponse) => {
+    return axios.request(config)
+      .then((periodResponse) => {
         if (periodResponse.code === 'ECONNRESET' || periodResponse.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
         const { results } = periodResponse.data;
         results.every((it) => {
@@ -32,26 +33,26 @@ async function updateListingTime(ids) {
           }
           return true;
         });
-        const items = Array.from(concatData.entries(), ([key, value]) => {
-          const rObj = {
-            updateOne: {
-              filter: { mintAddress: key },
-              update: {
-                $set: {
-                  listedFor: value,
-                },
-              },
-              upsert: true,
-            },
-          };
-          return rObj;
-        });
-        Item.bulkWrite(items);
       })
       .catch((error) => {
         logger.error(`updateListingTime1hr error 1: ${error}`);
       });
+  }));
+  const items = Array.from(concatData.entries(), ([key, value]) => {
+    const rObj = {
+      updateOne: {
+        filter: { mintAddress: key },
+        update: {
+          $set: {
+            listedFor: value,
+          },
+        },
+        upsert: true,
+      },
+    };
+    return rObj;
   });
+  Item.bulkWrite(items);
 }
 async function updateItemsOf(symbol) {
   try {
@@ -86,9 +87,9 @@ async function updateItemsOf(symbol) {
     const remainder = listedCount % 20;
     let index = 0;
     let step = remainder;
-    const concatData = new Map();
-    const ids = [];
     for (let h = 0; h < batches; h += 1) {
+      const concatData = new Map();
+      const ids = [];
       if (h === batches - 1 && iterationRemainder !== 0) iterations %= 10;
       else iterations = 10;
       console.log(`UpdateItems--${symbol}--BATCH--${h}--`);
