@@ -1,4 +1,3 @@
-/* eslint-disable no-throw-literal,max-len */
 const cron = require('node-cron');
 const axios = require('axios');
 const CollectionTs = require('../../models/collectionTs.model');
@@ -10,47 +9,50 @@ const Collection = require('../../models/collection.model');
 const CollectionService = require('../../services/collection.service');
 const ItemService = require('../../services/item.service');
 
-// const collectionSymbolList = ['888_anon_club'];
-
 async function updateListingTime(ids) {
+  console.log('Updating listedFor of items');
   const concatData = new Map();
-  await ids.forEach(async (id) => {
+  await Promise.all(ids.map(async (id) => {
     const config = {
       url: String(`https://api-mainnet.magiceden.io/rpc/getGlobalActivitiesByQuery?q={"$match":{"mint":"${id}"},"$sort":{"blockTime":-1,"createdAt":-1},"$skip":0}`),
       httpsAgent: agent,
     };
-    axios.request(config)
-      .then(async (periodResponse) => {
+    return axios.request(config)
+      .then((periodResponse) => {
         if (periodResponse.code === 'ECONNRESET' || periodResponse.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
         const { results } = periodResponse.data;
-        results.forEach(async (it) => {
+        results.every((it) => {
           let listedFor;
           if (it.txType === 'initializeEscrow') {
             const timeDiff = (new Date(Date.now()) - Date.parse(it.createdAt));
-            const inHours = Number(timeDiff / 3600000)
+            const inMinutes = Number(timeDiff / 60000)
               .toFixed(2);
-            if (inHours < 1) {
-              listedFor = '< 1 hour';
-            } else {
-              listedFor = `${inHours} hours`;
-            }
+            listedFor = inMinutes;
             concatData.set(it.mint, listedFor);
+            return false;
           }
+          return true;
         });
       })
       .catch((error) => {
-        logger.error(`updateListingTime error 1: ${error}`);
+        logger.error(`updateListingTime1m error 1: ${error}`);
       });
-    // eslint-disable-next-line no-shadow
-    const items = Array.from(concatData.entries(), ([key, value]) => {
-      const rObj = {
-        mintAddress: key,
-        listedFor: value,
-      };
-      return rObj;
-    });
-    Item.upsertMany(items).then(() => {}).catch((err) => { logger.error(`updateListingTime error 2: ${err}`); });
+  }));
+  const items = Array.from(concatData.entries(), ([key, value]) => {
+    const rObj = {
+      updateOne: {
+        filter: { mintAddress: key },
+        update: {
+          $set: {
+            listedFor: value,
+          },
+        },
+        upsert: true,
+      },
+    };
+    return rObj;
   });
+  Item.bulkWrite(items);
 }
 async function updateItemsOf(symbol) {
   try {
@@ -58,7 +60,7 @@ async function updateItemsOf(symbol) {
     const limit = 100;
 
     if (!collection) {
-      logger.error(`listedPriceDistributionTask---${symbol}---Collection not found`);
+      logger.error(`listedPriceDistributionTask1m---${symbol}---Collection not found`);
     }
     const collectionTs = await CollectionTs.find({ 'metadata.symbol': symbol }, '-_id metadata timestamp')
       .sort({ timestamp: -1 })
@@ -67,26 +69,26 @@ async function updateItemsOf(symbol) {
     const { listedCount } = collectionTs[0].metadata;
     if (listedCount > 300 || !listedCount) {
       // Add more unsupported cases ( E.g. cooldown on this function )
-      logger.error(`listedPriceDistributionTask---${symbol}---Collection of this size is unsupported(${listedCount})`);
+      logger.error(`listedPriceDistributionTask1m---${symbol}---Collection of this size is unsupported(${listedCount})`);
       return;
     }
     const { raritySymbol } = collection;
     const rarityResp = await RaritySheet.findOne({ raritySymbol });
     if (!rarityResp) {
-      logger.error(`listedPriceDistributionTask---${symbol}---RaritySheet not found!`);
+      logger.error(`listedPriceDistributionTask1m---${symbol}---RaritySheet not found!`);
     }
     let iterations = Math.ceil(listedCount / 20);
     const remainder = listedCount % 20;
     let step;
-    if (iterations > 2) {
-      iterations = 2;
+    if (iterations > 3) {
+      iterations = 3;
       step = 20;
     } else step = remainder;
 
     let index = 0;
-    const concatData = new Map();
-    const ids = [];
     for (let i = 0; i < iterations; i += 1) {
+      const concatData = new Map();
+      const ids = [];
       const config = {
         url: String(`https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q={"$match":{"collectionSymbol":"${symbol}"},"$sort":{"takerAmount":1,"createdAt":-1},"$skip":${index},"$limit":${step}}`),
         httpsAgent: agent,
@@ -114,13 +116,13 @@ async function updateItemsOf(symbol) {
           }
         })
         .catch((error) => {
-          logger.error(`updateItemsOf error 1: ${error}`);
+          logger.error(`updateItemsOf1m error 1: ${error}`);
         });
       index += step;
       step = 20;
     }
   } catch (error) {
-    logger.error(`updateItemsOf error 5: ${error}`);
+    logger.error(`updateItemsOf1m error 5: ${error}`);
   }
 }
 // '*/5 * * * *'

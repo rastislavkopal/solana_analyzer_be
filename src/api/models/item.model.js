@@ -24,6 +24,7 @@ const ItemSchema = new mongoose.Schema({
     value: String,
     rarity: Number,
   }],
+  // In minutes
   listedFor: Number,
   rank: {
     type: Number,
