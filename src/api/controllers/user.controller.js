@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { omit } = require('lodash');
 const User = require('../models/user.model');
+const logger = require('../../config/logger');
 
 /**
  * Load user and append to req.
@@ -12,7 +13,8 @@ exports.load = async (req, res, next, id) => {
     req.locals = { user };
     return next();
   } catch (error) {
-    return next(error);
+    logger.error(`user.controller load() error: ${error}`);
+    return null;
   }
 };
 

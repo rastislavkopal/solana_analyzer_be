@@ -7,6 +7,7 @@ const PasswordResetToken = require('../models/passwordResetToken.model');
 const { jwtExpirationInterval } = require('../../config/vars');
 const APIError = require('../errors/api-error');
 const emailProvider = require('../services/emails/emailProvider');
+const logger = require('../../config/logger');
 
 /**
  * Returns a formated object with tokens
@@ -52,7 +53,8 @@ exports.login = async (req, res, next) => {
     const userTransformed = user.transform();
     return res.json({ token, user: userTransformed });
   } catch (error) {
-    return next(error);
+    logger.error(`auth.controller login() error: ${error}`);
+    return null;
   }
 };
 
@@ -69,7 +71,8 @@ exports.oAuth = async (req, res, next) => {
     const userTransformed = user.transform();
     return res.json({ token, user: userTransformed });
   } catch (error) {
-    return next(error);
+    logger.error(`auth.controller oAuth() error: ${error}`);
+    return null;
   }
 };
 
@@ -88,7 +91,8 @@ exports.refresh = async (req, res, next) => {
     const response = generateTokenResponse(user, accessToken);
     return res.json(response);
   } catch (error) {
-    return next(error);
+    logger.error(`auth.controller refresh() error: ${error}`);
+    return null;
   }
 };
 
@@ -108,7 +112,8 @@ exports.sendPasswordReset = async (req, res, next) => {
       message: 'No account found with that email',
     });
   } catch (error) {
-    return next(error);
+    logger.error(`auth.controller sendPasswordReset() error: ${error}`);
+    return null;
   }
 };
 
@@ -141,6 +146,7 @@ exports.resetPassword = async (req, res, next) => {
     res.status(httpStatus.OK);
     return res.json('Password Updated');
   } catch (error) {
-    return next(error);
+    logger.error(`auth.controller resetPassword() error: ${error}`);
+    return null;
   }
 };

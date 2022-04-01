@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const Collection = require('../models/collection.model');
 const CollectionTs = require('../models/collectionTs.model');
 const service = require('../services/collection.service');
+const logger = require('../../config/logger');
 
 /**
  * Load collection and append to req.
@@ -13,7 +14,8 @@ exports.load = async (req, res, next, symbol) => {
     req.locals = { collection };
     return next();
   } catch (error) {
-    return next(error);
+    logger.error(`collections.controller load() error:${error}`);
+    return null;
   }
 };
 

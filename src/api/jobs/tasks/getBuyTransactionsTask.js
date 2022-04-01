@@ -24,6 +24,7 @@ async function saveTransactions(concatData, collectionSymbol) {
     isWhale = true;
   }
    */
+  // TODO: implement isWhale evaluation
   const items = Array.from(concatData.entries(), ([key, value]) => {
     const rObj = {
       updateOne: {

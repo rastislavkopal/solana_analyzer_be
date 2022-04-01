@@ -7,6 +7,7 @@ const jwt = require('jwt-simple');
 const uuidv4 = require('uuid/v4');
 const APIError = require('../errors/api-error');
 const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
+const logger = require('../../config/logger');
 
 /**
 * User Roles
@@ -72,7 +73,8 @@ userSchema.pre('save', async function save(next) {
 
     return next();
   } catch (error) {
-    return next(error);
+    logger.error(`user.model pre() error: ${error}`);
+    return null;
   }
 });
 

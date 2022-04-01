@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const RaritySheet = require('../models/raritySheet.model');
 const service = require('../services/collection.service');
 const Collection = require('../models/collection.model');
+const logger = require('../../config/logger');
 
 /**
  * Load collection and append to req.
@@ -14,7 +15,8 @@ exports.load = async (req, res, next, raritySymbol) => {
     req.locals = { collection };
     return next();
   } catch (error) {
-    return next(error);
+    logger.error(`rarity.controller load() error:${error}`);
+    return null;
   }
 };
 

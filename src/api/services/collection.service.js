@@ -123,6 +123,7 @@ exports.loadActive = async (req, res, next) => {
     const collectionSymbolList = activeCollections.map((collection) => collection.symbol);
     return collectionSymbolList;
   } catch (error) {
-    return next(error);
+    logger.error(`collection.service loadActive() error: ${error}`);
+    return null;
   }
 };

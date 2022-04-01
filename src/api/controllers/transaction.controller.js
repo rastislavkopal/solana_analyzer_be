@@ -2,6 +2,7 @@ const axios = require('axios');
 const Collection = require('../models/collection.model');
 const Item = require('../models/item.model');
 const Transaction = require('../models/transaction.model');
+const logger = require('../../config/logger');
 
 exports.load = async (req, res, next, symbol) => {
   try {
@@ -10,7 +11,8 @@ exports.load = async (req, res, next, symbol) => {
     req.locals = { collection };
     return next();
   } catch (error) {
-    return next(error);
+    logger.error(`transaction.controller load() error: ${error}`);
+    return null;
   }
 };
 exports.getLastBigSales = async (req, res, next) => {
