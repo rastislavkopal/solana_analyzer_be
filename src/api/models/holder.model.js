@@ -12,24 +12,22 @@ const holderSchema = new mongoose.Schema({
     maxLength: 64,
   },
   collectionId: String,
-  collections: [{
-    symbol: {
-      itemsCount: {
-        type: Number,
-        default: 0,
-      },
-      type: String,
-      index: true,
-      required: true,
-    },
-    isWhale: {
-      type: Boolean,
-      default() {
-        return this.itemsCount > 6;
-      },
-    },
-  }],
 
+  itemsCount: {
+    type: Number,
+    default: 0,
+  },
+  symbol: {
+    type: String,
+    index: true,
+    required: true,
+  },
+  isWhale: {
+    type: Boolean,
+    default() {
+      return this.itemsCount > 6;
+    },
+  },
 });
 
 /**
