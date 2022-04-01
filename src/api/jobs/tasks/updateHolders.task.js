@@ -42,45 +42,11 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
               concatData.set(value, 1);
             }
           });
-          // concatData.forEach(logMapElements);
-          /*
-          const items = Array.from(owners.entries(), ([key, value]) => {
-            const rObj = {
-              updateOne: {
-                filter: { walletId: value, 'collections.symbol': it.symbol },
-                update: {
-                  $inc: { 'collections.itemsCount': 1 },
-                },
-                upsert: true,
-              },
-            };
-            return rObj;
-          });
-          await Holder.bulkWrite(items);
-
-           */
-          /*
-          await Holder.updateMany({ 'collections.symbol': it.symbol },
-            { $set: { itemsCount: 0 } });
-
-          const { owners } = resp.data.result.data;
-
-          Object.keys(owners).forEach(async (key) => {
-            await Holder.findOneAndUpdate({
-              walletId: owners[key],
-            }, {
-              $inc: { 'collections.itemsCount': 1 },
-            }, {
-              new: true,
-              upsert: true,
-            });
-          });
-           */
         })
         .catch((error) => {
           logger.error(`updateHolderTask error 1: ${error}`);
         });
-      const holders = await Holder.find({ 'collections.symbol': it.symbol }, 'walletId');
+      const holders = await Holder.find({ symbol: it.symbol }, 'walletId');
       const hld = holders.map((holder) => holder.walletId);
       const difference = ids.filter((x) => !hld.includes(x));
       if (difference.length > 0) {
@@ -90,9 +56,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
             insertOne: {
               document: {
                 walletId: id,
-                collections: {
-                  symbol: it.symbol,
-                },
+                symbol: it.symbol,
               },
             },
           };
@@ -103,10 +67,10 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
       const itemCount = Array.from(concatData.entries(), ([key, value]) => {
         const rObj = {
           updateOne: {
-            filter: { walletId: key, 'collections.symbol': it.symbol },
+            filter: { walletId: key, symbol: it.symbol },
             update: {
               $set: {
-                'collections.$.itemsCount': value,
+                itemsCount: value,
               },
             },
             upsert: true,
@@ -114,7 +78,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
         };
         return rObj;
       });
-      await Holder.bulkWrite(itemCount);
+      Holder.bulkWrite(itemCount);
     });
   } catch (error) {
     logger.error(`updateHolderTask error 2: ${error}`);
