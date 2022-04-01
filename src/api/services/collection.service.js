@@ -117,7 +117,7 @@ exports.removeCollectionRarityIfNotExists = async (raritySymbol, collectionSymbo
   return null;
 };
 
-exports.loadActive = async (req, res, next) => {
+exports.loadActive = async () => {
   try {
     const activeCollections = await Collection.find({ active: true });
     const collectionSymbolList = activeCollections.map((collection) => collection.symbol);

@@ -11,8 +11,7 @@ exports.load = async (req, res, next, symbol) => {
     req.locals = { collection };
     return next();
   } catch (error) {
-    logger.error(`transaction.controller load() error: ${error}`);
-    return null;
+    return next(error);
   }
 };
 exports.getLastBigSales = async (req, res, next) => {

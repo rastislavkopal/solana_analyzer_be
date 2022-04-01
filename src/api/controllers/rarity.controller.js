@@ -15,8 +15,7 @@ exports.load = async (req, res, next, raritySymbol) => {
     req.locals = { collection };
     return next();
   } catch (error) {
-    logger.error(`rarity.controller load() error:${error}`);
-    return null;
+    return next(error);
   }
 };
 

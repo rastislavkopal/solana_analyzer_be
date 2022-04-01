@@ -15,8 +15,7 @@ exports.load = async (req, res, next, symbol) => {
     req.locals = { collection };
     return next();
   } catch (error) {
-    logger.error(`holders.controller load()error:${error}`);
-    return null;
+    return next(error);
   }
 };
 
