@@ -1,4 +1,3 @@
-const axios = require('axios');
 const Collection = require('../models/collection.model');
 const Item = require('../models/item.model');
 const Transaction = require('../models/transaction.model');
@@ -17,10 +16,11 @@ exports.load = async (req, res, next, symbol) => {
 exports.getLastBigSales = async (req, res, next) => {
   try {
     const { collection } = req.locals;
-    const { number } = req.params;
+    let { number } = req.params;
     const { symbol } = req.params;
     // testing purposes only
     // await Transaction.remove({}).exec();
+    if (number > 20) number = 20;
     const transactions = await Transaction.find({
       collectionSymbol: symbol,
     }).sort({ price: -1 })
@@ -36,6 +36,23 @@ exports.getLastBigSales = async (req, res, next) => {
 
     res.setHeader('Content-Type', 'application/json');
     res.json(items);
+  } catch (error) {
+    next(error);
+  }
+};
+exports.getLastSales = async (req, res, next) => {
+  try {
+    let { number } = req.params;
+    const { symbol } = req.params;
+    if (number > 20) number = 20;
+
+    const transactions = await Transaction.find({
+      collectionSymbol: symbol,
+    }).sort({ createdAt: -1 })
+      .limit(Number(number));
+
+    res.setHeader('Content-Type', 'application/json');
+    res.json(transactions);
   } catch (error) {
     next(error);
   }

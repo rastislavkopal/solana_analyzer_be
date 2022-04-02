@@ -34,7 +34,7 @@ const transactionSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    index: { expires: '24h' },
+    index: { expires: '7d' },
   },
 });
 

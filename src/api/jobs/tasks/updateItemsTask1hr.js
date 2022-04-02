@@ -54,6 +54,32 @@ async function updateListingTime(ids) {
   });
   Item.bulkWrite(items);
 }
+
+async function updateForSale(allIDs, symbol) {
+  const itemsResult = await Item.find({ mintAddress: allIDs, collectionSymbol: symbol });
+  const itemsResultArray = itemsResult.map((item) => item.mintAddress);
+
+  const allItemsResult = await Item.find({ collectionSymbol: symbol });
+  const allItemsArray = allItemsResult.map((item) => item.mintAddress);
+
+  const difference = allItemsArray.filter((x) => !itemsResultArray.includes(x));
+
+  const items = difference.map((id) => {
+    const rObj = {
+      updateOne: {
+        filter: { mintAddress: id },
+        update: {
+          $set: {
+            forSale: false,
+          },
+        },
+      },
+    };
+    return rObj;
+  });
+  Item.bulkWrite(items);
+}
+
 async function updateItemsOf(symbol) {
   try {
     const collection = await Collection.findOne({ symbol }).exec();
@@ -87,6 +113,7 @@ async function updateItemsOf(symbol) {
     const remainder = listedCount % 20;
     let index = 0;
     let step = remainder;
+    const allIDs = [];
     for (let h = 0; h < batches; h += 1) {
       const concatData = new Map();
       const ids = [];
@@ -116,6 +143,7 @@ async function updateItemsOf(symbol) {
                   name: it.title,
                 });
               });
+              allIDs.push(ids);
               await ItemService.updateItemsFromMap(concatData, symbol);
               updateListingTime(ids);
             }
@@ -127,6 +155,7 @@ async function updateItemsOf(symbol) {
         step = 20;
       }
     }
+    updateForSale(allIDs, symbol);
   } catch (error) {
     logger.error(`updateItemsOf1hr error 5: ${error}`);
   }

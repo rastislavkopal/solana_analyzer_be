@@ -64,8 +64,20 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
       }
 
       if (toAdd.length > 0) {
+        const items = toAdd.map((id) => {
+          const item = {
+            insertOne: {
+              document: {
+                walletId: id,
+                symbol: it.symbol,
+              },
+            },
+          };
+          return item;
+        }).filter((notUndefined) => notUndefined !== undefined);
+        /*
         const items = toAdd.flatMap((id) => {
-          if (id !== undefined || id === '') {
+          if (id !== undefined || id !== '' || id !== 'undefined') {
             const item = {
               insertOne: {
                 document: {
@@ -77,6 +89,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
             return [item];
           } return [];
         });
+         */
         await Holder.bulkWrite(items);
       }
 
