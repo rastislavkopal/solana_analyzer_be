@@ -5,6 +5,7 @@ const { agent } = require('../../utils/proxyGenerator');
 const Transaction = require('../../models/transaction.model');
 const Collection = require('../../models/collection.model');
 const CollectionService = require('../../services/collection.service');
+const Holder = require('../../models/holder.model');
 
 // # ┌────────────── second (optional)
 // # │ ┌──────────── minute
@@ -16,35 +17,44 @@ const CollectionService = require('../../services/collection.service');
 // # │ │ │ │ │ │
 // # * * * * * *
 
-async function saveTransactions(concatData, collectionSymbol) {
-  /*
-  const holder = await Holder.findOne({ collectionId, walletId: transaction.buyer }).exec();
-  let isWhale = false;
-  if (holder != null && holder.itemsCount > 7) {
-    isWhale = true;
-  }
-   */
-  // TODO: implement isWhale evaluation
-  const items = Array.from(concatData.entries(), ([key, value]) => {
-    const rObj = {
-      updateOne: {
-        filter: { signature: key },
-        update: {
-          $set: {
-            signature: key,
-            mintAddress: value.tokenMint,
-            collectionSymbol,
-            price: value.price,
-            buyer: value.buyer,
-            seller: value.seller,
+async function saveTransactions(concatData, collectionSymbol, walletIDs) {
+  const transactionSignatures = Array.from(concatData.keys());
+  const existingTransactionsQuery = await Transaction.find({ signature: transactionSignatures });
+  const existingTransactions = existingTransactionsQuery
+    .map((transaction) => transaction.signature);
+  const newTransactions = transactionSignatures.filter((x) => !existingTransactions.includes(x));
+
+  if (newTransactions.length > 0) {
+    const isWhaleMap = new Map();
+    const holders = await Holder.find({ walletId: walletIDs, symbol: collectionSymbol });
+    holders.forEach((it) => {
+      isWhaleMap.set(it.walletId, it.isWhale);
+    });
+    const items = Array.from(concatData.entries(), ([key, value]) => {
+      console.log('Whale? ');
+      console.log(isWhaleMap.get(value.buyer));
+      const rObj = {
+        updateOne: {
+          filter: { signature: key },
+          update: {
+            $set: {
+              signature: key,
+              mintAddress: value.tokenMint,
+              collectionSymbol,
+              price: value.price,
+              buyer: value.buyer,
+              seller: value.seller,
+              isWhale: isWhaleMap.get(value.buyer),
+            },
           },
+          upsert: true,
         },
-        upsert: true,
-      },
-    };
-    return rObj;
-  });
-  await Transaction.bulkWrite(items);
+      };
+      return rObj;
+    });
+    await Transaction.bulkWrite(items);
+  }
+
   /*
   Transaction.updateOne(
     { signature: transaction.signature },
@@ -64,10 +74,11 @@ async function saveTransactions(concatData, collectionSymbol) {
    */
 }
 
-async function getBuyTransactions(symbol, offset = 0, limit = 100) {
+async function getBuyTransactions(symbol, offset = 0, limit = 30) {
   try {
     const collection = await Collection.findOne({ symbol });
     const concatData = new Map();
+    const walletIDs = [];
     const config = {
       url: String(
         `https://api-mainnet.magiceden.dev/v2/collections/${symbol}/activities?${offset}=0&limit=${limit}`,
@@ -82,17 +93,18 @@ async function getBuyTransactions(symbol, offset = 0, limit = 100) {
         response.data.forEach((transaction) => {
           if (transaction.type === 'buyNow') {
             concatData.set(transaction.signature, transaction);
+            walletIDs.push(transaction.buyer);
           }
         });
-        saveTransactions(concatData, collection.symbol);
+        saveTransactions(concatData, collection.symbol, walletIDs);
       });
   } catch (error) {
     logger.error(`getBuyTransactionsTask error 1: ${error}`);
   }
 }
 
-// Updates list of collections and its information every 1 minute
-const getBuyTransactionsTask = cron.schedule('* * * * *', async () => {
+// Runs every 10 seconds
+const getBuyTransactionsTask = cron.schedule('*/10 * * * * *', async () => {
   console.log('Transaction-JOB---');
   const activeCollections = await CollectionService.loadActive();
   if (Object.keys(activeCollections).length > 0) {

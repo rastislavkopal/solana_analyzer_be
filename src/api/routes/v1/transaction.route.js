@@ -10,4 +10,8 @@ router
   .route('/:symbol/toptransactions/:number')
   .get(controller.getLastBigSales);
 
+router
+  .route('/:symbol/buytransactions/:number')
+  .get(controller.getLastSales);
+
 module.exports = router;
