@@ -46,13 +46,27 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
         .catch((error) => {
           logger.error(`updateHolderTask error 1: ${error}`);
         });
-      // TODO: implement removing holders
       const holders = await Holder.find({ symbol: it.symbol }, 'walletId');
       const hld = holders.map((holder) => holder.walletId);
-      const difference = ids.filter((x) => !hld.includes(x));
-      if (difference.length > 0) {
-        console.log(it.symbol);
-        const items = difference.map((id) => {
+      const toAdd = ids.filter((x) => !hld.includes(x));
+      const toRemove = hld.filter((x) => !ids.includes(x));
+      console.log('to remove: ');
+      console.log(JSON.stringify(toRemove));
+      if (toRemove.length > 0) {
+        const items = toAdd.map((id) => {
+          const item = {
+            deleteOne: {
+              filter: { walletId: id, symbol: it.symbol },
+            },
+          };
+          return item;
+        });
+        Holder.bulkWrite(items);
+      }
+
+      if (toAdd.length > 0) {
+        logger.info(JSON.stringify(toAdd));
+        const items = toAdd.map((id) => {
           const item = {
             insertOne: {
               document: {
@@ -65,13 +79,16 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
         });
         await Holder.bulkWrite(items);
       }
+
       const itemCount = Array.from(concatData.entries(), ([key, value]) => {
+        const isWhale = value > 6;
         const rObj = {
           updateOne: {
             filter: { walletId: key, symbol: it.symbol },
             update: {
               $set: {
                 itemsCount: value,
+                isWhale,
               },
             },
             upsert: true,
