@@ -50,8 +50,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
       const hld = holders.map((holder) => holder.walletId);
       const toAdd = ids.filter((x) => !hld.includes(x));
       const toRemove = hld.filter((x) => !ids.includes(x));
-      console.log('to remove: ');
-      console.log(JSON.stringify(toRemove));
+
       if (toRemove.length > 0) {
         const items = toAdd.map((id) => {
           const item = {
@@ -65,17 +64,18 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
       }
 
       if (toAdd.length > 0) {
-        logger.error(JSON.stringify(toAdd));
-        const items = toAdd.map((id) => {
-          const item = {
-            insertOne: {
-              document: {
-                walletId: id,
-                symbol: it.symbol,
+        const items = toAdd.flatMap((id) => {
+          if (id !== undefined) {
+            const item = {
+              insertOne: {
+                document: {
+                  walletId: id,
+                  symbol: it.symbol,
+                },
               },
-            },
-          };
-          return item;
+            };
+            return [item];
+          } return [];
         });
         await Holder.bulkWrite(items);
       }
