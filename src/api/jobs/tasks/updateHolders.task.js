@@ -65,7 +65,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
 
       if (toAdd.length > 0) {
         const items = toAdd.flatMap((id) => {
-          if (id !== undefined || id === '') {
+          if (id !== undefined || id !== '') {
             const item = {
               insertOne: {
                 document: {
