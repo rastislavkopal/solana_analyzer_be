@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const Collection = require('../models/collection.model');
 const CollectionTs = require('../models/collectionTs.model');
 const service = require('../services/collection.service');
+const logger = require('../../config/logger');
 
 /**
  * Load collection and append to req.
@@ -61,28 +62,17 @@ exports.listCollections = async (req, res, next) => {
 
 exports.collectionStats = async (req, res, next) => {
   try {
-    // const now = new Date(Date.now()).toISOString();
-    // const now5min = new Date(Date.now() - (300 * 1000)).toISOString();
-
+    const now = new Date(Date.now()).toISOString();
+    const now1min = new Date(Date.now() - (60 * 1000)).toISOString();
+    // eslint-disable-next-line max-len
     // const collectionTS_now = await CollectionTs.find({ timestamp: { $gt: now5min, $lte: now }},'-_id  name metadata timestamp');
-    const collectionTsNow = await CollectionTs.aggregate([
-      { $sort: { 'metadata.symbol': 1, timestamp: -1 } },
-      {
-        $group: {
-          _id: '$metadata.symbol',
-          timestamp: { $first: '$timestamp' },
-          metadata: { $first: '$metadata' },
+    const collectionTsNow = await CollectionTs.find({
+      timestamp:
+        {
+          $lte: now,
+          $gte: now1min,
         },
-      },
-    ]).option({ allowDiskUse: true });
-    /*
-    image: "metadata.image",
-          floorPrice: "metadata.floorPrice",
-          floorPriceChange: "metadata.floorPriceChange",
-          listedCount: "metadata.listedCount",
-          listedCountChange: "metadata.listedCountChange",
-          volume24hr: "metadata.volume24hr",
-     */
+    }).sort('floorPrice');
     res.json(collectionTsNow);
   } catch (error) {
     next(error);

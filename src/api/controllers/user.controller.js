@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { omit } = require('lodash');
 const User = require('../models/user.model');
+const logger = require('../../config/logger');
 
 /**
  * Load user and append to req.

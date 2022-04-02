@@ -7,6 +7,7 @@ const axios = require('axios');
 const Collection = require('../models/collection.model');
 const Item = require('../models/item.model');
 const { agent } = require('../utils/proxyGenerator');
+const logger = require('../../config/logger');
 // const logger = require('../../config/logger');
 // const { agent } = require('../utils/proxyGenerator');
 // const CollectionTs = require('../models/collectionTs.model');

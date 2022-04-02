@@ -46,6 +46,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
         .catch((error) => {
           logger.error(`updateHolderTask error 1: ${error}`);
         });
+      // TODO: implement removing holders
       const holders = await Holder.find({ symbol: it.symbol }, 'walletId');
       const hld = holders.map((holder) => holder.walletId);
       const difference = ids.filter((x) => !hld.includes(x));

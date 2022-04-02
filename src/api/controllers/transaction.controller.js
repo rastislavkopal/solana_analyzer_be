@@ -2,6 +2,7 @@ const axios = require('axios');
 const Collection = require('../models/collection.model');
 const Item = require('../models/item.model');
 const Transaction = require('../models/transaction.model');
+const logger = require('../../config/logger');
 
 exports.load = async (req, res, next, symbol) => {
   try {

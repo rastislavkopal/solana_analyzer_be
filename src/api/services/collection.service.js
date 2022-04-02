@@ -117,12 +117,13 @@ exports.removeCollectionRarityIfNotExists = async (raritySymbol, collectionSymbo
   return null;
 };
 
-exports.loadActive = async (req, res, next) => {
+exports.loadActive = async () => {
   try {
     const activeCollections = await Collection.find({ active: true });
     const collectionSymbolList = activeCollections.map((collection) => collection.symbol);
     return collectionSymbolList;
   } catch (error) {
-    return next(error);
+    logger.error(`collection.service loadActive() error: ${error}`);
+    return null;
   }
 };
