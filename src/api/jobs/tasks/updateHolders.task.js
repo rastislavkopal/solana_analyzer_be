@@ -65,7 +65,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
       }
 
       if (toAdd.length > 0) {
-        logger.info(JSON.stringify(toAdd));
+        logger.error(JSON.stringify(toAdd));
         const items = toAdd.map((id) => {
           const item = {
             insertOne: {
