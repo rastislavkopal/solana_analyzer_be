@@ -18,7 +18,10 @@ const ItemSchema = new mongoose.Schema({
   },
   raritySymbol: String,
   name: String,
-  for_sale: Boolean,
+  forSale: {
+    type: Boolean,
+    default: true,
+  },
   attributes: [{
     name: String,
     value: String,

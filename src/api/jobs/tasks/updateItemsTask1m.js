@@ -54,6 +54,9 @@ async function updateListingTime(ids) {
   });
   Item.bulkWrite(items);
 }
+async function updateForSale(allIDs, symbol) {
+  const itemsResult = await Item.find({ mintAddress: allIDs, collectionSymbol: symbol });
+}
 async function updateItemsOf(symbol) {
   try {
     const collection = await Collection.findOne({ symbol }).exec();
@@ -80,6 +83,7 @@ async function updateItemsOf(symbol) {
     let iterations = Math.ceil(listedCount / 20);
     const remainder = listedCount % 20;
     let step;
+    const allIDs = [];
     if (iterations > 3) {
       iterations = 3;
       step = 20;
@@ -111,6 +115,7 @@ async function updateItemsOf(symbol) {
                 name: it.title,
               });
             });
+            allIDs.push(ids);
             await ItemService.updateItemsFromMap(concatData, symbol);
             updateListingTime(ids);
           }
@@ -121,6 +126,7 @@ async function updateItemsOf(symbol) {
       index += step;
       step = 20;
     }
+    // updateForSale(allIDs, symbol);
   } catch (error) {
     logger.error(`updateItemsOf1m error 5: ${error}`);
   }
