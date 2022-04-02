@@ -16,7 +16,6 @@ const logger = require('../../../config/logger');
 // Updates list of collections and its information every 1 minute
 const updateItemsTask = cron.schedule('*/5 * * * * **', async () => {
   try {
-    // TODO run tokenInfoCrawler
     const result = await scrapToken();
     console.log(result);
   } catch (error) {
