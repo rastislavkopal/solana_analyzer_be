@@ -7,7 +7,6 @@ const mongoose = require('mongoose');
 const holderSchema = new mongoose.Schema({
   walletId: {
     type: String,
-    required: true,
     index: true,
     maxLength: 64,
   },

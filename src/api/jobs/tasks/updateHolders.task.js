@@ -15,7 +15,7 @@ const logger = require('../../../config/logger');
 // # │ │ │ │ │ │
 // # * * * * * *
 
-const updateHolderTask = cron.schedule('* * * * *', async () => {
+const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
   try {
     console.log('----------------JOB---update holders--------------');
     const collections = await Collection.find(
@@ -64,6 +64,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
       }
 
       if (toAdd.length > 0) {
+        /*
         const items = toAdd.map((id) => {
           const item = {
             insertOne: {
@@ -75,7 +76,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
           };
           return item;
         }).filter((notUndefined) => notUndefined !== undefined);
-        /*
+         */
         const items = toAdd.flatMap((id) => {
           if (id !== undefined || id !== '' || id !== 'undefined') {
             const item = {
@@ -89,7 +90,6 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
             return [item];
           } return [];
         });
-         */
         await Holder.bulkWrite(items);
       }
 
