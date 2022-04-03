@@ -11,6 +11,7 @@ const ItemSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
+  img: String,
   collectionSymbol: {
     type: String,
     index: true,

@@ -141,6 +141,7 @@ async function updateItemsOf(symbol) {
                   rank,
                   collectionSymbol: symbol,
                   name: it.title,
+                  img: it.img,
                 });
               });
               allIDs.push(ids);

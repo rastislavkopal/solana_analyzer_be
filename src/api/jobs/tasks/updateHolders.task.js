@@ -64,6 +64,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
       }
 
       if (toAdd.length > 0) {
+        /*
         const items = toAdd.map((id) => {
           const item = {
             insertOne: {
@@ -75,7 +76,7 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
           };
           return item;
         }).filter((notUndefined) => notUndefined !== undefined);
-        /*
+         */
         const items = toAdd.flatMap((id) => {
           if (id !== undefined || id !== '' || id !== 'undefined') {
             const item = {
@@ -89,7 +90,6 @@ const updateHolderTask = cron.schedule('* * * * *', async () => {
             return [item];
           } return [];
         });
-         */
         await Holder.bulkWrite(items);
       }
 
