@@ -73,7 +73,15 @@ exports.collectionStats = async (req, res, next) => {
           $gte: now1min,
         },
     }).sort('floorPrice');
-    res.json(collectionTsNow);
+    const returnArr = [];
+    const compareArr = [];
+    collectionTsNow.forEach((collectionTs) => {
+      if (!compareArr.includes(collectionTs.metadata.symbol)) {
+        compareArr.push(collectionTs.metadata.symbol);
+        returnArr.push(collectionTs);
+      }
+    });
+    res.json(returnArr);
   } catch (error) {
     next(error);
   }
