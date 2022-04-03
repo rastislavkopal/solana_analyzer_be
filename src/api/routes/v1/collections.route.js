@@ -8,39 +8,39 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(authorize(LOGGED_USER), controller.listCollections)
-  .post(authorize(LOGGED_USER), validate(addCollection), controller.addCollection)
-  .delete(authorize(LOGGED_USER), controller.removeCollections);
+  .get(authorize(), controller.listCollections)
+  .post(authorize(), validate(addCollection), controller.addCollection)
+  .delete(authorize(), controller.removeCollections);
 
 router
   .route('/mainPage/')
-  .get(authorize(LOGGED_USER), controller.collectionStats);
+  .get(authorize(), controller.collectionStats);
 
 router.param('symbol', controller.load);
 
 router
   .route('/:symbol')
-  .get(authorize(LOGGED_USER), controller.getCollection)
-  .put(authorize(LOGGED_USER), controller.updateCollection);
+  .get(authorize(), controller.getCollection)
+  .put(authorize(), controller.updateCollection);
 
 router
   .route('/:symbol/history/complete')
   .get(
-    authorize(LOGGED_USER),
+    authorize(),
     validate(getHistoricalData),
-    controller.getCollectionHistoryComplete
+    controller.getCollectionHistoryComplete,
   );
 
 router
   .route('/:symbol/history/floor')
-  .get(authorize(LOGGED_USER), validate(getHistoricalData), controller.getCollectionHistoryFloor);
+  .get(authorize(), validate(getHistoricalData), controller.getCollectionHistoryFloor);
 
 router
   .route('/:symbol/history/listings')
   .get(
-    authorize(LOGGED_USER),
+    authorize(),
     validate(getHistoricalData),
-    controller.getCollectionHistoryListings
+    controller.getCollectionHistoryListings,
   );
 
 module.exports = router;
