@@ -15,7 +15,7 @@ const logger = require('../../../config/logger');
 // # │ │ │ │ │ │
 // # * * * * * *
 
-const updateHolderTask = cron.schedule('* * * * *', async () => {
+const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
   try {
     console.log('----------------JOB---update holders--------------');
     const collections = await Collection.find(
