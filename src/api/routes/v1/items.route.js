@@ -13,10 +13,10 @@ router.param('symbol', controller.load);
 
 router
   .route('/:symbol/item/all')
-  .get(authorize(LOGGED_USER), controller.listItems);
+  .get(authorize(), controller.listItems);
 
 router
   .route('/:symbol/item/')
-  .get(authorize(LOGGED_USER), controller.test);
+  .get(authorize(), controller.test);
 
 module.exports = router;
