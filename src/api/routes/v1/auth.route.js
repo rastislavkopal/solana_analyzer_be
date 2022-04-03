@@ -2,6 +2,7 @@ const express = require('express');
 const validate = require('express-validation');
 const controller = require('../../controllers/auth.controller');
 const oAuthLogin = require('../../middlewares/auth').oAuth;
+const { authorize, ADMIN } = require('../../middlewares/auth');
 const {
   login,
   register,
@@ -41,7 +42,7 @@ const router = express.Router();
  * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
  */
 router.route('/register')
-  .post(validate(register), controller.register);
+  .post(authorize(ADMIN), validate(register), controller.register);
 
 /**
  * @api {post} v1/auth/login Login
@@ -119,8 +120,8 @@ router.route('/reset-password')
  * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
  * @apiError (Unauthorized 401)  Unauthorized    Incorrect access_token
  */
-router.route('/facebook')
-  .post(validate(oAuth), oAuthLogin('facebook'), controller.oAuth);
+// router.route('/facebook')
+//   .post(validate(oAuth), oAuthLogin('facebook'), controller.oAuth);
 
 /**
  * @api {post} v1/auth/google Google Login
@@ -140,7 +141,7 @@ router.route('/facebook')
  * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
  * @apiError (Unauthorized 401)  Unauthorized    Incorrect access_token
  */
-router.route('/google')
-  .post(validate(oAuth), oAuthLogin('google'), controller.oAuth);
+// router.route('/google')
+//   .post(validate(oAuth), oAuthLogin('google'), controller.oAuth);
 
 module.exports = router;
