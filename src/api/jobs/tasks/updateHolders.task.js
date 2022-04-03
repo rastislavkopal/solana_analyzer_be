@@ -50,7 +50,7 @@ const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
       const hld = holders.map((holder) => holder.walletId);
       const toAdd = ids.filter((x) => !hld.includes(x));
       const toRemove = hld.filter((x) => !ids.includes(x));
-
+      toRemove.push('');
       if (toRemove.length > 0) {
         const items = toAdd.map((id) => {
           const item = {
