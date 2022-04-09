@@ -41,10 +41,16 @@ exports.updateItemsFromRarityMap = async (concatData) => {
   Item.upsertMany(items).then(() => {}).catch((err) => { logger.error(`updateItemsFromData: ${err}`); });
 };
 exports.updateForSale = async (allIDs, symbol) => {
-  const itemsResult = await Item.find({ mintAddress: allIDs, collectionSymbol: symbol });
+  const itemsResult = await Item.find({ mintAddress: allIDs, collectionSymbol: symbol })
+    .catch((err) => {
+      logger.error(`itemsResult error: ${err}`);
+    });
   const itemsResultArray = itemsResult.map((item) => item.mintAddress);
 
-  const allItemsResult = await Item.find({ collectionSymbol: symbol });
+  const allItemsResult = await Item.find({ collectionSymbol: symbol })
+    .catch((err) => {
+      logger.error(`allItemsResult error: ${err}`);
+    });
   const allItemsArray = allItemsResult.map((item) => item.mintAddress);
 
   const difference = allItemsArray.filter((x) => !itemsResultArray.includes(x));
@@ -96,7 +102,9 @@ exports.updateListingTime = async (ids, symbol) => {
       .catch((error) => {
         logger.error(`updateListingTime1hr error 1: ${error}`);
       });
-  }));
+  })).catch((err) => {
+    logger.error(`updateListingTime Promise.all error: ${err}`);
+  });
   const items = Array.from(concatData.entries(), ([key, value]) => {
     const rObj = {
       updateOne: {
