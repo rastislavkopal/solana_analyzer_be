@@ -47,7 +47,7 @@ exports.getLastSales = async (req, res, next) => {
     if (number > 20) number = 20;
 
     const transactions = await Transaction.find({
-      collectionSymbol: symbol,
+      collectionSymbol: symbol.toLowerCase(),
     }).sort({ createdAt: -1 })
       .limit(Number(number));
 

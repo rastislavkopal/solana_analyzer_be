@@ -145,6 +145,7 @@ async function updateItemsOf(symbol) {
                 });
               });
               allIDs.push(ids);
+              updateForSale(ids, symbol);
               await ItemService.updateItemsFromMap(concatData, symbol);
               updateListingTime(ids);
             }
@@ -156,7 +157,6 @@ async function updateItemsOf(symbol) {
         step = 20;
       }
     }
-    updateForSale(allIDs, symbol);
   } catch (error) {
     logger.error(`updateItemsOf1hr error 5: ${error}`);
   }
