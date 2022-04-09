@@ -70,6 +70,7 @@ async function updateItemsOf(symbol) {
                   collectionSymbol: symbol,
                   name: it.title,
                   img: it.img,
+                  forSale: true,
                 });
               });
               ItemService.updateForSale(ids, symbol);
