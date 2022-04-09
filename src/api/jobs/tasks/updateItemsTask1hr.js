@@ -74,7 +74,7 @@ async function updateItemsOf(symbol) {
               });
               ItemService.updateForSale(ids, symbol);
               await ItemService.updateItemsFromMap(concatData, symbol);
-              ItemService.updateListingTime(ids);
+              ItemService.updateListingTime(ids, symbol);
             }
           })
           .catch((error) => {
