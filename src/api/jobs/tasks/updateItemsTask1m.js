@@ -83,7 +83,6 @@ async function updateItemsOf(symbol) {
     let iterations = Math.ceil(listedCount / 20);
     const remainder = listedCount % 20;
     let step;
-    const allIDs = [];
     if (iterations > 3) {
       iterations = 3;
       step = 20;
@@ -116,9 +115,9 @@ async function updateItemsOf(symbol) {
                 img: it.img,
               });
             });
-            allIDs.push(ids);
+            ItemService.updateForSale(ids, symbol);
             await ItemService.updateItemsFromMap(concatData, symbol);
-            updateListingTime(ids);
+            ItemService.updateListingTime(ids);
           }
         })
         .catch((error) => {
