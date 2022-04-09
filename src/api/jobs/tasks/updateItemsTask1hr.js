@@ -42,6 +42,7 @@ async function updateItemsOf(symbol) {
     const remainder = listedCount % 20;
     let index = 0;
     let step = remainder;
+    const allIDs = [];
     for (let h = 0; h < batches; h += 1) {
       const concatData = new Map();
       const ids = [];
@@ -73,7 +74,7 @@ async function updateItemsOf(symbol) {
                   forSale: true,
                 });
               });
-              ItemService.updateForSale(ids, symbol);
+              allIDs.push(ids);
               await ItemService.updateItemsFromMap(concatData, symbol);
               ItemService.updateListingTime(ids, symbol);
             }
@@ -85,6 +86,7 @@ async function updateItemsOf(symbol) {
         step = 20;
       }
     }
+    ItemService.updateForSale(allIDs, symbol);
   } catch (error) {
     logger.error(`updateItemsOf1hr error 5: ${error}`);
   }

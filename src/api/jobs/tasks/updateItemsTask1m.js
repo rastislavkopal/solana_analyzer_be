@@ -9,54 +9,6 @@ const Collection = require('../../models/collection.model');
 const CollectionService = require('../../services/collection.service');
 const ItemService = require('../../services/item.service');
 
-async function updateListingTime(ids) {
-  console.log('Updating listedFor of items');
-  const concatData = new Map();
-  await Promise.all(ids.map(async (id) => {
-    const config = {
-      url: String(`https://api-mainnet.magiceden.io/rpc/getGlobalActivitiesByQuery?q={"$match":{"mint":"${id}"},"$sort":{"blockTime":-1,"createdAt":-1},"$skip":0}`),
-      httpsAgent: agent,
-    };
-    return axios.request(config)
-      .then((periodResponse) => {
-        if (periodResponse.code === 'ECONNRESET' || periodResponse.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
-        const { results } = periodResponse.data;
-        results.every((it) => {
-          let listedFor;
-          if (it.txType === 'initializeEscrow') {
-            const timeDiff = (new Date(Date.now()) - Date.parse(it.createdAt));
-            const inMinutes = Number(timeDiff / 60000)
-              .toFixed(2);
-            listedFor = inMinutes;
-            concatData.set(it.mint, listedFor);
-            return false;
-          }
-          return true;
-        });
-      })
-      .catch((error) => {
-        logger.error(`updateListingTime1m error 1: ${error}`);
-      });
-  }));
-  const items = Array.from(concatData.entries(), ([key, value]) => {
-    const rObj = {
-      updateOne: {
-        filter: { mintAddress: key },
-        update: {
-          $set: {
-            listedFor: value,
-          },
-        },
-        upsert: true,
-      },
-    };
-    return rObj;
-  });
-  Item.bulkWrite(items);
-}
-async function updateForSale(allIDs, symbol) {
-  const itemsResult = await Item.find({ mintAddress: allIDs, collectionSymbol: symbol });
-}
 async function updateItemsOf(symbol) {
   try {
     const collection = await Collection.findOne({ symbol }).exec();
@@ -89,6 +41,7 @@ async function updateItemsOf(symbol) {
     } else step = remainder;
 
     let index = 0;
+    const allIDs = [];
     for (let i = 0; i < iterations; i += 1) {
       const concatData = new Map();
       const ids = [];
@@ -116,7 +69,8 @@ async function updateItemsOf(symbol) {
                 forSale: true,
               });
             });
-            ItemService.updateForSale(ids, symbol);
+            allIDs.push(ids);
+            // ItemService.updateForSale(ids, symbol);
             await ItemService.updateItemsFromMap(concatData, symbol);
             ItemService.updateListingTime(ids, symbol);
           }
@@ -127,7 +81,7 @@ async function updateItemsOf(symbol) {
       index += step;
       step = 20;
     }
-    // updateForSale(allIDs, symbol);
+    ItemService.updateForSale(allIDs, symbol);
   } catch (error) {
     logger.error(`updateItemsOf1m error 5: ${error}`);
   }
