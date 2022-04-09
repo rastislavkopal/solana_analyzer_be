@@ -23,10 +23,6 @@ async function saveTransactions(concatData, collectionSymbol, walletIDs) {
   const existingTransactions = existingTransactionsQuery
     .map((transaction) => transaction.signature);
   const newTransactions = transactionSignatures.filter((x) => !existingTransactions.includes(x));
-  console.log('existing transactions');
-  console.log(JSON.stringify(existingTransactions));
-  console.log('new transactions');
-  console.log(JSON.stringify(newTransactions));
 
   if (newTransactions.length > 0) {
     const isWhaleMap = new Map();
@@ -35,8 +31,6 @@ async function saveTransactions(concatData, collectionSymbol, walletIDs) {
       isWhaleMap.set(it.walletId, it.isWhale);
     });
     const items = Array.from(concatData.entries(), ([key, value]) => {
-      console.log('Whale? ');
-      console.log(isWhaleMap.get(value.buyer));
       const rObj = {
         updateOne: {
           filter: { signature: key },

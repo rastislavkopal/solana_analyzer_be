@@ -66,7 +66,7 @@ exports.updateForSale = async (allIDs, symbol) => {
     const items = difference.map((id) => {
       const rObj = {
         updateOne: {
-          filter: { mintAddress: id },
+          filter: { collectionSymbol: symbol, mintAddress: id },
           update: {
             $set: {
               forSale: false,
