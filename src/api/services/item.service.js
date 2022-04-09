@@ -67,8 +67,8 @@ exports.updateForSale = async (allIDs, symbol) => {
   });
 };
 
-exports.updateListingTime = async (ids) => {
-  console.log('Updating listedFor of items');
+exports.updateListingTime = async (ids, symbol) => {
+  console.log(`Updating listedFor of items of collection ${symbol}`);
   const concatData = new Map();
   await Promise.all(ids.map(async (id) => {
     const config = {
@@ -81,6 +81,7 @@ exports.updateListingTime = async (ids) => {
         const { results } = periodResponse.data;
         results.every((it) => {
           let listedFor;
+          // const { txType } = it;
           if (it.txType === 'initializeEscrow') {
             const timeDiff = (new Date(Date.now()) - Date.parse(it.createdAt));
             const inMinutes = Number(timeDiff / 60000)
