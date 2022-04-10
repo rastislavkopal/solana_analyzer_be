@@ -22,7 +22,7 @@ async function updateItemsOf(symbol) {
       .limit(limit);
 
     const { listedCount } = collectionTs[0].metadata;
-    if (listedCount > 300 || !listedCount) {
+    if (listedCount > 1500 || !listedCount) {
       // Add more unsupported cases ( E.g. cooldown on this function )
       logger.error(`listedPriceDistributionTask1m---${symbol}---Collection of this size is unsupported(${listedCount})`);
       return;
