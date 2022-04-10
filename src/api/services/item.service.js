@@ -46,7 +46,7 @@ exports.updateItemsFromRarityMap = async (concatData) => {
 };
 exports.updateForSale1m = async (allIDs, symbol) => {
   console.log(`Updating forSale 1m of ${symbol}`);
-  /*
+
   try {
     const itemsResult = await Item.find({ mintAddress: allIDs, collectionSymbol: symbol })
       .catch((err) => {
@@ -64,7 +64,7 @@ exports.updateForSale1m = async (allIDs, symbol) => {
     const allItemsArray = allItemsResult.map((item) => item.mintAddress);
 
     const difference = allItemsArray.filter((x) => !itemsResultArray.includes(x));
-
+    /*
     const items = difference.map((id) => {
       const rObj = {
         updateOne: {
@@ -85,8 +85,8 @@ exports.updateForSale1m = async (allIDs, symbol) => {
     logger.error(`updateForSale error: ${e}`);
   }
    */
-  try {
-    Item.updateMany({ mintAddress: allIDs }, { $set: { forSale: true } });
+
+    Item.updateMany({ mintAddress: difference }, { $set: { forSale: true } });
   } catch (e) {
     logger.error(`updateForSale error: ${e}`);
   }
