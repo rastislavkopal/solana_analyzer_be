@@ -81,7 +81,7 @@ async function updateItemsOf(symbol) {
       index += step;
       step = 20;
     }
-    ItemService.updateForSale(allIDs, symbol);
+    ItemService.updateForSale1m(allIDs, symbol);
   } catch (error) {
     logger.error(`updateItemsOf1m error 5: ${error}`);
   }
@@ -89,12 +89,16 @@ async function updateItemsOf(symbol) {
 // '*/5 * * * *'
 const updateItemsTask = cron.schedule('* * * * *', async () => {
   console.log('updateItemsTask1m-JOB---');
-  const activeCollections = await CollectionService.loadActive();
-  console.log(`Active: ${JSON.stringify(activeCollections)}`);
-  if (Object.keys(activeCollections).length > 0) {
-    activeCollections.forEach((symbol) => {
-      updateItemsOf(symbol);
-    });
+  try {
+    const activeCollections = await CollectionService.loadActive();
+    console.log(`Active: ${JSON.stringify(activeCollections)}`);
+    if (activeCollections && Object.keys(activeCollections).length > 0) {
+      activeCollections.forEach((symbol) => {
+        updateItemsOf(symbol);
+      });
+    }
+  } catch (e) {
+    logger.error(`updateItemsTask1m error:${e}`);
   }
 });
 

@@ -23,7 +23,7 @@ exports.updateItemsFromMap = async (concatData, symbol) => {
     };
     return rObj;
   });
-  Item.bulkWrite(items).catch((err) => {
+  Item.bulkWrite(items, { ordered: false }).catch((err) => {
     logger.error(`updateItemsFromMap of ${symbol} error: ${err}`);
   });
 };
@@ -44,7 +44,9 @@ exports.updateItemsFromRarityMap = async (concatData) => {
     logger.error(`updateItemsFromRarityMap error: ${e}`);
   }
 };
-exports.updateForSale = async (allIDs, symbol) => {
+exports.updateForSale1m = async (allIDs, symbol) => {
+  console.log(`Updating forSale 1m of ${symbol}`);
+  /*
   try {
     const itemsResult = await Item.find({ mintAddress: allIDs, collectionSymbol: symbol })
       .catch((err) => {
@@ -76,12 +78,21 @@ exports.updateForSale = async (allIDs, symbol) => {
       };
       return rObj;
     });
-    Item.bulkWrite(items).catch((err) => {
+    Item.bulkWrite(items, { ordered: false }).catch((err) => {
       logger.error(`updateForSale of ${symbol} error: ${err}`);
     });
   } catch (e) {
     logger.error(`updateForSale error: ${e}`);
   }
+   */
+  try {
+    Item.updateMany({ mintAddress: allIDs }, { $set: { forSale: true } });
+  } catch (e) {
+    logger.error(`updateForSale error: ${e}`);
+  }
+};
+exports.updateForSale1h = (symbol) => {
+  Item.updateMany({ collectionSymbol: symbol }, { $set: { forSale: false } });
 };
 
 exports.updateListingTime = async (ids, symbol) => {
@@ -131,7 +142,7 @@ exports.updateListingTime = async (ids, symbol) => {
       };
       return rObj;
     });
-    Item.bulkWrite(items).catch((err) => {
+    Item.bulkWrite(items, { ordered: false }).catch((err) => {
       logger.error(`updateListingTime error: ${err}`);
     });
   } catch (e) {

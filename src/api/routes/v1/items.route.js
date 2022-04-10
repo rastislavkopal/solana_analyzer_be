@@ -12,6 +12,10 @@ const router = express.Router();
 router.param('symbol', controller.load);
 
 router
+  .route('/forward')
+  .get(controller.forward);
+
+router
   .route('/:symbol/item/all')
   .get(authorize(), controller.listItems);
 

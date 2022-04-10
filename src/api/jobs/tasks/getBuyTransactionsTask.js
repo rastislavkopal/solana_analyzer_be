@@ -50,7 +50,7 @@ async function saveTransactions(concatData, collectionSymbol, walletIDs) {
       };
       return rObj;
     });
-    await Transaction.bulkWrite(items);
+    await Transaction.bulkWrite(items, { ordered: false });
   }
 
   /*

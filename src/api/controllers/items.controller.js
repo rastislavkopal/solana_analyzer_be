@@ -55,6 +55,23 @@ exports.listItemsBellowRank = async (req, res, next) => {
     next(error);
   }
 };
+exports.forward = async (req, res, next) => {
+  try {
+    const q = decodeURIComponent(req.query.q);
+    const config = {
+      url: `https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q=${q}`,
+      httpsAgent: agent,
+    };
+    axios.request(config).then((response) => {
+      res.json(response);
+    }).catch((err) => {
+      logger.error(`forward error 1: ${err}`);
+    });
+  } catch (e) {
+    logger.error(`forward error 2: ${e}`);
+    next(e);
+  }
+};
 exports.test = async (req, res, next) => {
   try {
     console.log(`symb: ${req.params.symbol}`);
