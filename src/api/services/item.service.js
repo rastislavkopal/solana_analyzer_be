@@ -92,6 +92,7 @@ exports.updateForSale1m = async (allIDs, symbol) => {
   }
 };
 exports.updateForSale1h = (symbol) => {
+  console.log(`updateForSale1h of ${symbol}`);
   Item.updateMany({ collectionSymbol: symbol }, { $set: { forSale: false } });
 };
 
