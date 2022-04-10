@@ -22,8 +22,8 @@ async function updateItemsOf(symbol) {
       .sort({ timestamp: -1 })
       .limit(limit);
 
-    const { listedCount } = collectionTs[0].metadata;
-    if (listedCount > 500 || !listedCount) {
+    let { listedCount } = collectionTs[0].metadata;
+    if (listedCount > 1500 || !listedCount) {
       // Add more unsupported cases ( E.g. cooldown on this function )
       logger.error(`listedPriceDistributionTask1hr---${symbol}---Collection of this size is unsupported(${listedCount})`);
       return;
@@ -33,6 +33,8 @@ async function updateItemsOf(symbol) {
     if (!rarityResp) {
       logger.error(`listedPriceDistributionTask1hr---${symbol}---RaritySheet not found!`);
     }
+    // limited to 100 items.
+    listedCount = 100;
     const batchSize = 5;
     let iterations = Math.ceil(listedCount / 20);
     let batches = Math.floor(iterations / batchSize);
