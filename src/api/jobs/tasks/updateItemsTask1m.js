@@ -92,7 +92,7 @@ const updateItemsTask = cron.schedule('* * * * *', async () => {
   try {
     const activeCollections = await CollectionService.loadActive();
     console.log(`Active: ${JSON.stringify(activeCollections)}`);
-    if (activeCollections || Object.keys(activeCollections).length > 0) {
+    if (activeCollections && Object.keys(activeCollections).length > 0) {
       activeCollections.forEach((symbol) => {
         updateItemsOf(symbol);
       });
