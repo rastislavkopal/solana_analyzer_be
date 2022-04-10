@@ -11,6 +11,7 @@ const ItemService = require('../../services/item.service');
 
 async function updateItemsOf(symbol) {
   try {
+    ItemService.updateForSale1h(symbol);
     const collection = await Collection.findOne({ symbol }).exec();
     const limit = 100;
 
@@ -42,7 +43,6 @@ async function updateItemsOf(symbol) {
     const remainder = listedCount % 20;
     let index = 0;
     let step = remainder;
-    const allIDs = [];
     for (let h = 0; h < batches; h += 1) {
       const concatData = new Map();
       const ids = [];
@@ -74,7 +74,6 @@ async function updateItemsOf(symbol) {
                   forSale: true,
                 });
               });
-              allIDs.push(ids);
               await ItemService.updateItemsFromMap(concatData, symbol);
               ItemService.updateListingTime(ids, symbol);
             }
@@ -86,20 +85,23 @@ async function updateItemsOf(symbol) {
         step = 20;
       }
     }
-    ItemService.updateForSale(allIDs, symbol);
   } catch (error) {
     logger.error(`updateItemsOf1hr error 5: ${error}`);
   }
 }
 // '*/5 * * * *'
 const updateItemsTask1hr = cron.schedule('0 * * * *', async () => {
-  console.log('updateItemsTask1hr-JOB---');
-  const activeCollections = await CollectionService.loadActive();
-  console.log(`Active: ${JSON.stringify(activeCollections)}`);
-  if (Object.keys(activeCollections).length > 0) {
-    activeCollections.forEach((symbol) => {
-      updateItemsOf(symbol);
-    });
+  try {
+    console.log('updateItemsTask1hr-JOB---');
+    const activeCollections = await CollectionService.loadActive();
+    console.log(`Active: ${JSON.stringify(activeCollections)}`);
+    if (activeCollections || Object.keys(activeCollections).length > 0) {
+      activeCollections.forEach((symbol) => {
+        updateItemsOf(symbol);
+      });
+    }
+  } catch (e) {
+    logger.error(`updateItemsTask1hr error: ${e}`);
   }
 });
 

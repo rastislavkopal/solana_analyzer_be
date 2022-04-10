@@ -60,7 +60,7 @@ const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
           };
           return item;
         });
-        Holder.bulkWrite(items);
+        Holder.bulkWrite(items, { ordered: false });
       }
 
       if (toAdd.length > 0) {
@@ -90,7 +90,7 @@ const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
             return [item];
           } return [];
         });
-        await Holder.bulkWrite(items);
+        await Holder.bulkWrite(items, { ordered: false });
       }
 
       const itemCount = Array.from(concatData.entries(), ([key, value]) => {
@@ -109,7 +109,7 @@ const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
         };
         return rObj;
       });
-      Holder.bulkWrite(itemCount);
+      Holder.bulkWrite(itemCount, { ordered: false });
     });
   } catch (error) {
     logger.error(`updateHolderTask error 2: ${error}`);
