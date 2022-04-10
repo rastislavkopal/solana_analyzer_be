@@ -70,7 +70,6 @@ async function updateItemsOf(symbol) {
               });
             });
             allIDs.push(ids);
-            // ItemService.updateForSale(ids, symbol);
             await ItemService.updateItemsFromMap(concatData, symbol);
             ItemService.updateListingTime(ids, symbol);
           }
