@@ -57,6 +57,7 @@ async function saveCollectionTimestampFromResponse(resp, image, name) {
     // console.log('The collection from before : '+JSON.stringify(collectionsTs24hBefore));
     const floorPriceChange = calculateChange(collectionTsNow, collectionsTs24hBefore, 'floorPrice');
     const listedCountChange = calculateChange(collectionTsNow, collectionsTs24hBefore, 'listedCount');
+
     const timestamp = new CollectionTs({
       name,
       metadata: {
