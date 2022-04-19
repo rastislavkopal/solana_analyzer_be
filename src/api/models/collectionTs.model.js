@@ -14,7 +14,6 @@ const collectionTsSchema = new mongoose.Schema(
         required: true,
         index: true,
       },
-      FPmarketcap: Number,
       image: String,
       floorPrice: Number,
       floorPriceChange: String,

@@ -28,6 +28,11 @@ async function updateItemsOf(symbol) {
       logger.error(`listedPriceDistributionTask1hr---${symbol}---Collection of this size is unsupported(${listedCount})`);
       return;
     }
+    const { raritySymbol } = collection;
+    const rarityResp = await RaritySheet.findOne({ raritySymbol });
+    if (!rarityResp) {
+      logger.error(`listedPriceDistributionTask1hr---${symbol}---RaritySheet not found!`);
+    }
     // limited to 100 items.
     listedCount = 100;
     const batchSize = 5;
@@ -48,7 +53,7 @@ async function updateItemsOf(symbol) {
       console.log(`UpdateItems--${symbol}--BATCH--${h}--`);
       for (let i = 0; i < iterations; i += 1) {
         const config = {
-          url: String(`https://api-mainnet.magiceden.dev/rpc/getListedNFTsByQuery?q={"$match":{"collectionSymbol":"${symbol}"},"$sort":{"takerAmount":1},"$skip":${index},"$limit":${step},"status":[]}`),
+          url: String(`https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q={"$match":{"collectionSymbol":"${symbol}"},"$sort":{"takerAmount":1,"createdAt":-1},"$skip":${index},"$limit":${step}}`),
           httpsAgent: agent,
         };
         axios.request(config)
@@ -57,22 +62,14 @@ async function updateItemsOf(symbol) {
               const { results } = priceResponse.data;
               results.forEach(async (it) => {
                 ids.push(it.mintAddress);
-                const { rarity } = it;
-                let ranking = -1;
-                // eslint-disable-next-line no-prototype-builtins
-                if (rarity.hasOwnProperty('howrare')) {
-                  const { rank } = rarity.howrare;
-                  ranking = rank;
-                  // eslint-disable-next-line no-prototype-builtins
-                } else if (rarity.hasOwnProperty('moonrank')) {
-                  const { rank } = rarity.moonrank;
-                  ranking = rank;
-                }
+                const { rank } = (rarityResp && rarityResp.items
+                  && rarityResp.items.has(it.mintAddress))
+                  ? rarityResp.items.get(it.mintAddress) : '';
                 concatData.set(it.mintAddress, {
                   mintAddress: it.mintAddress,
                   price: it.price,
                   listedFor: null,
-                  rank: ranking,
+                  rank,
                   collectionSymbol: symbol,
                   name: it.title,
                   img: it.img,
@@ -80,7 +77,7 @@ async function updateItemsOf(symbol) {
                 });
               });
               await ItemService.updateItemsFromMap(concatData, symbol);
-              // ItemService.updateListingTime(ids, symbol);
+              ItemService.updateListingTime(ids, symbol);
             }
           })
           .catch((error) => {
