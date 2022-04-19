@@ -27,11 +27,6 @@ async function updateItemsOf(symbol) {
       logger.error(`listedPriceDistributionTask1m---${symbol}---Collection of this size is unsupported(${listedCount})`);
       return;
     }
-    const { raritySymbol } = collection;
-    const rarityResp = await RaritySheet.findOne({ raritySymbol });
-    if (!rarityResp) {
-      logger.error(`listedPriceDistributionTask1m---${symbol}---RaritySheet not found!`);
-    }
     let iterations = Math.ceil(listedCount / 20);
     const remainder = listedCount % 20;
     let step;
@@ -46,7 +41,7 @@ async function updateItemsOf(symbol) {
       const concatData = new Map();
       const ids = [];
       const config = {
-        url: String(`https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q={"$match":{"collectionSymbol":"${symbol}"},"$sort":{"takerAmount":1,"createdAt":-1},"$skip":${index},"$limit":${step}}`),
+        url: String(`https://api-mainnet.magiceden.dev/rpc/getListedNFTsByQuery?q={"$match":{"collectionSymbol":"${symbol}"},"$sort":{"takerAmount":1},"$skip":${index},"$limit":${step},"status":[]}`),
         httpsAgent: agent,
       };
       axios.request(config)
@@ -55,14 +50,23 @@ async function updateItemsOf(symbol) {
             const { results } = priceResponse.data;
             results.forEach(async (it) => {
               ids.push(it.mintAddress);
-              const { rank } = (rarityResp && rarityResp.items
-                  && rarityResp.items.has(it.mintAddress))
-                ? rarityResp.items.get(it.mintAddress) : '';
+              // zmenit rank it.rarity.howrare
+              const { rarity } = it;
+              let ranking = -1;
+              // eslint-disable-next-line no-prototype-builtins
+              if (rarity.hasOwnProperty('howrare')) {
+                const { rank } = rarity.howrare;
+                ranking = rank;
+                // eslint-disable-next-line no-prototype-builtins
+              } else if (rarity.hasOwnProperty('moonrank')) {
+                const { rank } = rarity.moonrank;
+                ranking = rank;
+              }
               concatData.set(it.mintAddress, {
                 mintAddress: it.mintAddress,
                 price: it.price,
                 listedFor: null,
-                rank,
+                rank: ranking,
                 collectionSymbol: symbol,
                 name: it.title,
                 img: it.img,
