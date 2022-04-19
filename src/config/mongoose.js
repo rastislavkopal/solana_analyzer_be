@@ -30,6 +30,7 @@ exports.connect = () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
+      socketTimeoutMS: 4 * 30000,
     })
     .then(() => console.log('mongoDB connected...'));
   return mongoose.connection;
