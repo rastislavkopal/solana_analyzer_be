@@ -77,7 +77,7 @@ async function updateItemsOf(symbol) {
                 });
               });
               await ItemService.updateItemsFromMap(concatData, symbol);
-              // ItemService.updateListingTime(ids, symbol);
+              ItemService.updateListingTime(ids, symbol);
             }
           })
           .catch((error) => {
@@ -93,7 +93,7 @@ async function updateItemsOf(symbol) {
 }
 // '*/5 * * * *'
 // 0 * * * *
-const updateItemsTask1hr = cron.schedule('*/5 * * * *', async () => {
+const updateItemsTask1hr = cron.schedule('0 * * * *', async () => {
   try {
     console.log('updateItemsTask1hr-JOB---');
     const activeCollections = await CollectionService.loadActive();
