@@ -12,7 +12,7 @@ const ItemService = require('./item.service');
  */
 exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => {
   const config = {
-    url: String(`https://api-mainnet.magiceden.io/collections/${collectionSymbol}`),
+    url: String(`https://api-mainnet.magiceden.dev/collections/${collectionSymbol}`),
     httpsAgent: agent,
   };
 

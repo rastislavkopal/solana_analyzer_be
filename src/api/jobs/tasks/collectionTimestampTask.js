@@ -87,7 +87,7 @@ const collectionTimestampTask = cron.schedule('* * * * *', async () => {
     const collections = await Collection.find({}, 'symbol name image');
     collections.forEach(async (it) => {
       const config = {
-        url: String(`https://api-mainnet.magiceden.io/rpc/getCollectionEscrowStats/${it.symbol}`),
+        url: String(`https://api-mainnet.magiceden.dev/rpc/getCollectionEscrowStats/${it.symbol}`),
         httpsAgent: agent,
       };
 
