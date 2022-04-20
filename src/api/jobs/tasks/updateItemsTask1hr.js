@@ -11,7 +11,7 @@ const ItemService = require('../../services/item.service');
 
 async function updateItemsOf(symbol) {
   try {
-    ItemService.updateForSale1h(symbol);
+    await ItemService.updateForSale1h(symbol);
     const collection = await Collection.findOne({ symbol }).exec();
     const limit = 100;
 
@@ -34,7 +34,7 @@ async function updateItemsOf(symbol) {
       logger.error(`listedPriceDistributionTask1hr---${symbol}---RaritySheet not found!`);
     }
     // limited to 100 items.
-    listedCount = 100;
+    listedCount = 200;
     const batchSize = 5;
     let iterations = Math.ceil(listedCount / 20);
     let batches = Math.floor(iterations / batchSize);
@@ -92,7 +92,8 @@ async function updateItemsOf(symbol) {
   }
 }
 // '*/5 * * * *'
-const updateItemsTask1hr = cron.schedule('0 * * * *', async () => {
+// 0 * * * *
+const updateItemsTask1hr = cron.schedule('*/5 * * * *', async () => {
   try {
     console.log('updateItemsTask1hr-JOB---');
     const activeCollections = await CollectionService.loadActive();

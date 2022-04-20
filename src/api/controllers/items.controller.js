@@ -59,7 +59,7 @@ exports.forward = async (req, res, next) => {
   try {
     const q = decodeURIComponent(req.query.q);
     const config = {
-      url: `https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q=${q}`,
+      url: `https://api-mainnet.magiceden.dev/rpc/getListedNFTsByQuery?q=${q}`,
       httpsAgent: agent,
     };
     axios.request(config).then((response) => {
@@ -77,7 +77,7 @@ exports.test = async (req, res, next) => {
     console.log(`symb: ${req.params.symbol}`);
     const t = encodeURIComponent(`{"$match":{"collectionSymbol":"${req.params.symbol}"},"$sort":{"takerAmount":1,"createdAt":-1},"$skip":500,"$limit":500,"status":["all"]}`);
     const config = {
-      url: `https://api-mainnet.magiceden.io/rpc/getListedNFTsByQuery?q=${t}`,
+      url: `https://api-mainnet.magiceden.dev/rpc/getListedNFTsByQuery?q=${t}`,
       httpsAgent: agent,
     };
     console.log(`URL: ${config.url}`);
