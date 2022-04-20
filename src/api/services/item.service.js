@@ -93,7 +93,11 @@ exports.updateForSale1m = async (allIDs, symbol) => {
 };
 exports.updateForSale1h = (symbol) => {
   console.log(`updateForSale1h of ${symbol}`);
-  Item.updateMany({ collectionSymbol: symbol }, { $set: { forSale: false } });
+
+  Item.updateMany({ collectionSymbol: symbol },
+    { $set: { forSale: false, listedFor: 0 } }).then(() => {
+    console.log(`updateForSale1h of ${symbol} was successfull!`);
+  });
 };
 
 exports.updateListingTime = async (ids, symbol) => {
@@ -102,7 +106,7 @@ exports.updateListingTime = async (ids, symbol) => {
     const concatData = new Map();
     await Promise.all(ids.map(async (id) => {
       const config = {
-        url: String(`https://api-mainnet.magiceden.io/rpc/getGlobalActivitiesByQuery?q={"$match":{"mint":"${id}"},"$sort":{"blockTime":-1,"createdAt":-1},"$skip":0}`),
+        url: String(`https://api-mainnet.magiceden.dev/rpc/getGlobalActivitiesByQuery?q={"$match":{"mint":"${id}"},"$sort":{"blockTime":-1,"createdAt":-1},"$skip":0}`),
         httpsAgent: agent,
       };
       return axios.request(config)
