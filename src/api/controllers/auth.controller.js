@@ -64,6 +64,14 @@ exports.login = async (req, res, next) => {
 exports.nftlogin = async (req, res, next) => {
   try {
     const accessToken = await generateNftAccessToken(req.body.mints);
+    if (!accessToken) {
+      const err = {
+        status: httpStatus.UNAUTHORIZED,
+        isPublic: true,
+        message: 'Does not contain valid NFT pass',
+      };
+      throw new APIError(err);
+    }
     const tokenType = 'Bearer';
     const expiresIn = moment().add(jwtExpirationInterval, 'minutes');
 
