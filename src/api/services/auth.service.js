@@ -28,7 +28,6 @@ exports.generateNftAccessToken = async (mints) => {
       iat: moment().unix(),
       sub: intersect.values().next().value,
     };
-    console.log(payload); // TODO remove
     return jwt.encode(payload, jwtSecret);
   }
 
