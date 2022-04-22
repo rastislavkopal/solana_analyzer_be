@@ -8,6 +8,10 @@ const collectionTsSchema = new mongoose.Schema(
   {
     name: String,
     timestamp: Date,
+    recent: {
+      type: Boolean,
+      index: true,
+    },
     metadata: {
       symbol: {
         type: String,

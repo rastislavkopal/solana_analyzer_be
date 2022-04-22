@@ -57,7 +57,51 @@ async function saveCollectionTimestampFromResponse(resp, image, name) {
     // console.log('The collection from before : '+JSON.stringify(collectionsTs24hBefore));
     const floorPriceChange = calculateChange(collectionTsNow, collectionsTs24hBefore, 'floorPrice');
     const listedCountChange = calculateChange(collectionTsNow, collectionsTs24hBefore, 'listedCount');
-
+    const collectiontsRecent = await CollectionTs.findOne({ 'metadata.symbol': results.symbol, recent: true });
+    if (collectiontsRecent) {
+      const update = {
+        $set: {
+          name,
+          metadata: {
+            symbol: results.symbol,
+            floorPrice: results.floorPrice,
+            listedCount: results.listedCount,
+            listedTotalValue: results.listedTotalValue,
+            avgPrice24hr: results.avgPrice24hr,
+            volume24hr: results.volume24hr,
+            volumeAll: results.volumeAll,
+            image,
+            floorPriceChange,
+            listedCountChange,
+          },
+          timestamp: now,
+        },
+      };
+      CollectionTs.updateOne({ 'metadata.symbol': results.symbol, recent: true }, { update }).catch((e) => {
+        logger.error(`saveCollectionTimestampFromResponse error 1: ${e}`);
+      });
+    } else {
+      const timestamp = new CollectionTs({
+        name,
+        recent: true,
+        metadata: {
+          symbol: results.symbol,
+          floorPrice: results.floorPrice,
+          listedCount: results.listedCount,
+          listedTotalValue: results.listedTotalValue,
+          avgPrice24hr: results.avgPrice24hr,
+          volume24hr: results.volume24hr,
+          volumeAll: results.volumeAll,
+          image,
+          floorPriceChange,
+          listedCountChange,
+        },
+        timestamp: now,
+      });
+      timestamp.save((err) => {
+        if (err) logger.error(`saveCollectionTimestampFromResponse error 2: ${err}`); // saved
+      });
+    }
     const timestamp = new CollectionTs({
       name,
       metadata: {
@@ -75,10 +119,10 @@ async function saveCollectionTimestampFromResponse(resp, image, name) {
       timestamp: now,
     });
     timestamp.save((err) => {
-      if (err) logger.error(`saveCollectionTimestampFromResponse error 1: ${err}`); // saved
+      if (err) logger.error(`saveCollectionTimestampFromResponse error 3: ${err}`); // saved
     });
   } catch (error) {
-    logger.error(`saveCollectionTimestampFromResponse error 2:  ${error}`);
+    logger.error(`saveCollectionTimestampFromResponse error 4:  ${error}`);
   }
 }
 
