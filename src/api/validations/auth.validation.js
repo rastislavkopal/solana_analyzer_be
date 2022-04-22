@@ -26,6 +26,12 @@ module.exports = {
     },
   },
 
+  nftLogin: {
+    body: {
+      mints: Joi.array().min(1).required(),
+    },
+  },
+
   // POST /v1/auth/facebook
   // POST /v1/auth/google
   oAuth: {
