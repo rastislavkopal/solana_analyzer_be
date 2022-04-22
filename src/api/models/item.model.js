@@ -17,6 +17,10 @@ const ItemSchema = new mongoose.Schema({
     index: true,
     required: true,
   },
+  steal: {
+    type: Boolean,
+    default: false,
+  },
   raritySymbol: String,
   name: String,
   forSale: {

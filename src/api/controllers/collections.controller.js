@@ -24,6 +24,7 @@ exports.load = async (req, res, next, symbol) => {
  */
 exports.getCollection = async (req, res, next) => {
   try {
+    console.log('Im here.');
     if (!req.locals.collection) {
       res.status(httpStatus.BAD_REQUEST);
       res.json('Collection not found.');
