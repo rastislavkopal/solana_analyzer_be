@@ -12,7 +12,7 @@ const logger = require('../../config/logger');
 /**
 * User Roles
 */
-const roles = ['user', 'admin'];
+const roles = ['user', 'admin', 'nft'];
 
 /**
  * User Schema
