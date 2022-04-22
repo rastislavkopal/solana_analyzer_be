@@ -11,7 +11,7 @@ const CollectionService = require('../../services/collection.service');
 // Updates list of collections and its information every 1 minute
 // Every hour 0 * * * *
 // Every 5 minutes */5 * * * *
-const findOverBidsTask = cron.schedule('*/5 * * * *', async () => {
+const findOverBidsTask = cron.schedule('0 * * * *', async () => {
   try {
     const items = await Item.find({ forSale: true }, 'mintAddress price');
     let counter = 0;
@@ -29,7 +29,7 @@ const findOverBidsTask = cron.schedule('*/5 * * * *', async () => {
           if (response) {
             const { price: highestBid } = response.data;
             if (highestBid > currentPrice) {
-              console.log('BID FOUND!!!');
+              // console.log('BID FOUND!!!');
               const rObj = {
                 updateOne: {
                   filter: { mintAddress },
@@ -45,7 +45,7 @@ const findOverBidsTask = cron.schedule('*/5 * * * *', async () => {
             }
           }
           if (counter === 100) {
-            console.log('100 item bids checked!');
+            // console.log('100 item bids checked!');
             Item.bulkWrite(arr, { ordered: false }).catch((err) => {
               logger.error(`findOverBidsTask error 1: ${err}`);
             });
