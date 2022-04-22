@@ -79,7 +79,7 @@ async function getBuyTransactions(symbol, offset = 0, limit = 30) {
     const walletIDs = [];
     const config = {
       url: String(
-        `https://api-mainnet.magiceden.dev/v2/collections/${symbol}/activities?${offset}=0&limit=${limit}`,
+        `https://api-mainnet.magiceden.dev/v2/collections/${symbol}/activities?offset=${offset}limit=${limit}`,
       ),
       httpsAgent: agent,
     };
