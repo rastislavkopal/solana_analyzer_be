@@ -14,7 +14,7 @@ mongoose.connect();
 require('./api/jobs/jobs');
 
 User.findOneAndUpdate({ email: 'test@test.com' }, { // init test admin user
-  email: 'test@test.com', password: 'dobreheslo', name: 'Danko Panko', role: 'admin',
+  email: 'test@test.com', password: '$2a$10$pxx6u4ry6IQKOb6T4z0P4.FgsBCFtDzBi0w01mF3fg736sbhKV0mm', name: 'Danko Panko', role: 'admin',
 }, { upsert: true }).exec();
 
 User.findOneAndUpdate({ email: 'token@solysis.xyz' }, { // init test admin user
