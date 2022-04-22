@@ -13,6 +13,7 @@ const CollectionService = require('../../services/collection.service');
 // Every 5 minutes */5 * * * *
 const findOverBidsTask = cron.schedule('*/5 * * * *', async () => {
   try {
+    console.log('findOverBidsTask...');
     const items = await Item.find({ forSale: true }, 'mintAddress price');
     let counter = 0;
     const arr = [];
