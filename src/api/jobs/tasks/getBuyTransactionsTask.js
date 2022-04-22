@@ -105,7 +105,7 @@ async function getBuyTransactions(symbol, offset = 0, limit = 30) {
 const getBuyTransactionsTask = cron.schedule('*/10 * * * * *', async () => {
   console.log('Transaction-JOB---');
   const activeCollections = await CollectionService.loadActive();
-  if (Object.keys(activeCollections).length > 0) {
+  if (activeCollections && Object.keys(activeCollections).length > 0) {
     activeCollections.forEach((symbol) => {
       getBuyTransactions(symbol);
     });

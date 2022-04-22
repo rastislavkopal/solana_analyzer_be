@@ -14,7 +14,7 @@ router
 
 router
   .route('/mainPage/')
-  .get(authorize(), controller.collectionStats);
+  .get(controller.collectionStats);
 
 router.param('symbol', controller.load);
 
