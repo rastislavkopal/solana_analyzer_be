@@ -104,12 +104,12 @@ exports.updateListingTime = async (ids, symbol) => {
   console.log(`Updating listedFor of items of collection ${symbol}`);
   try {
     const concatData = new Map();
-    await Promise.all(ids.map(async (id) => {
+    await Promise.all(ids.map(async (id, index) => {
       const config = {
         url: String(`https://api-mainnet.magiceden.dev/rpc/getGlobalActivitiesByQuery?q={"$match":{"mint":"${id}"},"$sort":{"blockTime":-1,"createdAt":-1},"$skip":0}`),
         httpsAgent: agent,
       };
-      return axios.request(config)
+      setTimeout(() => axios.request(config)
         .then((periodResponse) => {
           if (periodResponse.code === 'ECONNRESET' || periodResponse.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
           const { results } = periodResponse.data;
@@ -129,7 +129,7 @@ exports.updateListingTime = async (ids, symbol) => {
         })
         .catch((error) => {
           logger.error(`updateListingTime1hr error 1: ${error}`);
-        });
+        }), 200 * (index + 1));
     })).catch((err) => {
       logger.error(`updateListingTime Promise.all error: ${err}`);
     });
