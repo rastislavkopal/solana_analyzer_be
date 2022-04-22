@@ -6,14 +6,15 @@ const { authorize, LOGGED_USER } = require('../../middlewares/auth');
 
 const router = express.Router();
 
-/**
- * Load collection when API with collectionNameId route parameter is hit
- */
-router.param('symbol', controller.load);
-
 router
   .route('/forward')
   .get(controller.forward);
+
+/**
+ * Load collection when API with collectionNameId route parameter is hit
+ */
+
+router.param('symbol', controller.load);
 
 router
   .route('/:symbol/item/all')

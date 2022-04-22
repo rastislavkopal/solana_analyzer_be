@@ -19,7 +19,7 @@ router
 router.param('symbol', controller.load);
 
 router
-  .route('/:symbol')
+  .route(authorize(), '/:symbol/')
   .get(authorize(), controller.getCollection)
   .put(authorize(), controller.updateCollection);
 

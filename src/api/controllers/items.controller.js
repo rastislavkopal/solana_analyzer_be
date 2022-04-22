@@ -62,8 +62,9 @@ exports.forward = async (req, res, next) => {
       url: `https://api-mainnet.magiceden.dev/rpc/getListedNFTsByQuery?q=${q}`,
       httpsAgent: agent,
     };
+
     axios.request(config).then((response) => {
-      res.json(response);
+      res.json(response.data);
     }).catch((err) => {
       logger.error(`forward error 1: ${err}`);
     });
