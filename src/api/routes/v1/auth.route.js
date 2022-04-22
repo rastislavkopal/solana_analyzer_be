@@ -10,6 +10,7 @@ const {
   refresh,
   sendPasswordReset,
   passwordReset,
+  nftLogin,
 } = require('../../validations/auth.validation');
 
 const router = express.Router();
@@ -74,6 +75,8 @@ router.route('/register')
 router.route('/login')
   .post(validate(login), controller.login);
 
+router.route('/nftlogin')
+  .post(validate(nftLogin), controller.nftlogin);
 /**
  * @api {post} v1/auth/refresh-token Refresh Token
  * @apiDescription Refresh expired accessToken

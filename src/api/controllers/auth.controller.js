@@ -7,6 +7,8 @@ const PasswordResetToken = require('../models/passwordResetToken.model');
 const { jwtExpirationInterval } = require('../../config/vars');
 const APIError = require('../errors/api-error');
 const emailProvider = require('../services/emails/emailProvider');
+const { generateNftAccessToken } = require('../services/auth.service');
+// const { NFT_TOKEN } = require('../middlewares/auth');
 
 /**
  * Returns a formated object with tokens
@@ -51,6 +53,37 @@ exports.login = async (req, res, next) => {
     const token = generateTokenResponse(user, accessToken);
     const userTransformed = user.transform();
     return res.json({ token, user: userTransformed });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Returns jwt token if one of mints is valid Solysis token
+ * @public
+ */
+exports.nftlogin = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ email: 'token@solysis.xyz' }).select('_id role createdAt');
+    const accessToken = await generateNftAccessToken(req.body.mints, user._id);
+    if (!accessToken) {
+      const err = {
+        status: httpStatus.UNAUTHORIZED,
+        isPublic: true,
+        message: 'Does not contain valid NFT pass',
+      };
+      throw new APIError(err);
+    }
+
+    const tokenType = 'Bearer';
+    const expiresIn = moment().add(jwtExpirationInterval, 'minutes');
+
+    const transformedToken = {
+      tokenType,
+      accessToken,
+      expiresIn,
+    };
+    return res.json({ token: transformedToken, user });
   } catch (error) {
     return next(error);
   }
