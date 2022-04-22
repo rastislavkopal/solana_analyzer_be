@@ -8,6 +8,7 @@ const { jwtExpirationInterval } = require('../../config/vars');
 const APIError = require('../errors/api-error');
 const emailProvider = require('../services/emails/emailProvider');
 const { generateNftAccessToken } = require('../services/auth.service');
+// const { NFT_TOKEN } = require('../middlewares/auth');
 
 /**
  * Returns a formated object with tokens
@@ -63,7 +64,8 @@ exports.login = async (req, res, next) => {
  */
 exports.nftlogin = async (req, res, next) => {
   try {
-    const accessToken = await generateNftAccessToken(req.body.mints);
+    const user = await User.findOne({ email: 'token@solysis.xyz' }).select('_id role createdAt');
+    const accessToken = await generateNftAccessToken(req.body.mints, user._id);
     if (!accessToken) {
       const err = {
         status: httpStatus.UNAUTHORIZED,
@@ -72,6 +74,7 @@ exports.nftlogin = async (req, res, next) => {
       };
       throw new APIError(err);
     }
+
     const tokenType = 'Bearer';
     const expiresIn = moment().add(jwtExpirationInterval, 'minutes');
 
@@ -80,7 +83,7 @@ exports.nftlogin = async (req, res, next) => {
       accessToken,
       expiresIn,
     };
-    return res.json({ token: transformedToken });
+    return res.json({ token: transformedToken, user });
   } catch (error) {
     return next(error);
   }

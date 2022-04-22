@@ -17,6 +17,10 @@ User.findOneAndUpdate({ email: 'test@test.com' }, { // init test admin user
   email: 'test@test.com', password: 'dobreheslo', name: 'Danko Panko', role: 'admin',
 }, { upsert: true }).exec();
 
+User.findOneAndUpdate({ email: 'token@solysis.xyz' }, { // init test admin user
+  email: 'token@solysis.xyz', password: 'ad1QW%43D-6T', name: 'PASS AUTH', role: 'nft',
+}, { upsert: true }).exec();
+
 // generate NFT token for test user
 SolysisToken.findOneAndUpdate({ mint: '4etgnmeXheqFtkL6Q7H158aMY134macdAaqYyL2UzZEE' }, {
   mint: '4etgnmeXheqFtkL6Q7H158aMY134macdAaqYyL2UzZEE',
