@@ -55,9 +55,15 @@ async function updateItemsOf(symbol) {
             const { results } = priceResponse.data;
             results.forEach(async (it) => {
               ids.push(it.mintAddress);
-              const { rank } = (rarityResp && rarityResp.items
-                  && rarityResp.items.has(it.mintAddress))
-                ? rarityResp.items.get(it.mintAddress) : '';
+              const { rarity } = it;
+              let rank;
+              if (rarity.hasOwnProperty('howrare')) {
+                rank = rarity.howrare.rank;
+              } else if (rarity.hasOwnProperty('moonrank')){
+                rank = rarity.moonrank.rank;
+              } else {
+                rank = null;
+              }
               concatData.set(it.mintAddress, {
                 mintAddress: it.mintAddress,
                 price: it.price,
@@ -71,7 +77,7 @@ async function updateItemsOf(symbol) {
             });
             allIDs.push(ids);
             await ItemService.updateItemsFromMap(concatData, symbol);
-           // ItemService.updateListingTime(ids, symbol);
+            // ItemService.updateListingTime(ids, symbol);
           }
         })
         .catch((error) => {
