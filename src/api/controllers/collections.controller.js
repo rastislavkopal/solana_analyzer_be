@@ -62,17 +62,12 @@ exports.listCollections = async (req, res, next) => {
 
 exports.collectionStats = async (req, res, next) => {
   try {
-    const now = new Date(Date.now()).toISOString();
-    const now1min = new Date(Date.now() - (60 * 1000)).toISOString();
+    // const now = new Date(Date.now()).toISOString();
+    // const now1min = new Date(Date.now() - (60 * 1000)).toISOString();
     // eslint-disable-next-line max-len
     // const collectionTS_now = await CollectionTs.find({ timestamp: { $gt: now5min, $lte: now }},'-_id  name metadata timestamp');
-    const collectionTsNow = await CollectionTs.find({
-      timestamp:
-        {
-          $lte: now,
-          $gte: now1min,
-        },
-    }).sort('floorPrice');
+    const collectionTsNow = await CollectionTs.find({ recent: true }).sort('floorPrice');
+    /*
     const returnArr = [];
     const compareArr = [];
     collectionTsNow.forEach((collectionTs) => {
@@ -81,7 +76,8 @@ exports.collectionStats = async (req, res, next) => {
         returnArr.push(collectionTs);
       }
     });
-    res.json(returnArr);
+     */
+    res.json(collectionTsNow);
   } catch (error) {
     next(error);
   }
