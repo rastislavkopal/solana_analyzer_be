@@ -21,8 +21,10 @@ const logger = require('../../config/logger');
 exports.load = async (req, res, next, symbol) => {
   try {
     console.log('loading symbol');
-    const collection = await Collection.findOne({ symbol }).exec();
-    req.locals = { collection };
+    const collection = await Collection.findOne({ symbol });
+
+    if (collection) req.locals = { collection };
+
     return next();
   } catch (error) {
     return next(error);
@@ -35,8 +37,10 @@ exports.load = async (req, res, next, symbol) => {
  */
 exports.listItems = async (req, res, next) => {
   try {
-    const collectionSymbol = req.locals.collection.symbol;
-    const items = await Item.find({ collectionSymbol });
+    console.log('listing items...');
+    const { symbol } = req.locals.collection;
+
+    const items = await Item.find({ collectionSymbol: symbol });
     res.setHeader('Content-Type', 'application/json');
     res.json(items);
   } catch (error) {
