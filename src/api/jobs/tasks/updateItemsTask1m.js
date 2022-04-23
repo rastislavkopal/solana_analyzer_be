@@ -57,9 +57,9 @@ async function updateItemsOf(symbol) {
               ids.push(it.mintAddress);
               const { rarity } = it;
               let rank;
-              if (rarity.hasOwnProperty('howrare')) {
+              if (rarity && rarity.hasOwnProperty('howrare')) {
                 rank = rarity.howrare.rank;
-              } else if (rarity.hasOwnProperty('moonrank')){
+              } else if (rarity && rarity.hasOwnProperty('moonrank')){
                 rank = rarity.moonrank.rank;
               } else {
                 rank = null;
