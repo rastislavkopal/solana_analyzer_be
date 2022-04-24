@@ -36,7 +36,7 @@ const updateCollectionTask = cron.schedule('*/10 * * * *', async () => {
         });
       })
       .catch((error) => {
-        logger.info(error.message);
+        logger.info(`updateCollectionTask error 1: ${error}`);
       });
 
     // update collection with daily_sales, volumes etc..
@@ -62,18 +62,22 @@ const updateCollectionTask = cron.schedule('*/10 * * * *', async () => {
             upsert: true,
             rawResult: false,
           }, (err) => {
-            if (err) logger.error(`updateCollectionTask error 0:${err}`);
+            if (err) logger.error(`updateCollectionTask error 0: ${err}`);
+          }).catch((e) => {
+            logger.error(`updateCollectionTask error 1: ${e}`);
           });
         });
       })
       .catch((error) => {
-        logger.error(`updateCollectionTask error 1:${error}`);
+        logger.error(`updateCollectionTask error 2:${error}`);
       });
   } catch (error) {
-    logger.error(`updateCollectionTask error 2: ${error}`);
+    logger.error(`updateCollectionTask error 3: ${error}`);
   }
 
-  const collections = await Collection.find({});
+  const collections = await Collection.find({}).catch((error) => {
+    logger.error(`updateCollectionTask error 4: ${error}`);
+  });
   logger.info(`Updated collections info: ${collections.length} .. items`);
 });
 

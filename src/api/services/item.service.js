@@ -40,7 +40,7 @@ exports.updateItemsFromRarityMap = async (concatData) => {
       };
       return rObj;
     });
-    Item.upsertMany(items).then(() => {}).catch((err) => { logger.error(`updateItemsFromData: ${err}`); });
+    Item.upsertMany(items).catch((err) => { logger.error(`updateItemsFromData: ${err}`); });
   } catch (e) {
     logger.error(`updateItemsFromRarityMap error: ${e}`);
   }
@@ -65,31 +65,12 @@ exports.updateForSale1m = async (allIDs, symbol) => {
     const allItemsArray = allItemsResult.map((item) => item.mintAddress);
 
     const difference = allItemsArray.filter((x) => !itemsResultArray.includes(x));
-    /*
-    const items = difference.map((id) => {
-      const rObj = {
-        updateOne: {
-          filter: { collectionSymbol: symbol, mintAddress: id },
-          update: {
-            $set: {
-              forSale: false,
-            },
-          },
-        },
-      };
-      return rObj;
-    });
-    Item.bulkWrite(items, { ordered: false }).catch((err) => {
-      logger.error(`updateForSale of ${symbol} error: ${err}`);
-    });
-  } catch (e) {
-    logger.error(`updateForSale error: ${e}`);
-  }
-   */
 
-    Item.updateMany({ mintAddress: difference }, { $set: { forSale: true } });
+    Item.updateMany({ mintAddress: difference }, { $set: { forSale: true } }).catch((e) => {
+      logger.error(`updateForSale1m 1  updateMany promise error: ${e}`);
+    });
   } catch (e) {
-    logger.error(`updateForSale error: ${e}`);
+    logger.error(`updateForSale1m 2 error: ${e}`);
   }
 };
 exports.updateForSale1h = (symbol) => {
@@ -98,6 +79,8 @@ exports.updateForSale1h = (symbol) => {
   Item.updateMany({ collectionSymbol: symbol },
     { $set: { forSale: false, listedFor: 0 } }).then(() => {
     console.log(`updateForSale1h of ${symbol} was successfull!`);
+  }).catch((e) => {
+    logger.error(`updateForSale1h updateMany promise error: ${e}`);
   });
 };
 

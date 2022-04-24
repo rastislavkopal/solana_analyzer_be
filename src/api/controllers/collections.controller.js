@@ -236,10 +236,14 @@ exports.updateCollection = async (req, res, next) => {
       }
     });
 
-    const ret = await Collection.updateOne({ _id: collection._id }, transformed);
+    const ret = await Collection.updateOne({ _id: collection._id }, transformed).catch((e) => {
+      logger.error(`updateCollection error 1: ${e}`);
+    });
 
     if (transformed.raritySymbol) {
-      service.updateCollectionRarity(transformed.raritySymbol, collection.symbol);
+      service.updateCollectionRarity(transformed.raritySymbol, collection.symbol).catch((e) =>{
+        logger.error(`updateCollection error 2: ${e}`);
+      });
     }
 
     if (ret.modifiedCount !== 0) {

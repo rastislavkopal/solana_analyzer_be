@@ -21,7 +21,9 @@ const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
     const collections = await Collection.find(
       { raritySymbol: { $exists: true, $ne: null } },
       '_id symbol raritySymbol',
-    );
+    ).catch((e) => {
+      logger.error(`updateHolderTask error 0: ${e}`);
+    });
 
     collections.forEach(async (it) => {
       const config = {
@@ -46,7 +48,9 @@ const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
         .catch((error) => {
           logger.error(`updateHolderTask error 1: ${error}`);
         });
-      const holders = await Holder.find({ symbol: it.symbol }, 'walletId');
+      const holders = await Holder.find({ symbol: it.symbol }, 'walletId').catch((e) => {
+        logger.error(`updateHolderTask error 2: ${e}`);
+      });
       const hld = holders.map((holder) => holder.walletId);
       const toAdd = ids.filter((x) => !hld.includes(x));
       const toRemove = hld.filter((x) => !ids.includes(x));
@@ -60,23 +64,12 @@ const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
           };
           return item;
         });
-        Holder.bulkWrite(items, { ordered: false });
+        Holder.bulkWrite(items, { ordered: false }).catch((e) => {
+          logger.error(`updateHolderTask error 2: ${e}`);
+        });
       }
 
       if (toAdd.length > 0) {
-        /*
-        const items = toAdd.map((id) => {
-          const item = {
-            insertOne: {
-              document: {
-                walletId: id,
-                symbol: it.symbol,
-              },
-            },
-          };
-          return item;
-        }).filter((notUndefined) => notUndefined !== undefined);
-         */
         const items = toAdd.flatMap((id) => {
           if (id !== undefined || id !== '' || id !== 'undefined') {
             const item = {
@@ -90,7 +83,9 @@ const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
             return [item];
           } return [];
         });
-        await Holder.bulkWrite(items, { ordered: false });
+        await Holder.bulkWrite(items, { ordered: false }).catch((e) => {
+          logger.error(`updateHolderTask error 3: ${e}`);
+        });
       }
 
       const itemCount = Array.from(concatData.entries(), ([key, value]) => {
@@ -109,10 +104,12 @@ const updateHolderTask = cron.schedule('*/15 * * * *', async () => {
         };
         return rObj;
       });
-      Holder.bulkWrite(itemCount, { ordered: false });
+      Holder.bulkWrite(itemCount, { ordered: false }).catch((e) => {
+        logger.error(`updateHolderTask error 4: ${e}`);
+      });
     });
   } catch (error) {
-    logger.error(`updateHolderTask error 2: ${error}`);
+    logger.error(`updateHolderTask error 5: ${error}`);
   }
 });
 

@@ -129,7 +129,9 @@ async function saveCollectionTimestampFromResponse(resp, image, name) {
 const collectionTimestampTask = cron.schedule('* * * * *', async () => {
   try {
     console.log('Collection_Time_series-JOB---');
-    const collections = await Collection.find({}, 'symbol name image');
+    const collections = await Collection.find({}, 'symbol name image').catch((e) => {
+      logger.error(`Collection_Time_series-JOB error: ${e}`);
+    });
     collections.forEach(async (it) => {
       const config = {
         url: String(`https://api-mainnet.magiceden.dev/rpc/getCollectionEscrowStats/${it.symbol}`),
@@ -139,7 +141,9 @@ const collectionTimestampTask = cron.schedule('* * * * *', async () => {
       axios.request(config)
         .then((resp) => {
           if (resp.code === 'ECONNRESET' || resp.code === 'ERR_SOCKET_CLOSED') throw new Error('An error occured while reaching magiceden api');
-          saveCollectionTimestampFromResponse(resp, it.image, it.name);
+          saveCollectionTimestampFromResponse(resp, it.image, it.name).catch((e) => {
+            logger.error(`saveCollectionTimestampFromResponse error: ${e}`);
+          });
         })
         .catch((error) => {
           logger.error(`collectionTimestampTask error 1: ${error}`);
