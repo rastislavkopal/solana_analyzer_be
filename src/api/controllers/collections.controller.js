@@ -10,7 +10,6 @@ const logger = require('../../config/logger');
  */
 exports.load = async (req, res, next, symbol) => {
   try {
-    console.log('I was here.');
     const collection = await Collection.findOne({ symbol }).exec();
     req.locals = { collection };
     return next();

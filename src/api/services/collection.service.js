@@ -100,7 +100,9 @@ exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
           itemName,
         });
       });
-      saveUniqueAttributesFrommap(attrMap, raritySymbol, collectionSymbol).catch((e) => {
+      await saveUniqueAttributesFrommap(attrMap, raritySymbol, collectionSymbol).then(() => {
+        console.log('saveUniqueAttributesFrommap done!');
+      }).catch((e) => {
         logger.error(`saveUniqueAttributesFrommap error: ${e}`);
       });
       ItemService.updateItemsFromRarityMap(map1).catch((e) => {
@@ -111,7 +113,7 @@ exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
         const res = await RaritySheet.findOne({ raritySymbol });
         // console.log(`!res: ${JSON.stringify(res)}`);
         if (!res) {
-          new RaritySheet({
+          await new RaritySheet({
             raritySymbol,
             ranking_url,
             twitter,
@@ -120,9 +122,11 @@ exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
             logo,
             collectionSymbol,
           }).save();
+          console.log('tu1');
           return 'Success!';
         }
       }
+      console.log('tu2');
       return 'Success!';
     }).catch((err) => {
       logger.error(`Update collection rarity error: ${err}`);
