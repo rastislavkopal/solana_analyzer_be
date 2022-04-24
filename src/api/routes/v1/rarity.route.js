@@ -1,13 +1,13 @@
 const express = require('express');
 const validate = require('express-validation');
 const controller = require('../../controllers/rarity.controller');
+const controller2 = require('../../controllers/collections.controller');
 const { accessCollectionRarity } = require('../../validations/rarity.validation');
 const { authorize } = require('../../middlewares/auth');
 
 const router = express.Router();
 
-router.param('raritySymbol', controller.load);
-router.param('symbol', controller.load);
+router.param('symbol', controller2.load);
 router
   .route('/rarity')
   .get(

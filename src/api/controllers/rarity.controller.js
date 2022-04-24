@@ -9,16 +9,6 @@ const logger = require('../../config/logger');
  * Load collection and append to req.
  * @public
  */
-exports.load = async (req, res, next, raritySymbol) => {
-  try {
-    const collection = await Collection.findOne({ raritySymbol }).exec();
-    console.log(collection);
-    req.locals = { collection };
-    return next();
-  } catch (error) {
-    return next(error);
-  }
-};
 
 /**
  * Get collections rarity
@@ -38,10 +28,10 @@ exports.addCollectionRarity = async (req, res, next) => {
   try {
     // eslint-disable-next-line max-len
     const ret = await service.updateCollectionRarity(req.body.raritySymbol, req.body.collectionSymbol);
-
+    console.log(JSON.stringify(ret));
     if (!ret) {
       res.status(httpStatus.NOT_FOUND);
-      res.json('Collection not found (SUCCESS ANYWAYS?)');
+      res.json('Collection not found');
     }
 
     res.status(httpStatus.CREATED);
@@ -74,9 +64,11 @@ exports.getRarityItems = async (req, res, next) => {
       res.json('Collection not found.');
     }
     const { collection } = req.locals;
-    const { raritySymbol } = collection;
+    const { symbol } = collection;
     const { percentage } = req.params;
-    const { attributes } = await Attributes.find({ raritySymbol });
+    const query = await Attributes.find({ collectionSymbol: symbol });
+    // console.log(JSON.stringify(query));
+    const { attributes } = query;
     const resp = [];
     attributes.forEach((attribute) => {
       if (attribute.rarity <= percentage) resp.push(attribute.value);

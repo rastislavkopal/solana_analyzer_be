@@ -59,9 +59,10 @@ async function saveCollectionTimestampFromResponse(resp, image, name) {
     const listedCountChange = calculateChange(collectionTsNow, collectionsTs24hBefore, 'listedCount');
     const collectiontsRecent = await CollectionTs.findOne({ 'metadata.symbol': results.symbol, recent: true });
     if (collectiontsRecent) {
-      const update = {
+      await CollectionTs.updateOne({ 'metadata.symbol': results.symbol, recent: true }, {
         $set: {
           name,
+          recent: true,
           metadata: {
             symbol: results.symbol,
             floorPrice: results.floorPrice,
@@ -76,8 +77,8 @@ async function saveCollectionTimestampFromResponse(resp, image, name) {
           },
           timestamp: now,
         },
-      };
-      CollectionTs.updateOne({ 'metadata.symbol': results.symbol, recent: true }, { update }).catch((e) => {
+      }).then(() => {
+      }).catch((e) => {
         logger.error(`saveCollectionTimestampFromResponse error 1: ${e}`);
       });
     } else {
