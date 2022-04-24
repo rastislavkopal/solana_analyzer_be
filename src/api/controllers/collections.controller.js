@@ -10,6 +10,7 @@ const logger = require('../../config/logger');
  */
 exports.load = async (req, res, next, symbol) => {
   try {
+    console.log('I was here.');
     const collection = await Collection.findOne({ symbol }).exec();
     req.locals = { collection };
     return next();
@@ -241,7 +242,7 @@ exports.updateCollection = async (req, res, next) => {
     });
 
     if (transformed.raritySymbol) {
-      service.updateCollectionRarity(transformed.raritySymbol, collection.symbol).catch((e) =>{
+      service.updateCollectionRarity(transformed.raritySymbol, collection.symbol).catch((e) => {
         logger.error(`updateCollection error 2: ${e}`);
       });
     }

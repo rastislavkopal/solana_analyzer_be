@@ -7,7 +7,7 @@ const { authorize, LOGGED_USER } = require('../../middlewares/auth');
 const router = express.Router();
 
 router
-  .route('/forward')
+  .route('/me/forward')
   .get(controller.forward);
 
 /**
