@@ -7,7 +7,7 @@ const { authorize } = require('../../middlewares/auth');
 const router = express.Router();
 
 router.param('raritySymbol', controller.load);
-
+router.param('symbol', controller.load);
 router
   .route('/rarity')
   .get(
@@ -25,5 +25,9 @@ router
 router
   .route('/rarity/all')
   .get(authorize(), controller.listRaritySheets);
+
+router
+  .route('/rarity/:symbol/:percentage')
+  .get(authorize(), controller.getRarityItems);
 
 module.exports = router;
