@@ -12,7 +12,9 @@ const ItemService = require('../../services/item.service');
 async function updateItemsOf(symbol) {
   try {
     await ItemService.updateForSale1h(symbol);
-    const collection = await Collection.findOne({ symbol }).exec();
+    const collection = await Collection.findOne({ symbol }).catch((e) => {
+      logger.error(`updateItemsOf error 0: ${e}`);
+    });
     const limit = 100;
 
     if (!collection) {
@@ -20,8 +22,13 @@ async function updateItemsOf(symbol) {
     }
     const collectionTs = await CollectionTs.find({ 'metadata.symbol': symbol }, '-_id metadata timestamp')
       .sort({ timestamp: -1 })
-      .limit(limit);
-
+      .limit(limit)
+      .catch((e) => {
+        logger.error(`updateItemsOf error 1: ${e}`);
+      });
+    if (!collectionTs || !collectionTs[0].metadata) {
+      logger.error('No collectionTS metadata found');
+    }
     let { listedCount } = collectionTs[0].metadata;
     if (listedCount > 1500 || !listedCount) {
       // Add more unsupported cases ( E.g. cooldown on this function )
@@ -29,7 +36,9 @@ async function updateItemsOf(symbol) {
       return;
     }
     const { raritySymbol } = collection;
-    const rarityResp = await RaritySheet.findOne({ raritySymbol });
+    const rarityResp = await RaritySheet.findOne({ raritySymbol }).catch((e) => {
+      logger.error(`updateItemsOf error 2: ${e}`);
+    });
     if (!rarityResp) {
       logger.error(`listedPriceDistributionTask1hr---${symbol}---RaritySheet not found!`);
     }
@@ -66,7 +75,7 @@ async function updateItemsOf(symbol) {
                 let rank;
                 if (rarity && rarity.hasOwnProperty('howrare')) {
                   rank = rarity.howrare.rank;
-                } else if (rarity && rarity.hasOwnProperty('moonrank')){
+                } else if (rarity && rarity.hasOwnProperty('moonrank')) {
                   rank = rarity.moonrank.rank;
                 } else {
                   rank = null;
@@ -87,14 +96,14 @@ async function updateItemsOf(symbol) {
             }
           })
           .catch((error) => {
-            logger.error(`updateItemsOf1hr error 1: ${error}`);
+            logger.error(`updateItemsOf1hr error 3: ${error}`);
           });
         index += step;
         step = 20;
       }
     }
   } catch (error) {
-    logger.error(`updateItemsOf1hr error 5: ${error}`);
+    logger.error(`updateItemsOf1hr error 4: ${error}`);
   }
 }
 // '*/5 * * * *'
@@ -102,7 +111,9 @@ async function updateItemsOf(symbol) {
 const updateItemsTask1hr = cron.schedule('0 * * * *', async () => {
   try {
     console.log('updateItemsTask1hr-JOB---');
-    const activeCollections = await CollectionService.loadActive();
+    const activeCollections = await CollectionService.loadActive().catch((e) => {
+      logger.error(`updateItemsOfTask1hr loadActive error : ${e}`);
+    });
     console.log(`Active: ${JSON.stringify(activeCollections)}`);
     if (activeCollections && Object.keys(activeCollections).length > 0) {
       activeCollections.forEach((symbol) => {

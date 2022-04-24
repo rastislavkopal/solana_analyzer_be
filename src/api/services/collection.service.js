@@ -82,11 +82,13 @@ exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
           itemName,
         });
       });
-      ItemService.updateItemsFromRarityMap(map1);
+      ItemService.updateItemsFromRarityMap(map1).catch((e) => {
+        logger.error(`updateCollectionRarity error: ${e}`);
+      });
 
       if (response.data.result.data && raritySymbol) {
         const res = await RaritySheet.findOne({ raritySymbol });
-        console.log(`!res: ${JSON.stringify(res)}`);
+        // console.log(`!res: ${JSON.stringify(res)}`);
         if (!res) {
           new RaritySheet({
             raritySymbol,

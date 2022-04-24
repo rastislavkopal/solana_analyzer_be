@@ -19,14 +19,20 @@ const Holder = require('../../models/holder.model');
 
 async function saveTransactions(concatData, collectionSymbol, walletIDs) {
   const transactionSignatures = Array.from(concatData.keys());
-  const existingTransactionsQuery = await Transaction.find({ signature: transactionSignatures });
+  const existingTransactionsQuery = await Transaction.find({ signature: transactionSignatures })
+    .catch((e) => {
+      logger.error(`saveTransactions error: ${e}`);
+    });
   const existingTransactions = existingTransactionsQuery
     .map((transaction) => transaction.signature);
   const newTransactions = transactionSignatures.filter((x) => !existingTransactions.includes(x));
 
   if (newTransactions.length > 0) {
     const isWhaleMap = new Map();
-    const holders = await Holder.find({ walletId: walletIDs, symbol: collectionSymbol });
+    const holders = await Holder.find({ walletId: walletIDs, symbol: collectionSymbol })
+      .catch((e) => {
+        logger.error(`saveTransactions error 2: ${e}`);
+      });
     holders.forEach((it) => {
       isWhaleMap.set(it.walletId, it.isWhale);
     });
@@ -50,31 +56,17 @@ async function saveTransactions(concatData, collectionSymbol, walletIDs) {
       };
       return rObj;
     });
-    await Transaction.bulkWrite(items, { ordered: false });
+    await Transaction.bulkWrite(items, { ordered: false }).catch((e) => {
+      logger.error(`saveTransactions error 3: ${e}`);
+    });
   }
-
-  /*
-  Transaction.updateOne(
-    { signature: transaction.signature },
-    {
-      $set: {
-        mintAddress: transaction.tokenMint,
-        buyer: transaction.buyer,
-        seller: transaction.seller,
-        price: transaction.price,
-        transactionType: transaction.type,
-        collectionId,
-        isWhale,
-      },
-    },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
-  );
-   */
 }
 
 async function getBuyTransactions(symbol, offset = 0, limit = 30) {
   try {
-    const collection = await Collection.findOne({ symbol });
+    const collection = await Collection.findOne({ symbol }).catch((e) => {
+      logger.error(`getBuyTransactions error 1: ${e}`);
+    });
     const concatData = new Map();
     const walletIDs = [];
     const config = {
@@ -95,16 +87,20 @@ async function getBuyTransactions(symbol, offset = 0, limit = 30) {
           }
         });
         saveTransactions(concatData, collection.symbol, walletIDs);
+      }).catch((e) => {
+        logger.error(`getBuyTransactions error 2: ${e}`);
       });
   } catch (error) {
-    logger.error(`getBuyTransactionsTask error 1: ${error}`);
+    logger.error(`getBuyTransactions error 3: ${error}`);
   }
 }
 
 // Runs every 10 seconds
 const getBuyTransactionsTask = cron.schedule('*/10 * * * * *', async () => {
   console.log('Transaction-JOB---');
-  const activeCollections = await CollectionService.loadActive();
+  const activeCollections = await CollectionService.loadActive().catch((e) => {
+    logger.error(`getBuyTransactionsTask loadActive error: ${e}`);
+  });
   if (activeCollections && Object.keys(activeCollections).length > 0) {
     activeCollections.forEach((symbol) => {
       getBuyTransactions(symbol);
