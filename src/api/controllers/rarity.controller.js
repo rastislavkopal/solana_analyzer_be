@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const RaritySheet = require('../models/raritySheet.model');
 const service = require('../services/collection.service');
 const Collection = require('../models/collection.model');
+const Attributes = require('../models/attributes.model');
 const logger = require('../../config/logger');
 
 /**
@@ -66,7 +67,25 @@ exports.removeCollectionRarity = async (req, res, next) => {
     next(error);
   }
 };
-
+exports.getRarityItems = async (req, res, next) => {
+  try {
+    if (!req.locals.collection) {
+      res.status(httpStatus.BAD_REQUEST);
+      res.json('Collection not found.');
+    }
+    const { collection } = req.locals;
+    const { raritySymbol } = collection;
+    const { percentage } = req.params;
+    const { attributes } = await Attributes.find({ raritySymbol });
+    const resp = [];
+    attributes.forEach((attribute) => {
+      if (attribute.rarity <= percentage) resp.push(attribute.value);
+    });
+    res.json(resp);
+  } catch (error) {
+    next(error);
+  }
+};
 exports.listRaritySheets = async (req, res, next) => {
   try {
     const collections = await RaritySheet.find({});

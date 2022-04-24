@@ -1,9 +1,12 @@
 const axios = require('axios');
+const { attr } = require('cheerio/lib/api/attributes');
 const { agent } = require('../utils/proxyGenerator');
 const Collection = require('../models/collection.model');
 const RaritySheet = require('../models/raritySheet.model');
 const logger = require('../../config/logger');
 const ItemService = require('./item.service');
+const Item = require('../models/item.model');
+const Attributes = require('../models/attributes.model');
 // const rarityController = require('../controllers/rarity.controller');
 
 /**
@@ -50,6 +53,15 @@ exports.createCollectionIfNotExists = async (collectionSymbol, raritySymbol) => 
   return ret;
 };
 
+function saveUniqueAttributesFrommap(attrMap, raritySymbol, collectionSymbol) {
+  const attributes = Array.from(attrMap.values());
+
+  Attributes.updateOne({ raritySymbol }, { $set: { raritySymbol, collectionSymbol, attributes } })
+    .catch((err) => {
+      logger.error(`updateItemsFromMap of ${collectionSymbol} error: ${err}`);
+    });
+}
+
 /**
  * Add rarity sheet if it doesn't already exist
  * @public
@@ -72,8 +84,14 @@ exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
       } = response.data.result.data;
 
       const map1 = new Map();
+      const attrMap = new Map();
       items.forEach((item) => {
         const itemAttr = item.attributes;
+        itemAttr.forEach((attribute) => {
+          if (!attrMap.get(attribute.value)) {
+            attrMap.set(attribute.value, attribute);
+          }
+        });
         const itemRank = item.rank;
         const itemName = item.name;
         map1.set(item.mint, {
@@ -81,6 +99,9 @@ exports.updateCollectionRarity = async (raritySymbol, collectionSymbol) => {
           itemRank,
           itemName,
         });
+      });
+      saveUniqueAttributesFrommap(attrMap, raritySymbol, collectionSymbol).catch((e) => {
+        logger.error(`saveUniqueAttributesFrommap error: ${e}`);
       });
       ItemService.updateItemsFromRarityMap(map1).catch((e) => {
         logger.error(`updateCollectionRarity error: ${e}`);
