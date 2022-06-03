@@ -1,4 +1,4 @@
-# Solysis BACKEND
+# solana_analyzer BACKEND
 RESTful API using Node.js, Express and MongoDB
 
 ## Features
@@ -34,8 +34,8 @@ RESTful API using Node.js, Express and MongoDB
 #### Clone the repo and make it yours:
 
 ```bash
-git clone --depth 1 https://github.com/rastislavkopal/solysis_be
-cd solysis_be
+git clone --depth 1 https://github.com/rastislavkopal/solana_analyzer_be
+cd solana_analyzer_be
 ```
 
 #### Install dependencies:
